@@ -3,39 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المحادثة | Stranger Meeting</title>
-    <style>
-        :root { --bg: #e5ddd5; --header: #075e54; --me: #dcf8c6; --them: #fff; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background: var(--bg); }
-        .header { background: var(--header); color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .back-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
-        #msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
-        .me { align-self: flex-end; background: var(--me); border-bottom-right-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .them { align-self: flex-start; background: var(--them); border-bottom-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .input-bar { padding: 10px; background: #f0f0f0; display: flex; align-items: center; gap: 10px; }
-        input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; }
-        .btn-round { background: var(--header); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 20px; }
-        .v-btn { background: #4CAF50; }
-    </style>
+    <title>المحادثة | SM</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light-mode chat-page">
 
     <div class="header">
-        <div class="user-info">
-            <button class="back-btn" onclick="location.href='./dashboard.html'">🔙</button>
+        <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
+        <div class="user-meta">
             <strong id="targetName">جاري التحميل...</strong>
+            <small id="statusLine">نشط الآن</small>
         </div>
-        <button class="btn-round v-btn" id="vCallBtn">📹</button>
+        <button id="vCallBtn" class="v-btn">📹</button>
     </div>
-    
-    <div id="msgs"></div>
+
+    <div id="msgs" class="msg-container">
+        </div>
 
     <div class="input-bar">
-        <input type="text" id="mIn" placeholder="اكتب رسالة هنا...">
-        <button id="sBtn" class="btn-round">📤</button>
+        <input type="text" id="mIn" placeholder="اكتب رسالة...">
+        <button id="sBtn" class="send-btn">📤</button>
     </div>
+
+    <script src="ui-logic.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -55,44 +45,46 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const otherId = urlParams.get('id');
+        const otherId = new URLSearchParams(location.search).get('id');
 
         onAuthStateChanged(auth, async (user) => {
-            if (!user || !otherId) {
-                window.location.href = "./dashboard.html";
-                return;
+            if (!user || !otherId) return location.href = "login.html";
+
+            // جلب بيانات الطرف الآخر
+            const targetSnap = await getDoc(doc(db, "users", otherId));
+            if (targetSnap.exists()) {
+                document.getElementById("targetName").innerText = targetSnap.data().fullname;
             }
-            
-            // جلب اسم الشخص الآخر لعنوان المحادثة
-            const snap = await getDoc(doc(db, "users", otherId));
-            if(snap.exists()) document.getElementById("targetName").innerText = snap.data().fullname;
 
-            // --- نظام اتصال الفيديو المحدث ---
+            // إعداد زر الفيديو الذكي
             document.getElementById("vCallBtn").onclick = () => {
-                // تقصير المعرفات لضمان التوافق وسرعة الربط
-                const myShortId = user.uid.substring(0, 5);
-                const otherShortId = otherId.substring(0, 5);
-                const roomUnique = [myShortId, otherShortId].sort().join("");
-                const roomId = "Room" + roomUnique;
-
-                // التوجه لصفحة meeting.html (تأكد من تحديثها بكود السيرفر البديل 8x8)
-                window.location.href = `./meeting.html?room=${roomId}`;
+                // توليد معرف غرفة فريد وموحد للطرفين (ترتيب الـ UIDs أبجدياً)
+                const roomID = [user.uid.substring(0, 8), otherId.substring(0, 8)].sort().join("");
+                location.href = `meeting.html?room=${roomID}`;
             };
 
-            // نظام الدردشة الكتابية
+            // معرف المحادثة (Chat ID) الموحد
             const chatId = [user.uid, otherId].sort().join("_");
-            const msgRef = collection(db, "chats", chatId, "messages");
+            const messagesRef = collection(db, "chats", chatId, "messages");
 
-            document.getElementById("sBtn").onclick = async () => {
-                const val = document.getElementById("mIn").value;
-                if(val.trim()) {
-                    await addDoc(msgRef, { s: user.uid, t: val, time: serverTimestamp() });
+            // إرسال رسالة
+            const sendMsg = async () => {
+                const text = document.getElementById("mIn").value;
+                if (text.trim()) {
+                    await addDoc(messagesRef, {
+                        s: user.uid,
+                        t: text,
+                        time: serverTimestamp()
+                    });
                     document.getElementById("mIn").value = "";
                 }
             };
 
-            onSnapshot(query(msgRef, orderBy("time", "asc")), (snap) => {
+            document.getElementById("sBtn").onclick = sendMsg;
+            document.getElementById("mIn").onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
+
+            // الاستماع للرسائل الحية
+            onSnapshot(query(messagesRef, orderBy("time", "asc")), (snap) => {
                 const box = document.getElementById("msgs");
                 box.innerHTML = "";
                 snap.forEach(d => {
@@ -102,7 +94,7 @@
                     div.innerText = m.t;
                     box.appendChild(div);
                 });
-                box.scrollTop = box.scrollHeight;
+                box.scrollTop = box.scrollHeight; // التمرير لأسفل تلقائياً
             });
         });
     </script>
