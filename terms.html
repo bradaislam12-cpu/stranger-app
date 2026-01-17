@@ -2,21 +2,46 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>سياسة الخصوصية | Stranger Meeting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شروط الخدمة | SM</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: sans-serif; line-height: 1.6; padding: 30px; max-width: 800px; margin: auto; background: #f4f4f4; text-align: right; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1 { color: #4CAF50; border-bottom: 2px solid #eee; }
-        .back-btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
+        .terms-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 15px;
+            line-height: 1.8;
+        }
+        h2 { color: var(--p); border-bottom: 2px solid var(--p); padding-bottom: 10px; }
+        ul { padding-right: 20px; }
+        li { margin-bottom: 15px; }
+        .back-btn { margin-top: 20px; width: 100%; }
     </style>
 </head>
-<body>
-    <div class="card">
-        <h1>سياسة الخصوصية والاستخدام الآمن</h1>
-        <p>1. <b>تشفير المكالمات:</b> جميع مكالمات الفيديو مشفرة ولا يتم تسجيلها نهائياً.</p>
-        <p>2. <b>الصلاحيات:</b> نطلب الوصول للكاميرا والميكروفون فقط لتمكين الدردشة المباشرة.</p>
-        <p>3. <b>قواعد السلوك:</b> يمنع استخدام الكاميرا لأي محتوى مسيء؛ وسيتم حظر المخالفين فوراً.</p>
-        <a href="register.html" class="back-btn">العودة للتسجيل</a>
+<body class="light-mode">
+
+    <div class="container">
+        <div class="terms-container">
+            <h2>شروط الاستخدام والخصوصية</h2>
+            <p>أهلاً بك في <strong>Stranger Meeting</strong>. باستخدامك لهذا الموقع، أنت توافق على الالتزام بالقواعد التالية:</p>
+            
+            <ul>
+                <li><strong>الخصوصية:</strong> نحن لا نقوم بتسجيل أو تخزين محادثات الفيديو الخاصة بك. الاتصال يتم بشكل مباشر وآمن.</li>
+                <li><strong>السلوك العام:</strong> يمنع استخدام المنصة في أي أعمال تسيء للآخرين أو تخالف القوانين المحلية والدولية.</li>
+                <li><strong>المسؤولية:</strong> أنت المسؤول الوحيد عن الحفاظ على سرية بيانات حسابك وكلمة مرورك.</li>
+                <li><strong>البيانات:</strong> نقوم بتخزين اسمك وبريدك الإلكتروني فقط لغرض تمكين الآخرين من العثور عليك والدردشة معك.</li>
+            </ul>
+
+            <div style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px; font-size: 0.9rem;">
+                نحن نسعى دائماً لتوفير بيئة آمنة وهادئة للتواصل بين الأصدقاء والغرباء.
+            </div>
+
+            <button class="back-btn" onclick="history.back()">فهمت، العودة للخلف</button>
+        </div>
     </div>
+
+    <script src="ui-logic.js"></script>
 </body>
 </html>
