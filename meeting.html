@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دخول المكالمة... | Stranger Meeting</title>
+    <title>جاري الدخول للمكالمة... | SM</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
@@ -16,13 +16,12 @@
             margin: 0; 
             text-align: center; 
         }
-        .container { padding: 20px; }
         .loader { 
             border: 4px solid #333; 
             border-top: 4px solid #00a884; 
             border-radius: 50%; 
-            width: 50px; 
-            height: 50px; 
+            width: 60px; 
+            height: 60px; 
             animation: spin 1s linear infinite; 
             margin: 0 auto 20px; 
         }
@@ -30,23 +29,11 @@
         .btn { 
             background: #00a884; 
             color: white; 
-            padding: 15px 35px; 
-            border-radius: 12px; 
+            padding: 15px 30px; 
+            border-radius: 10px; 
             text-decoration: none; 
             font-weight: bold; 
-            font-size: 1.1rem; 
             display: inline-block; 
-            box-shadow: 0 4px 15px rgba(0,168,132,0.3);
-            transition: 0.3s;
-        }
-        .btn:active { transform: scale(0.95); }
-        .cancel-btn {
-            background: none;
-            border: none;
-            color: #888;
-            margin-top: 25px;
-            cursor: pointer;
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -54,32 +41,37 @@
 
     <div class="container">
         <div class="loader"></div>
-        <h2>جاري تحضير الاتصال الآمن...</h2>
-        <p>إذا لم يتم تحويلك خلال لحظات، اضغط على الزر:</p>
-        
-        <a id="directLink" href="#" class="btn">دخول المكالمة الآن ✅</a>
-        
-        <br>
-        <button class="cancel-btn" onclick="location.href='./dashboard.html'">إلغاء والعودة للرئيسية</button>
+        <h2 id="msg">جاري توليد اسمك المستعار...</h2>
+        <p>سيتم فتح الغرفة تلقائياً خلال لحظات</p>
+        <a id="directLink" href="#" class="btn" style="display:none;">دخول يدوي ✅</a>
     </div>
 
     <script>
-        // جلب اسم الغرفة من الرابط
+        // 1. جلب معرف الغرفة من الرابط
         const params = new URLSearchParams(window.location.search);
         const roomID = params.get('room') || "PublicRoom";
         
-        // استخدام سيرفر 8x8 الاحترافي (مبني على Jitsi لكنه أسرع وأكثر استقراراً للأجهزة الضعيفة)
-        // هذا الرابط يفتح الغرفة مباشرة للطرفين بدون الحاجة لمضيف
-        const finalUrl = `https://8x8.vc/vpaas-magic-cookie-3d605658097b4b72803b9e400495393a/${roomID}#config.prejoinPageEnabled=false`;
+        // 2. توليد اسم عشوائي (مثلاً: Stranger_452) لتخطي خانة الاسم
+        const randomID = Math.floor(Math.random() * 9000) + 1000;
+        const randomName = "Stranger_" + randomID;
 
-        // تعيين الرابط للزر
-        const linkElem = document.getElementById("directLink");
-        linkElem.href = finalUrl;
+        // 3. الرابط السحري: 
+        // نرسل الاسم عبر userInfo.displayName وتخطي شاشة الانتظار عبر prejoinPageEnabled=false
+        const finalUrl = `https://8x8.vc/vpaas-magic-cookie-3d605658097b4b72803b9e400495393a/${roomID}#userInfo.displayName="${randomName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
 
-        // تحويل تلقائي سريع لضمان عدم توقف المستخدم في هذه الصفحة
+        const linkBtn = document.getElementById("directLink");
+        linkBtn.href = finalUrl;
+
+        // 4. تحويل تلقائي فوري
         setTimeout(() => {
+            document.getElementById("msg").innerText = "جاري التحويل للغرفة...";
             window.location.href = finalUrl;
-        }, 1200);
+        }, 800);
+
+        // إظهار الزر في حال فشل التحويل التلقائي
+        setTimeout(() => {
+            linkBtn.style.display = "inline-block";
+        }, 3000);
     </script>
 </body>
 </html>
