@@ -3,42 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الأعضاء | SM</title>
+    <title class="tr" data-key="title">Stranger Meeting</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .user-card {
-            background: var(--card);
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        .user-list-container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .user-card { 
+            background: var(--card); 
+            border-radius: 15px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.3s;
         }
-        .user-info { display: flex; align-items: center; gap: 15px; }
-        .avatar { width: 50px; height: 50px; background: var(--p); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
-        .details { font-size: 0.85rem; opacity: 0.8; line-height: 1.4; }
-        .badge { background: var(--bg); padding: 2px 8px; border-radius: 5px; margin-right: 5px; font-size: 0.75rem; border: 1px solid rgba(0,0,0,0.1); }
-        .chat-btn { border-radius: 20px; padding: 8px 18px; }
+        .user-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { 
+            width: 55px; height: 55px; background: var(--p); color: white; 
+            border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; font-weight: bold; font-size: 1.3rem; 
+        }
+        .user-details strong { display: block; font-size: 1rem; color: var(--txt); }
+        .user-details p { margin: 0; font-size: 0.8rem; opacity: 0.7; color: var(--txt); line-height: 1.5; }
+        .tag { 
+            display: inline-block; background: var(--bg); padding: 2px 8px; 
+            border-radius: 5px; font-size: 0.7rem; margin-top: 5px; 
+            border: 1px solid rgba(0,0,0,0.1); 
+        }
+        .interest-tag { color: var(--p); font-weight: bold; }
+        .chat-btn { 
+            background: var(--p); color: white; border: none; 
+            padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; 
+            cursor: pointer; font-weight: bold; 
+        }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="header">
-        <div class="user-meta">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="avatar" id="myAvatar" style="width: 35px; height: 35px; font-size: 0.9rem; cursor: pointer;" onclick="location.href='profile.html'">?</div>
             <strong class="tr" data-key="title">Stranger Meeting</strong>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <button onclick="toggleLang()" id="langBtn" style="width: 35px; height: 35px; border-radius: 50%; padding: 0; font-size: 0.7rem;">EN</button>
+            <button onclick="toggleLang()" id="langBtn" style="width: 35px; height: 35px; border-radius: 50%; padding: 0; font-size: 0.7rem; background: rgba(255,255,255,0.2); color: white; border: none;">EN</button>
             <button onclick="toggleTheme()" class="icon-btn">🌓</button>
             <button onclick="location.href='profile.html'" class="icon-btn">👤</button>
         </div>
     </div>
 
-    <div class="container" style="padding-top: 20px;">
+    <div class="user-list-container">
         <div id="userList">
-            <p style="text-align: center; opacity: 0.5;">جاري تحميل المتصلين...</p>
+            <p style="text-align: center; margin-top: 50px; opacity: 0.5;" class="tr" data-key="loading">جاري البحث عن متصلين...</p>
         </div>
     </div>
 
@@ -47,7 +65,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
@@ -62,44 +80,63 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (!user) return location.href = "login.html";
+
+            // تحديث صورتي المصغرة في الهيدر
+            const myDoc = await getDoc(doc(db, "users", user.uid));
+            if(myDoc.exists()) {
+                document.getElementById("myAvatar").innerText = myDoc.data().fullname.charAt(0).toUpperCase();
+            }
 
             const lang = localStorage.getItem('sm-lang') || 'ar';
 
+            // جلب قائمة المستخدمين لحظياً
             onSnapshot(collection(db, "users"), (snap) => {
-                const list = document.getElementById("userList");
-                list.innerHTML = "";
-                
-                snap.forEach(d => {
-                    const u = d.data();
-                    if (d.id !== user.uid) {
-                        // ترجمة القيم من القاموس
-                        const countryTr = i18n[lang][u.country] || u.country;
-                        const interestTr = i18n[lang][u.interest] || u.interest;
-                        const ageVal = u.age || "??";
+                const listDiv = document.getElementById("userList");
+                listDiv.innerHTML = "";
+
+                snap.forEach((userDoc) => {
+                    const userData = userDoc.data();
+
+                    // عدم إظهار حسابي الشخصي في القائمة
+                    if (userDoc.id !== user.uid) {
+                        
+                        // ترجمة البيانات من القاموس في ui-logic.js
+                        const countryName = i18n[lang][userData.country] || userData.country;
+                        const interestName = i18n[lang][userData.interest] || userData.interest;
+                        const userAge = userData.age || "??";
 
                         const card = document.createElement("div");
                         card.className = "user-card";
                         card.innerHTML = `
                             <div class="user-info">
-                                <div class="avatar">${u.fullname.charAt(0)}</div>
-                                <div>
-                                    <strong>${u.fullname}</strong>
-                                    <div class="details">
-                                        <span class="badge">${ageVal}</span>
-                                        <span class="badge">${countryTr}</span><br>
-                                        <span style="color: var(--p)">#${interestTr}</span>
-                                    </div>
+                                <div class="avatar">${userData.fullname.charAt(0).toUpperCase()}</div>
+                                <div class="user-details">
+                                    <strong>${userData.fullname}</strong>
+                                    <p>
+                                        <span class="tag">${userAge} ${lang === 'ar' ? 'سنة' : 'Y.O'}</span>
+                                        <span class="tag">📍 ${countryName}</span>
+                                    </p>
+                                    <span class="interest-tag">#${interestTr(interestName)}</span>
                                 </div>
                             </div>
-                            <button onclick="location.href='chat.html?id=${d.id}'" class="chat-btn tr" data-key="chat">دردشة</button>
+                            <button onclick="location.href='chat.html?id=${userDoc.id}'" class="chat-btn tr" data-key="chat">دردشة</button>
                         `;
-                        list.appendChild(card);
+                        listDiv.appendChild(card);
                     }
                 });
+
+                if (listDiv.innerHTML === "") {
+                    listDiv.innerHTML = '<p style="text-align:center; opacity:0.5;">لا يوجد مستخدمين آخرين حالياً</p>';
+                }
             });
         });
+
+        // دالة مساعدة للتأكد من عرض الاهتمام بشكل نظيف
+        function interestTr(val) {
+            return val.replace(/ & /g, ' & ').replace(/\//g, ' ');
+        }
     </script>
 </body>
 </html>
