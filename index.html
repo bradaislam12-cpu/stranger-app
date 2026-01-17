@@ -1,23 +1,51 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="mainHtml">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stranger Meeting | جاري التحميل... 🚀</title>
+    <title>Stranger Meeting | الرئيسية</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root { --bg: #f0f2f5; --text: #4CAF50; }
-        [data-theme="dark"] { --bg: #121212; --text: #00a884; }
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--bg); font-family: sans-serif; transition: 0.3s; }
-        .loader-text { font-size: 1.2rem; color: var(--text); font-weight: bold; }
+        /* تنسيقات خاصة بصفحة الترحيب فقط */
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+        .logo-area { font-size: 3rem; margin-bottom: 10px; }
+        .hero-text { margin-bottom: 30px; opacity: 0.9; }
+        .btns-group { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 15px; }
+        .secondary { background: #555 !important; }
     </style>
 </head>
-<body>
-    <div class="loader-text" id="loadTxt">جاري تحضير اللقاء... 🚀</div>
+<body class="light-mode">
 
-    <script type="module">
+    <div class="welcome-container">
+        <div class="logo-area">🤝</div>
+        <h1 id="title">Stranger Meeting</h1>
+        <p id="subTitle" class="hero-text">تواصل مع الآخرين بخصوصية وأمان تام</p>
+        
+        <div class="btns-group">
+            <button onclick="location.href='register.html'" id="btnReg">إنشاء حساب جديد</button>
+            <button class="secondary" onclick="location.href='login.html'" id="btnLogin">تسجيل الدخول</button>
+        </div>
+
+        <div class="settings-bar" style="margin-top: 40px; display: flex; gap: 20px;">
+            <button onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
+            <button onclick="location.href='terms.html'" style="background: none; color: var(--txt); font-size: 0.8rem; text-decoration: underline;">الشروط والخصوصية</button>
+        </div>
+    </div>
+
+    <script src="ui-logic.js"></script>
+
+    <script>
+        // فحص حالة تسجيل الدخول: إذا كان المستخدم مسجلاً، وجهه للوحة التحكم فوراً
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+        
         const firebaseConfig = { 
             apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
             authDomain: "strangermeeting-91226.firebaseapp.com", 
@@ -30,25 +58,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        function applySettings() {
-            const savedTheme = localStorage.getItem("theme") || "light";
-            const savedLang = localStorage.getItem("lang") || "ar";
-            document.documentElement.setAttribute("data-theme", savedTheme);
-            if(savedLang === 'en') {
-                document.getElementById("mainHtml").dir = 'ltr';
-                document.getElementById("loadTxt").innerText = "Preparing the meeting... 🚀";
-            }
-        }
-        applySettings();
-
         onAuthStateChanged(auth, (user) => {
-            setTimeout(() => { 
-                if (user) {
-                    window.location.href = "./dashboard.html"; 
-                } else {
-                    window.location.href = "./login.html";
-                }
-            }, 1500);
+            if (user) {
+                // إذا كان مسجلاً دخول بالفعل، نختصر عليه الطريق
+                location.href = "dashboard.html";
+            }
         });
     </script>
 </body>
