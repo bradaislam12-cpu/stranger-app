@@ -19,7 +19,7 @@
     <div class="header">
         <button onclick="location.href='./dashboard.html'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">🔙</button>
         <span id="targetName">جاري التحميل...</span>
-        <button class="v-btn" onclick="startVideoCall()">📹</button>
+        <button class="v-btn" id="vCallBtn">📹</button>
     </div>
     
     <div id="msgs"></div>
@@ -51,20 +51,17 @@
         const otherId = urlParams.get('id');
         const mode = urlParams.get('mode') || 'friend';
 
-        window.startVideoCall = () => {
-            const myId = auth.currentUser.uid;
-            if(!otherId) return;
-            // توحيد منطق اسم الغرفة للطرفين
-            const sortedIds = [myId, otherId].sort().join("-");
-            const roomId = (mode === 'stranger' ? "STR-" : "FRD-") + sortedIds;
-            window.location.href = `./meeting.html?room=${roomId}&mode=${mode}`;
-        };
-
         onAuthStateChanged(auth, async (user) => {
             if (!user || !otherId) return;
             
             const snap = await getDoc(doc(db, "users", otherId));
-            if(snap.exists()) document.getElementById("targetName").innerText = snap.data().fullname;
+            if(snap.exists()) document.getElementById("targetName").innerText = snap.data().fullname + (mode === 'stranger' ? " (غريب)" : "");
+
+            // منطق مكالمة الفيديو
+            document.getElementById("vCallBtn").onclick = () => {
+                const roomId = "CALL-" + [user.uid, otherId].sort().join("-");
+                window.location.href = `./meeting.html?room=${roomId}&mode=${mode}`;
+            };
 
             const chatId = [user.uid, otherId].sort().join("_");
             const msgRef = collection(db, "chats", chatId, "messages");
