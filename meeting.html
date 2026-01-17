@@ -7,49 +7,46 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
         #video-container { width: 100%; height: 100%; }
-        .overlay-bar { position: fixed; top: 0; width: 100%; padding: 10px; z-index: 1000; background: rgba(0,0,0,0.7); color: white; text-align: center; font-family: sans-serif; }
-        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 10px 25px; border-radius: 20px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-family: sans-serif; }
     </style>
 </head>
 <body>
-    <div class="overlay-bar" id="status">جاري الاتصال المباشر...</div>
     <button class="exit-btn" onclick="location.href='./dashboard.html'">إنهاء المكالمة ❌</button>
     <div id="video-container"></div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        // توليد اسم غرفة فريد ومعقد قليلاً لتجنب التداخل وضمان الخصوصية
-        const roomID = params.get('room') || "PublicRoom";
-        const mode = params.get('mode') || "friend";
+        // تقصير اسم الغرفة لضمان توافق المتصفحات
+        const roomID = params.get('room') ? params.get('room').substring(0, 20) : "DefaultRoom";
         
-        document.getElementById("status").innerText = mode === 'stranger' ? "🕵️ محادثة غريب آمنة" : "🔒 مكالمة صديق";
-
         const domain = "meet.jit.si";
         const options = {
-            // إضافة بادئة عشوائية لاسم الغرفة لتجنب قوانين الغرف المحمية
-            roomName: "vpaas-magic-cookie-888999" + roomID, 
+            roomName: "SM-" + roomID, 
             width: "100%",
             height: "100%",
             parentNode: document.querySelector('#video-container'),
             configOverwrite: { 
-                prejoinPageEnabled: false,      // تخطي شاشة "انضم للملتقى"
-                disableDeepLinking: true,       // منع طلب تحميل التطبيق على الموبايل
-                enableLobbyChat: false,         // تعطيل غرفة الانتظار
-                startWithAudioMuted: false,     // تشغيل الميكروفون فوراً
-                startWithVideoMuted: false,     // تشغيل الكاميرا فوراً
-                requireDisplayName: false       // عدم طلب كتابة الاسم
+                prejoinPageEnabled: false,      // تعطيل شاشة الانتظار
+                startWithAudioMuted: false,
+                startWithVideoMuted: false,
+                disableDeepLinking: true,
+                remoteVideoMenu: { disableKick: true },
+                disableRemoteMute: true
             },
             interfaceConfigOverwrite: {
+                // إخفاء كافة العناصر التي قد تعيق الدخول المباشر
                 TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview'],
-                SHOW_JITSI_WATERMARK: false
+                ALPHAVIDEO_DISPLAY_NAME: 'User',
+                SHOW_CHROME_EXTENSION_BANNER: false
             }
         };
 
         const api = new JitsiMeetExternalAPI(domain, options);
 
-        // إخفاء شريط الحالة عند بدء المكالمة فعلياً
+        // محاولة إجبار الكاميرا على العمل إذا منعها المتصفح
         api.addEventListener('videoConferenceJoined', () => {
-            document.getElementById("status").style.display = 'none';
+            api.executeCommand('toggleVideo'); 
+            api.executeCommand('toggleAudio');
         });
     </script>
 </body>
