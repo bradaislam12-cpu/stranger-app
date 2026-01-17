@@ -2,26 +2,39 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إنشاء حساب | Stranger Meeting</title>
-    <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 20px; width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .terms { font-size: 12px; color: #666; margin: 10px 0; text-align: right; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب | SM</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="card">
-        <h2>انضم إلينا ✨</h2>
-        <input type="email" id="email" placeholder="البريد الإلكتروني">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        <div class="terms">
-            <input type="checkbox" id="tCheck"> أوافق على <a href="terms.html" target="_blank">سياسة الخصوصية</a>
+<body class="light-mode">
+
+    <div class="auth-box">
+        <h2>حساب جديد</h2>
+        <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px;">انضم إلينا وابدأ التواصل بخصوصية</p>
+
+        <div style="text-align: right; width: 100%;">
+            <input type="text" id="fullname" placeholder="الاسم الكامل" required>
+            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+            <input type="password" id="pass" placeholder="كلمة المرور (6 رموز فأكثر)" required>
         </div>
-        <button id="regBtn">إنشاء الحساب 🚀</button>
-        <p>لديك حساب؟ <a href="login.html">سجل دخولك</a></p>
+
+        <div style="font-size: 0.75rem; margin: 15px 0; color: var(--txt); opacity: 0.7;">
+            بالتسجيل، أنت توافق على <a href="terms.html" style="color: var(--p);">شروط الخدمة</a>
+        </div>
+
+        <button id="regBtn" style="width: 100%;">إنشاء الحساب 🚀</button>
+        
+        <p style="margin-top: 20px;">
+            لديك حساب بالفعل؟ <a href="login.html" style="color: var(--p); font-weight: bold;">سجل دخولك</a>
+        </p>
+
+        <div class="settings-bar" style="margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
+            <button onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
+            <button onclick="location.href='index.html'" style="background:none; color:var(--txt); font-size: 0.8rem;">الرئيسية</button>
+        </div>
     </div>
+
+    <script src="ui-logic.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -41,19 +54,49 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        document.getElementById("regBtn").onclick = async () => {
-            const e = document.getElementById("email").value;
-            const p = document.getElementById("pass").value;
-            const check = document.getElementById("tCheck").checked;
+        const regBtn = document.getElementById("regBtn");
 
-            if(!check) { alert("يجب الموافقة على الشروط"); return; }
+        regBtn.onclick = async () => {
+            const name = document.getElementById("fullname").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const pass = document.getElementById("pass").value;
+
+            if(!name || !email || !pass) {
+                alert("يرجى إكمال كافة الحقول");
+                return;
+            }
+
+            if(pass.length < 6) {
+                alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+                return;
+            }
+
+            regBtn.innerText = "جاري الإنشاء...";
+            regBtn.disabled = true;
+
             try {
-                const res = await createUserWithEmailAndPassword(auth, e, p);
+                // 1. إنشاء الحساب في نظام Firebase Auth
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                
+                // 2. حفظ بيانات المستخدم الإضافية في Firestore
                 await setDoc(doc(db, "users", res.user.uid), {
-                    email: e, fullname: "مستخدم جديد", points: 10, country: "", interests: []
+                    fullname: name,
+                    email: email,
+                    uid: res.user.uid,
+                    joinedAt: new Date()
                 });
-                window.location.href = "profile.html";
-            } catch (err) { alert(err.message); }
+
+                // 3. التوجيه للوحة التحكم
+                location.href = "dashboard.html";
+            } catch (error) {
+                regBtn.innerText = "إنشاء الحساب 🚀";
+                regBtn.disabled = false;
+                if(error.code === 'auth/email-already-in-use') {
+                    alert("هذا البريد مسجل مسبقاً!");
+                } else {
+                    alert("خطأ: " + error.message);
+                }
+            }
         };
     </script>
 </body>
