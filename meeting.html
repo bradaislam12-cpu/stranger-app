@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مكالمة فيديو | SM</title>
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
+        #video-container { width: 100%; height: 100vh; }
+        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <button class="exit-btn" onclick="location.href='dashboard.html'">إنهاء المكالمة ❌</button>
+    <div id="video-container"></div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const roomID = params.get('room') || "PublicRoom";
+        
+        const domain = "meet.jit.si";
+        const options = {
+            roomName: "StrangerMeeting-" + roomID,
+            width: "100%",
+            height: "100%",
+            parentNode: document.querySelector('#video-container'),
+            configOverwrite: {
+                prejoinPageEnabled: false,
+                disableDeepLinking: true,
+                startWithAudioMuted: false,
+                startWithVideoMuted: false
+            },
+            interfaceConfigOverwrite: {
+                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview', 'chat']
+            }
+        };
+
+        const api = new JitsiMeetExternalAPI(domain, options);
+        api.addEventListener('videoConferenceJoined', () => {
+            const iframe = api.getIFrame();
+            iframe.setAttribute("allow", "camera; microphone; fullscreen; display-capture; autoplay");
+        });
+    </script>
+</body>
+</html>

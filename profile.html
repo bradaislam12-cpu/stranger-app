@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="mainHtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل الملف الشخصي 👤 | Stranger Meeting</title>
+    <style>
+        :root { --bg: #f0f2f5; --card: #fff; --text: #333; --accent: #4CAF50; --input: #fff; }
+        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #eee; --accent: #00a884; --input: #2a2a2a; }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; transition: 0.3s; }
+        .profile-card { background: var(--card); padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 500px; position: relative; }
+        .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; font-size: 22px; }
+        
+        h2 { color: var(--accent); text-align: center; margin-bottom: 20px; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: var(--accent); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; background: var(--input); color: var(--text); }
+        
+        .interests-container { 
+            height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 10px; 
+            padding: 10px; background: var(--input); margin-top: 5px;
+        }
+        .int-group-title { font-weight: bold; font-size: 12px; color: #888; margin-top: 10px; border-bottom: 1px solid #eee; }
+        .int-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 14px; }
+        .int-item input { width: auto; margin: 0; }
+
+        .save-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 25px; }
+        .points-badge { text-align: center; background: #FFD700; color: #000; padding: 5px; border-radius: 10px; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+    <a href="dashboard.html" class="back-btn">⬅️</a>
+    <h2>تعديل الملف الشخصي 👤</h2>
+    
+    <div class="points-badge">رصيدك الحالي: 💰 <span id="uPoints">0</span> نقطة</div>
+
+    <label>الاسم الكامل 📛</label>
+    <input type="text" id="uName" placeholder="اسمك">
+
+    <label>الدولة والمنطقة 🌍 Country</label>
+    <select id="uCountry">
+        <option value="">اختر دولتك...</option>
+        <optgroup label="🌍 إفريقيا (Africa)">
+            <option value="Algeria">الجزائر | Algeria</option>
+            <option value="Egypt">مصر | Egypt</option>
+            <option value="Morocco">المغرب | Morocco</option>
+            <option value="Tunisia">تونس | Tunisia</option>
+            <option value="Libya">ليبيا | Libya</option>
+            <option value="Nigeria">نيجيريا | Nigeria</option>
+            <option value="South Africa">South Africa</option>
+        </optgroup>
+        <optgroup label="🌍 آسيا (Asia)">
+            <option value="Saudi Arabia">السعودية | Saudi Arabia</option>
+            <option value="UAE">الإمارات | UAE</option>
+            <option value="Qatar">قطر | Qatar</option>
+            <option value="Iraq">العراق | Iraq</option>
+            <option value="Turkey">تركيا | Turkey</option>
+            <option value="Japan">اليابان | Japan</option>
+        </optgroup>
+        <optgroup label="🌍 أوروبا (Europe)">
+            <option value="France">فرنسا | France</option>
+            <option value="Germany">ألمانيا | Germany</option>
+            <option value="UK">المملكة المتحدة | UK</option>
+        </optgroup>
+        <optgroup label="🌍 أمريكا">
+            <option value="USA">أمريكا | USA</option>
+            <option value="Canada">كندا | Canada</option>
+            <option value="Brazil">البرازيل | Brazil</option>
+        </optgroup>
+    </select>
+
+    <label>اهتماماتك المفضلة 🎨 Interests</label>
+    <div class="interests-container" id="interestsList">
+        </div>
+
+    <button class="save-btn" onclick="saveProfile()">حفظ التغييرات ✅</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
+        authDomain: "strangermeeting-91226.firebaseapp.com", 
+        projectId: "strangermeeting-91226", 
+        storageBucket: "strangermeeting-91226.firebasestorage.app", 
+        messagingSenderId: "575547116212", 
+        appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const interestsData = [
+        { cat: "🧑‍🎓 التعليم والمعرفة", items: ["القراءة والكتب", "تعلم اللغات", "الدورات التعليمية", "التاريخ والثقافة", "العلوم والتكنولوجيا"] },
+        { cat: "🎨 الفنون والإبداع", items: ["الرسم والتصميم", "التصوير", "الموسيقى", "الكتابة الإبداعية", "الأفلام والمسلسلات"] },
+        { cat: "⚽ الرياضة والأنشطة", items: ["كرة القدم", "كرة السلة", "الجري واللياقة", "السباحة", "الرياضات الإلكترونية"] },
+        { cat: "🌍 السفر والاستكشاف", items: ["السفر والسياحة", "الطبيعة", "المدن والمعالم", "المأكولات العالمية"] },
+        { cat: "💻 التقنية والرقمية", items: ["البرمجة", "الألعاب", "الذكاء الاصطناعي", "الأجهزة الذكية"] },
+        { cat: "❤️ اهتمامات شخصية", items: ["الطبخ", "الموضة", "الصحة والعافية", "الحيوانات", "العمل التطوعي"] }
+    ];
+
+    // بناء قائمة الاهتمامات
+    const container = document.getElementById("interestsList");
+    interestsData.forEach(group => {
+        container.innerHTML += `<div class="int-group-title">${group.cat}</div>`;
+        group.items.forEach(item => {
+            container.innerHTML += `
+                <div class="int-item">
+                    <input type="checkbox" class="int-check" value="${item}">
+                    <span>${item}</span>
+                </div>`;
+        });
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if(user) {
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if(snap.exists()) {
+                const data = snap.data();
+                document.getElementById("uName").value = data.fullname || "";
+                document.getElementById("uCountry").value = data.country || "";
+                document.getElementById("uPoints").innerText = data.points || 0;
+                
+                // تحديد الاهتمامات المحفوظة مسبقاً
+                if(data.interests) {
+                    const checks = document.querySelectorAll('.int-check');
+                    checks.forEach(ch => { if(data.interests.includes(ch.value)) ch.checked = true; });
+                }
+            }
+        } else { window.location.href = "login.html"; }
+    });
+
+    window.saveProfile = async () => {
+        const selected = Array.from(document.querySelectorAll('.int-check:checked')).map(el => el.value);
+        try {
+            await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                fullname: document.getElementById("uName").value,
+                country: document.getElementById("uCountry").value,
+                interests: selected
+            });
+            alert("تم حفظ بياناتك بنجاح! ✨");
+        } catch (e) { alert("خطأ في الحفظ!"); }
+    };
+
+    // تطبيق المظهر
+    if(localStorage.getItem("theme") === "dark") document.documentElement.setAttribute("data-theme", "dark");
+</script>
+</body>
+</html>
