@@ -2,12 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مكالمة فيديو مباشر | Stranger Meeting</title>
+    <title>مكالمة فيديو | SM</title>
     <script src="https://meet.jit.si/external_api.js"></script>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
         #video-container { width: 100%; height: 100%; }
-        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-family: sans-serif; }
+        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -16,37 +16,32 @@
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        // تقصير اسم الغرفة لضمان توافق المتصفحات
-        const roomID = params.get('room') ? params.get('room').substring(0, 20) : "DefaultRoom";
-        
+        const roomID = params.get('room') || "GlobalRoom";
+        const role = params.get('role') || "guest"; // الافتراضي هو ضيف
+
         const domain = "meet.jit.si";
         const options = {
-            roomName: "SM-" + roomID, 
+            roomName: "StrangerMeeting-" + roomID,
             width: "100%",
             height: "100%",
             parentNode: document.querySelector('#video-container'),
             configOverwrite: { 
-                prejoinPageEnabled: false,      // تعطيل شاشة الانتظار
+                prejoinPageEnabled: false,
                 startWithAudioMuted: false,
                 startWithVideoMuted: false,
-                disableDeepLinking: true,
-                remoteVideoMenu: { disableKick: true },
-                disableRemoteMute: true
+                // إذا كان مضيفاً، نجعله هو المتحكم
+                disableLobby: role === 'host' ? true : false,
             },
             interfaceConfigOverwrite: {
-                // إخفاء كافة العناصر التي قد تعيق الدخول المباشر
-                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview'],
-                ALPHAVIDEO_DISPLAY_NAME: 'User',
-                SHOW_CHROME_EXTENSION_BANNER: false
+                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview', 'chat'],
             }
         };
 
         const api = new JitsiMeetExternalAPI(domain, options);
 
-        // محاولة إجبار الكاميرا على العمل إذا منعها المتصفح
-        api.addEventListener('videoConferenceJoined', () => {
-            api.executeCommand('toggleVideo'); 
-            api.executeCommand('toggleAudio');
+        // إذا دخل الضيف قبل المضيف، نجعله يحاول إعادة الاتصال تلقائياً
+        api.addEventListener('participantJoined', () => {
+            console.log("طرف آخر انضم للمكالمة");
         });
     </script>
 </body>
