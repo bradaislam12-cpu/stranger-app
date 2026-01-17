@@ -5,14 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المحادثة | SM</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .header-info { display: flex; flex-direction: column; line-height: 1.2; }
+        .target-country { font-size: 0.75rem; opacity: 0.8; font-weight: normal; }
+        .v-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px; border-radius: 50%; cursor: pointer; }
+    </style>
 </head>
 <body class="light-mode chat-page">
 
     <div class="header">
-        <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
-        <div class="user-meta">
-            <strong id="targetName">جاري التحميل...</strong>
-            <small id="statusLine">نشط الآن</small>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
+            <div class="header-info">
+                <strong id="targetName">...</strong>
+                <span id="targetCountry" class="target-country">...</span>
+            </div>
         </div>
         <button id="vCallBtn" class="v-btn">📹</button>
     </div>
@@ -45,32 +52,37 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        const otherId = new URLSearchParams(location.search).get('id');
+        const urlParams = new URLSearchParams(window.location.search);
+        const otherId = urlParams.get('id');
 
         onAuthStateChanged(auth, async (user) => {
-            if (!user || !otherId) return location.href = "login.html";
+            if (!user || !otherId) return location.href = "dashboard.html";
 
-            // جلب بيانات الطرف الآخر
-            const targetSnap = await getDoc(doc(db, "users", otherId));
-            if (targetSnap.exists()) {
-                document.getElementById("targetName").innerText = targetSnap.data().fullname;
+            const lang = localStorage.getItem('sm-lang') || 'ar';
+
+            // جلب بيانات الطرف الآخر (الاسم والدولة)
+            const otherDoc = await getDoc(doc(db, "users", otherId));
+            if (otherDoc.exists()) {
+                const data = otherDoc.data();
+                document.getElementById("targetName").innerText = data.fullname;
+                // ترجمة اسم الدولة من القاموس
+                const countryKey = data.country;
+                document.getElementById("targetCountry").innerText = i18n[lang][countryKey] || countryKey;
             }
 
-            // إعداد زر الفيديو الذكي
+            // رابط مكالمة الفيديو
             document.getElementById("vCallBtn").onclick = () => {
-                // توليد معرف غرفة فريد وموحد للطرفين (ترتيب الـ UIDs أبجدياً)
-                const roomID = [user.uid.substring(0, 8), otherId.substring(0, 8)].sort().join("");
-                location.href = `meeting.html?room=${roomID}`;
+                const roomName = [user.uid, otherId].sort().join("");
+                location.href = `meeting.html?room=${roomName}`;
             };
 
-            // معرف المحادثة (Chat ID) الموحد
             const chatId = [user.uid, otherId].sort().join("_");
             const messagesRef = collection(db, "chats", chatId, "messages");
 
             // إرسال رسالة
             const sendMsg = async () => {
-                const text = document.getElementById("mIn").value;
-                if (text.trim()) {
+                const text = document.getElementById("mIn").value.trim();
+                if (text) {
                     await addDoc(messagesRef, {
                         s: user.uid,
                         t: text,
@@ -83,7 +95,7 @@
             document.getElementById("sBtn").onclick = sendMsg;
             document.getElementById("mIn").onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
 
-            // الاستماع للرسائل الحية
+            // استماع الرسائل
             onSnapshot(query(messagesRef, orderBy("time", "asc")), (snap) => {
                 const box = document.getElementById("msgs");
                 box.innerHTML = "";
@@ -94,7 +106,7 @@
                     div.innerText = m.t;
                     box.appendChild(div);
                 });
-                box.scrollTop = box.scrollHeight; // التمرير لأسفل تلقائياً
+                box.scrollTop = box.scrollHeight;
             });
         });
     </script>
