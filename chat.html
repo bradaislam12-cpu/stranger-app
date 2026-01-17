@@ -55,12 +55,12 @@
             if (!user || !otherId) return;
             
             const snap = await getDoc(doc(db, "users", otherId));
-            if(snap.exists()) document.getElementById("targetName").innerText = snap.data().fullname + (mode === 'stranger' ? " (غريب)" : "");
+            if(snap.exists()) document.getElementById("targetName").innerText = snap.data().fullname;
 
-            // منطق مكالمة الفيديو
+            // عند الضغط على زر الفيديو: أنت المضيف (role=host)
             document.getElementById("vCallBtn").onclick = () => {
-                const roomId = "CALL-" + [user.uid, otherId].sort().join("-");
-                window.location.href = `./meeting.html?room=${roomId}&mode=${mode}`;
+                const roomId = [user.uid, otherId].sort().join("-");
+                window.location.href = `./meeting.html?room=${roomId}&role=host&mode=${mode}`;
             };
 
             const chatId = [user.uid, otherId].sort().join("_");
