@@ -2,34 +2,84 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>دخول المكالمة... | SM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دخول المكالمة... | Stranger Meeting</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #121212; color: white; margin: 0; text-align: center; }
-        .btn { background: #00a884; color: white; padding: 20px 40px; border-radius: 15px; text-decoration: none; font-weight: bold; font-size: 1.2rem; display: inline-block; box-shadow: 0 4px 15px rgba(0,168,132,0.4); }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background: #121212; 
+            color: white; 
+            margin: 0; 
+            text-align: center; 
+        }
+        .container { padding: 20px; }
+        .loader { 
+            border: 4px solid #333; 
+            border-top: 4px solid #00a884; 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 20px; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn { 
+            background: #00a884; 
+            color: white; 
+            padding: 15px 35px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            display: inline-block; 
+            box-shadow: 0 4px 15px rgba(0,168,132,0.3);
+            transition: 0.3s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .cancel-btn {
+            background: none;
+            border: none;
+            color: #888;
+            margin-top: 25px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div>
-        <h2>جاهز للمكالمة؟ 📞</h2>
-        <p>اضغط على الزر أدناه للدخول فوراً</p>
-        <a id="directLink" href="#" class="btn">دخول المحادثة الآن ✅</a>
-        <br><br>
-        <button onclick="location.href='./dashboard.html'" style="background:none; border:none; color:#777; cursor:pointer;">إلغاء</button>
+
+    <div class="container">
+        <div class="loader"></div>
+        <h2>جاري تحضير الاتصال الآمن...</h2>
+        <p>إذا لم يتم تحويلك خلال لحظات، اضغط على الزر:</p>
+        
+        <a id="directLink" href="#" class="btn">دخول المكالمة الآن ✅</a>
+        
+        <br>
+        <button class="cancel-btn" onclick="location.href='./dashboard.html'">إلغاء والعودة للرئيسية</button>
     </div>
 
     <script>
+        // جلب اسم الغرفة من الرابط
         const params = new URLSearchParams(window.location.search);
         const roomID = params.get('room') || "PublicRoom";
         
-        // استخدام رابط مباشر يفتح تطبيق Jitsi أو المتصفح مباشرة بدون قيود المضيف
-        const finalUrl = `https://8x8.vc/vpaas-magic-cookie-3d605658097b4b72803b9e400495393a/${roomID}`;
+        // استخدام سيرفر 8x8 الاحترافي (مبني على Jitsi لكنه أسرع وأكثر استقراراً للأجهزة الضعيفة)
+        // هذا الرابط يفتح الغرفة مباشرة للطرفين بدون الحاجة لمضيف
+        const finalUrl = `https://8x8.vc/vpaas-magic-cookie-3d605658097b4b72803b9e400495393a/${roomID}#config.prejoinPageEnabled=false`;
 
-        document.getElementById("directLink").href = finalUrl;
+        // تعيين الرابط للزر
+        const linkElem = document.getElementById("directLink");
+        linkElem.href = finalUrl;
 
-        // محاولة تحويل تلقائي
+        // تحويل تلقائي سريع لضمان عدم توقف المستخدم في هذه الصفحة
         setTimeout(() => {
             window.location.href = finalUrl;
-        }, 1000);
+        }, 1200);
     </script>
 </body>
 </html>
