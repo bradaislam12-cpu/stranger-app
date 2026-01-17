@@ -2,47 +2,39 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مكالمة فيديو | SM</title>
-    <script src="https://meet.jit.si/external_api.js"></script>
+    <title>جاري تحويلك للمكالمة... | SM</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
-        #video-container { width: 100%; height: 100%; }
-        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #121212; color: white; margin: 0; text-align: center; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #00a884; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn { background: #00a884; color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 20px; display: inline-block; }
     </style>
 </head>
 <body>
-    <button class="exit-btn" onclick="location.href='./dashboard.html'">إنهاء المكالمة ❌</button>
-    <div id="video-container"></div>
+    <div>
+        <div class="loader" style="margin: 0 auto 20px;"></div>
+        <h2>جاري تهيئة الغرفة الآمنة...</h2>
+        <p>إذا لم يتم تحويلك تلقائياً، اضغط على الزر أدناه</p>
+        <a id="directLink" href="#" class="btn">دخول المكالمة الآن 📞</a>
+        <br><br>
+        <button onclick="location.href='./dashboard.html'" style="background:none; border:1px solid #555; color:#aaa; cursor:pointer; padding:5px 10px; border-radius:5px;">إلغاء والعودة</button>
+    </div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        const roomID = params.get('room') || "GlobalRoom";
-        const role = params.get('role') || "guest"; // الافتراضي هو ضيف
+        const roomID = params.get('room') || "PublicRoom";
+        
+        // الرابط المباشر الذي يفتح واجهة Jitsi الأصلية المستقرة
+        // قمنا بإضافة بارامترات لتخطي شاشة الانتظار قدر الإمكان
+        const jitsiUrl = `https://meet.jit.si/${roomID}#config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
 
-        const domain = "meet.jit.si";
-        const options = {
-            roomName: "StrangerMeeting-" + roomID,
-            width: "100%",
-            height: "100%",
-            parentNode: document.querySelector('#video-container'),
-            configOverwrite: { 
-                prejoinPageEnabled: false,
-                startWithAudioMuted: false,
-                startWithVideoMuted: false,
-                // إذا كان مضيفاً، نجعله هو المتحكم
-                disableLobby: role === 'host' ? true : false,
-            },
-            interfaceConfigOverwrite: {
-                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview', 'chat'],
-            }
-        };
+        // تعيين الرابط للزر
+        document.getElementById("directLink").href = jitsiUrl;
 
-        const api = new JitsiMeetExternalAPI(domain, options);
-
-        // إذا دخل الضيف قبل المضيف، نجعله يحاول إعادة الاتصال تلقائياً
-        api.addEventListener('participantJoined', () => {
-            console.log("طرف آخر انضم للمكالمة");
-        });
+        // تحويل تلقائي بعد ثانية واحدة لضمان استقرار الصفحة
+        setTimeout(() => {
+            window.location.href = jitsiUrl;
+        }, 1500);
     </script>
 </body>
 </html>
