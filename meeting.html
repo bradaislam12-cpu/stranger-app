@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دخول المكالمة... | SM</title>
+    <title>جاري الاتصال المباشر... | SM</title>
     <style>
         body { 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
-            background: #1a1a1a; 
+            background: #121212; 
             color: white; 
             margin: 0; 
             text-align: center; 
@@ -26,14 +26,16 @@
             margin: 0 auto 20px; 
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .status-text { font-size: 1.2rem; margin-bottom: 10px; }
         .btn { 
             background: #00a884; 
             color: white; 
-            padding: 15px 30px; 
-            border-radius: 10px; 
+            padding: 12px 25px; 
+            border-radius: 8px; 
             text-decoration: none; 
             font-weight: bold; 
             display: inline-block; 
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -41,31 +43,40 @@
 
     <div class="container">
         <div class="loader"></div>
-        <h2>جاري تهيئة الغرفة المفتوحة...</h2>
-        <p>سيتم نقلك للمحادثة فوراً وبدون تسجيل دخول</p>
-        <a id="directLink" href="#" class="btn">اضغط هنا للدخول المباشر ✅</a>
+        <div class="status-text" id="statusMsg">جاري فتح الكاميرا...</div>
+        <p>يتم الآن تخطي شاشات التسجيل تلقائياً</p>
+        <a id="directLink" href="#" class="btn" style="display:none;">دخول يدوي ✅</a>
     </div>
 
     <script>
-        // 1. جلب اسم الغرفة
+        // 1. جلب معرف الغرفة من الرابط
         const params = new URLSearchParams(window.location.search);
-        const roomID = params.get('room') || "PublicRoom";
+        let roomID = params.get('room') || "GlobalRoom";
         
-        // 2. توليد اسم مستعار عشوائي لتخطي شاشة الاسم
+        // 2. تقصير اسم الغرفة برمجياً لتجنب حماية السيرفر (8 أحرف كافية)
+        const safeRoomName = "SM-" + roomID.substring(0, 12);
+
+        // 3. توليد اسم عشوائي (مثلاً: Anonymous_782) لتجاوز خانة الاسم
         const randomID = Math.floor(Math.random() * 9000) + 1000;
         const nickName = "User_" + randomID;
 
-        // 3. الرابط الجديد (استخدام سيرفر Jitsi العام والمجاني)
-        // أضفنا بارامترات لإجبار الواجهة على تخطي شاشات الانتظار والاسم
-        const finalUrl = `https://meet.jit.si/${roomID}#userInfo.displayName="${nickName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
+        // 4. الرابط السحري لسيرفر Jitsi العام
+        // نستخدم #config لتخطي شاشة الانتظار و #userInfo لتحديد الاسم تلقائياً
+        const finalUrl = `https://meet.jit.si/${safeRoomName}#userInfo.displayName="${nickName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false&config.requireDisplayName=false`;
 
         const linkBtn = document.getElementById("directLink");
         linkBtn.href = finalUrl;
 
-        // 4. تحويل تلقائي بعد ثانية واحدة
+        // 5. التحويل التلقائي السريع
         setTimeout(() => {
+            document.getElementById("statusMsg").innerText = "جاري التحويل...";
             window.location.href = finalUrl;
-        }, 1000);
+        }, 800);
+
+        // إظهار زر النسخ الاحتياطي في حال تأخر المتصفح
+        setTimeout(() => {
+            linkBtn.style.display = "inline-block";
+        }, 3000);
     </script>
 </body>
 </html>
