@@ -9,28 +9,35 @@
 <body class="light-mode">
 
     <div class="auth-box">
-        <h2>حساب جديد</h2>
-        <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px;">انضم إلينا وابدأ التواصل بخصوصية</p>
-
-        <div style="text-align: right; width: 100%;">
-            <input type="text" id="fullname" placeholder="الاسم الكامل" required>
-            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-            <input type="password" id="pass" placeholder="كلمة المرور (6 رموز فأكثر)" required>
-        </div>
-
-        <div style="font-size: 0.75rem; margin: 15px 0; color: var(--txt); opacity: 0.7;">
-            بالتسجيل، أنت توافق على <a href="terms.html" style="color: var(--p);">شروط الخدمة</a>
-        </div>
-
-        <button id="regBtn" style="width: 100%;">إنشاء الحساب 🚀</button>
+        <h2 class="tr" data-key="register">إنشاء حساب</h2>
         
-        <p style="margin-top: 20px;">
-            لديك حساب بالفعل؟ <a href="login.html" style="color: var(--p); font-weight: bold;">سجل دخولك</a>
-        </p>
+        <input type="text" id="fullname" class="tr" data-key="fullname" placeholder="الاسم">
+        <input type="email" id="email" class="tr" data-key="email" placeholder="البريد">
+        <input type="password" id="pass" class="tr" data-key="pass" placeholder="كلمة المرور">
 
-        <div class="settings-bar" style="margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
-            <button onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
-            <button onclick="location.href='index.html'" style="background:none; color:var(--txt); font-size: 0.8rem;">الرئيسية</button>
+        <label class="tr" data-key="country">الدولة</label>
+        <select id="country">
+            <option value="" class="tr" data-key="select">اختر...</option>
+            <option value="egypt" class="tr" data-key="egypt">مصر</option>
+            <option value="saudi" class="tr" data-key="saudi">السعودية</option>
+            <option value="algeria" class="tr" data-key="algeria">الجزائر</option>
+            <option value="Iraq" class="tr" data-key="Iraq">العراق</option>
+        </select>
+
+        <label class="tr" data-key="interests">الاهتمام الرئيسي</label>
+        <select id="interest">
+            <option value="" class="tr" data-key="select">اختر...</option>
+            <option value="tech" class="tr" data-key="tech">تكنولوجيا</option>
+            <option value="gaming" class="tr" data-key="gaming">ألعاب</option>
+            <option value="sports" class="tr" data-key="sports">رياضة</option>
+            <option value="coding" class="tr" data-key="coding">برمجة</option>
+        </select>
+
+        <button id="regBtn" class="tr" data-key="register" style="width: 100%; margin-top: 20px;">إنشاء الحساب</button>
+        
+        <div style="margin-top: 15px;">
+            <button onclick="toggleLang()">🌐 Change Language</button>
+            <button onclick="toggleTheme()">🌓</button>
         </div>
     </div>
 
@@ -54,49 +61,26 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const regBtn = document.getElementById("regBtn");
-
-        regBtn.onclick = async () => {
-            const name = document.getElementById("fullname").value.trim();
-            const email = document.getElementById("email").value.trim();
+        document.getElementById("regBtn").onclick = async () => {
+            const name = document.getElementById("fullname").value;
+            const email = document.getElementById("email").value;
             const pass = document.getElementById("pass").value;
+            const country = document.getElementById("country").value;
+            const interest = document.getElementById("interest").value;
 
-            if(!name || !email || !pass) {
-                alert("يرجى إكمال كافة الحقول");
-                return;
-            }
-
-            if(pass.length < 6) {
-                alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
-                return;
-            }
-
-            regBtn.innerText = "جاري الإنشاء...";
-            regBtn.disabled = true;
+            if(!name || !email || !pass || !country || !interest) return alert("أكمل البيانات");
 
             try {
-                // 1. إنشاء الحساب في نظام Firebase Auth
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
-                
-                // 2. حفظ بيانات المستخدم الإضافية في Firestore
                 await setDoc(doc(db, "users", res.user.uid), {
                     fullname: name,
                     email: email,
-                    uid: res.user.uid,
-                    joinedAt: new Date()
+                    country: country,
+                    interest: interest,
+                    uid: res.user.uid
                 });
-
-                // 3. التوجيه للوحة التحكم
                 location.href = "dashboard.html";
-            } catch (error) {
-                regBtn.innerText = "إنشاء الحساب 🚀";
-                regBtn.disabled = false;
-                if(error.code === 'auth/email-already-in-use') {
-                    alert("هذا البريد مسجل مسبقاً!");
-                } else {
-                    alert("خطأ: " + error.message);
-                }
-            }
+            } catch (e) { alert(e.message); }
         };
     </script>
 </body>
