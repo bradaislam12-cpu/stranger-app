@@ -3,43 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الأعضاء المتصلون | SM</title>
+    <title>الأعضاء | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .user-card {
+            background: var(--card);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--card);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .user-card:hover { transform: scale(1.02); }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; background: var(--p); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        .chat-btn { background: var(--p); color: white; padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 0.9rem; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .avatar { width: 50px; height: 50px; background: var(--p); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+        .details { font-size: 0.85rem; opacity: 0.8; line-height: 1.4; }
+        .badge { background: var(--bg); padding: 2px 8px; border-radius: 5px; margin-right: 5px; font-size: 0.75rem; border: 1px solid rgba(0,0,0,0.1); }
+        .chat-btn { border-radius: 20px; padding: 8px 18px; }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="header">
         <div class="user-meta">
-            <span>Stranger Meeting</span>
+            <strong class="tr" data-key="title">Stranger Meeting</strong>
         </div>
-        <div class="header-btns" style="display: flex; gap: 10px;">
-            <button onclick="location.href='profile.html'" class="icon-btn">👤</button>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="toggleLang()" id="langBtn" style="width: 35px; height: 35px; border-radius: 50%; padding: 0; font-size: 0.7rem;">EN</button>
             <button onclick="toggleTheme()" class="icon-btn">🌓</button>
-            <button id="logoutBtn" class="icon-btn" style="background: #ff4d4d; color: white;">🚪</button>
+            <button onclick="location.href='profile.html'" class="icon-btn">👤</button>
         </div>
     </div>
 
-    <div class="container">
-        <h3 id="welcomeMsg" style="margin-bottom: 20px;">مرحباً بك</h3>
+    <div class="container" style="padding-top: 20px;">
         <div id="userList">
-            <p style="text-align: center; opacity: 0.6;">جاري البحث عن أشخاص...</p>
+            <p style="text-align: center; opacity: 0.5;">جاري تحميل المتصلين...</p>
         </div>
     </div>
 
@@ -47,8 +46,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
@@ -63,52 +62,44 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             if (!user) return location.href = "login.html";
 
-            // جلب اسم المستخدم الحالي للترحيب
-            const userSnap = await getDoc(doc(db, "users", user.uid));
-            if (userSnap.exists()) {
-                document.getElementById("welcomeMsg").innerText = `مرحباً، ${userSnap.data().fullname}`;
-            }
+            const lang = localStorage.getItem('sm-lang') || 'ar';
 
-            // الاستماع لقائمة المستخدمين (تحديث حي)
             onSnapshot(collection(db, "users"), (snap) => {
                 const list = document.getElementById("userList");
                 list.innerHTML = "";
                 
                 snap.forEach(d => {
-                    const userData = d.data();
-                    // عرض الجميع باستثناء نفسي
+                    const u = d.data();
                     if (d.id !== user.uid) {
+                        // ترجمة القيم من القاموس
+                        const countryTr = i18n[lang][u.country] || u.country;
+                        const interestTr = i18n[lang][u.interest] || u.interest;
+                        const ageVal = u.age || "??";
+
                         const card = document.createElement("div");
                         card.className = "user-card";
                         card.innerHTML = `
                             <div class="user-info">
-                                <div class="avatar">${userData.fullname.charAt(0)}</div>
+                                <div class="avatar">${u.fullname.charAt(0)}</div>
                                 <div>
-                                    <strong>${userData.fullname}</strong><br>
-                                    <small style="color: #25d366;">متصل الآن</small>
+                                    <strong>${u.fullname}</strong>
+                                    <div class="details">
+                                        <span class="badge">${ageVal}</span>
+                                        <span class="badge">${countryTr}</span><br>
+                                        <span style="color: var(--p)">#${interestTr}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <button onclick="location.href='chat.html?id=${d.id}'" class="chat-btn">دردشة 💬</button>
+                            <button onclick="location.href='chat.html?id=${d.id}'" class="chat-btn tr" data-key="chat">دردشة</button>
                         `;
                         list.appendChild(card);
                     }
                 });
-
-                if (list.innerHTML === "") {
-                    list.innerHTML = "<p style='text-align: center; opacity: 0.5;'>لا يوجد مستخدمون آخرون حالياً</p>";
-                }
             });
         });
-
-        // زر تسجيل الخروج
-        document.getElementById("logoutBtn").onclick = () => {
-            if (confirm("هل تريد تسجيل الخروج؟")) {
-                signOut(auth).then(() => location.href = "login.html");
-            }
-        };
     </script>
 </body>
 </html>
