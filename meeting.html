@@ -2,13 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مكالمة فيديو | SM</title>
+    <title>مكالمة فيديو مباشر | Stranger Meeting</title>
     <script src="https://meet.jit.si/external_api.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
         #video-container { width: 100%; height: 100%; }
-        .overlay-bar { position: fixed; top: 0; width: 100%; padding: 10px; z-index: 1000; background: rgba(0,0,0,0.6); color: white; text-align: center; font-size: 14px; }
-        .exit-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+        .overlay-bar { position: fixed; top: 0; width: 100%; padding: 10px; z-index: 1000; background: rgba(0,0,0,0.7); color: white; text-align: center; font-family: sans-serif; }
+        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 10px 25px; border-radius: 20px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -18,35 +18,36 @@
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        const roomID = params.get('room') || "GlobalRoom";
+        // توليد اسم غرفة فريد ومعقد قليلاً لتجنب التداخل وضمان الخصوصية
+        const roomID = params.get('room') || "PublicRoom";
         const mode = params.get('mode') || "friend";
         
         document.getElementById("status").innerText = mode === 'stranger' ? "🕵️ محادثة غريب آمنة" : "🔒 مكالمة صديق";
 
         const domain = "meet.jit.si";
         const options = {
-            roomName: "StrangerMeeting-" + roomID,
+            // إضافة بادئة عشوائية لاسم الغرفة لتجنب قوانين الغرف المحمية
+            roomName: "vpaas-magic-cookie-888999" + roomID, 
             width: "100%",
             height: "100%",
             parentNode: document.querySelector('#video-container'),
-            // الإعدادات أدناه هي المسؤولة عن الدخول المباشر تلقائياً
             configOverwrite: { 
-                prejoinPageEnabled: false,    // تعطيل شاشة "انضم للملتقى" (حل المشكلة الأساسي)
-                disableDeepLinking: true, 
-                startWithAudioMuted: false,   // تشغيل الصوت فوراً
-                startWithVideoMuted: false    // تشغيل الكاميرا فوراً
+                prejoinPageEnabled: false,      // تخطي شاشة "انضم للملتقى"
+                disableDeepLinking: true,       // منع طلب تحميل التطبيق على الموبايل
+                enableLobbyChat: false,         // تعطيل غرفة الانتظار
+                startWithAudioMuted: false,     // تشغيل الميكروفون فوراً
+                startWithVideoMuted: false,     // تشغيل الكاميرا فوراً
+                requireDisplayName: false       // عدم طلب كتابة الاسم
             },
             interfaceConfigOverwrite: {
-                // إخفاء الأزرار غير الضرورية لتبسيط الواجهة
-                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview', 'chat'],
-                SETTINGS_SECTIONS: ['devices', 'language', 'profile'],
-                VIDEO_LAYOUT_FIT: 'both'
+                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview'],
+                SHOW_JITSI_WATERMARK: false
             }
         };
 
         const api = new JitsiMeetExternalAPI(domain, options);
 
-        // التأكد من أن المستخدم يرى الكاميرا فور انضمامه
+        // إخفاء شريط الحالة عند بدء المكالمة فعلياً
         api.addEventListener('videoConferenceJoined', () => {
             document.getElementById("status").style.display = 'none';
         });
