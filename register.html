@@ -5,62 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title class="tr" data-key="register">إنشاء حساب | SM</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        select { width: 100%; padding: 12px; border-radius: 10px; margin-bottom: 15px; background: var(--card); color: var(--txt); border: 1px solid #ddd; font-size: 0.9rem; }
+        optgroup { font-weight: bold; color: var(--p); background: var(--bg); }
+        .auth-box { max-width: 450px; margin: 20px auto; padding: 25px; }
+    </style>
 </head>
 <body class="light-mode">
 
     <div class="auth-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 class="tr" data-key="register" style="margin: 0;">إنشاء حساب</h2>
-            <button onclick="toggleLang()" id="langBtn" style="width: 35px; height: 35px; border-radius: 50%; padding: 0; font-size: 0.7rem; background: var(--p); color: white;">EN</button>
+            <button onclick="toggleLang()" id="langBtn" style="width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 0.8rem; background: var(--p); color: white; border: none; cursor: pointer;">EN</button>
         </div>
         
         <input type="text" id="fullname" class="tr" data-key="fullname" placeholder="الاسم الكامل">
-        <input type="email" id="email" class="tr" data-key="email" placeholder="البريد الإلكتروني">
+        <input type="email" id="email" class="tr" data-key="email" placeholder="البريد">
         <input type="password" id="pass" class="tr" data-key="pass" placeholder="كلمة المرور">
+        <input type="number" id="age" class="tr" data-key="age" placeholder="العمر">
 
-        <div style="text-align: right; margin-top: 10px;">
-            <label class="tr" data-key="age" style="font-size: 0.8rem; font-weight: bold;">العمر</label>
-            <input type="number" id="age" placeholder="20" min="12" max="99">
-        </div>
-
-        <div style="text-align: right; margin-top: 10px;">
-            <label class="tr" data-key="country" style="font-size: 0.8rem; font-weight: bold;">الدولة</label>
-            <select id="country" style="width: 100%; padding: 10px; border-radius: 10px; background: var(--card); color: var(--txt); border: 1px solid #ddd;">
-                <option value="" class="tr" data-key="select">اختر...</option>
-                <option value="egypt" class="tr" data-key="egypt">مصر</option>
-                <option value="saudi" class="tr" data-key="saudi">السعودية</option>
+        <label class="tr" data-key="country" style="display:block; margin-bottom:5px; font-size:0.8rem;">الدولة</label>
+        <select id="country">
+            <option value="" class="tr" data-key="select">اختر الدولة...</option>
+            <optgroup label="🌍 Africa">
                 <option value="algeria" class="tr" data-key="algeria">الجزائر</option>
-                <option value="Iraq" class="tr" data-key="Iraq">العراق</option>
-                <option value="palestine" class="tr" data-key="palestine">فلسطين</option>
-                <option value="jordan" class="tr" data-key="jordan">الأردن</option>
+                <option value="egypt" class="tr" data-key="egypt">مصر</option>
                 <option value="morocco" class="tr" data-key="morocco">المغرب</option>
-            </select>
-        </div>
+                <option value="tunisia" class="tr" data-key="tunisia">تونس</option>
+                <option value="libya" class="tr" data-key="libya">ليبيا</option>
+                <option value="nigeria" class="tr" data-key="nigeria">نيجيريا</option>
+                <option value="safrica" class="tr" data-key="safrica">جنوب أفريقيا</option>
+            </optgroup>
+            <optgroup label="🌍 Asia">
+                <option value="saudi" class="tr" data-key="saudi">السعودية</option>
+                <option value="uae" class="tr" data-key="uae">الإمارات</option>
+                <option value="qatar" class="tr" data-key="qatar">قطر</option>
+                <option value="iraq" class="tr" data-key="iraq">العراق</option>
+                <option value="kuwait" class="tr" data-key="kuwait">الكويت</option>
+                <option value="turkey" class="tr" data-key="turkey">تركيا</option>
+            </optgroup>
+            <optgroup label="🌍 Europe">
+                <option value="france" class="tr" data-key="france">فرنسا</option>
+                <option value="germany" class="tr" data-key="germany">ألمانيا</option>
+                <option value="uk" class="tr" data-key="uk">المملكة المتحدة</option>
+                <option value="russia" class="tr" data-key="russia">روسيا</option>
+            </optgroup>
+            <optgroup label="🌍 Americas">
+                <option value="usa" class="tr" data-key="usa">الولايات المتحدة</option>
+                <option value="canada" class="tr" data-key="canada">كندا</option>
+                <option value="brazil" class="tr" data-key="brazil">البرازيل</option>
+            </optgroup>
+        </select>
 
-        <div style="text-align: right; margin-top: 10px;">
-            <label class="tr" data-key="interests" style="font-size: 0.8rem; font-weight: bold;">الاهتمام الرئيسي</label>
-            <select id="interest" style="width: 100%; padding: 10px; border-radius: 10px; background: var(--card); color: var(--txt); border: 1px solid #ddd;">
-                <option value="" class="tr" data-key="select">اختر...</option>
-                <option value="tech" class="tr" data-key="tech">تكنولوجيا</option>
-                <option value="gaming" class="tr" data-key="gaming">ألعاب</option>
-                <option value="sports" class="tr" data-key="sports">رياضة</option>
-                <option value="coding" class="tr" data-key="coding">برمجة</option>
-                <option value="music" class="tr" data-key="music">موسيقى</option>
-            </select>
-        </div>
+        <label class="tr" data-key="interests" style="display:block; margin-bottom:5px; font-size:0.8rem;">الاهتمامات</label>
+        <select id="interest">
+            <option value="" class="tr" data-key="select">اختر الاهتمام...</option>
+            <optgroup label="🧑‍🎓 Education">
+                <option value="reading" class="tr" data-key="reading">القراءة</option>
+                <option value="languages" class="tr" data-key="languages">اللغات</option>
+                <option value="science" class="tr" data-key="science">العلوم</option>
+            </optgroup>
+            <optgroup label="🎨 Creativity">
+                <option value="drawing" class="tr" data-key="drawing">الرسم</option>
+                <option value="music" class="tr" data-key="music">الموسيقى</option>
+                <option value="movies" class="tr" data-key="movies">الأفلام</option>
+            </optgroup>
+            <optgroup label="⚽ Sports">
+                <option value="football" class="tr" data-key="football">كرة القدم</option>
+                <option value="esports" class="tr" data-key="esports">إلكترونية</option>
+                <option value="fitness" class="tr" data-key="fitness">لياقة</option>
+            </optgroup>
+            <optgroup label="💻 Technology">
+                <option value="coding" class="tr" data-key="coding">البرمجة</option>
+                <option value="ai" class="tr" data-key="ai">ذكاء اصطناعي</option>
+                <option value="games" class="tr" data-key="games">ألعاب</option>
+            </optgroup>
+            <optgroup label="❤️ Personal">
+                <option value="cooking" class="tr" data-key="cooking">الطبخ</option>
+                <option value="travel" class="tr" data-key="travel">السفر</option>
+            </optgroup>
+        </select>
 
-        <button id="regBtn" class="tr" data-key="register" style="width: 100%; margin-top: 25px;">إنشاء الحساب</button>
-        
-        <p style="margin-top: 15px; font-size: 0.9rem;">
-            <span class="tr" data-key="haveAccount">لديك حساب؟</span> 
-            <a href="login.html" class="tr" data-key="login" style="color: var(--p); font-weight: bold;">تسجيل الدخول</a>
-        </p>
-
-        <button onclick="toggleTheme()" class="icon-btn" style="margin-top: 10px;">🌓</button>
+        <button id="regBtn" class="tr" data-key="register" style="width: 100%; margin-top: 10px; padding: 15px;">إنشاء الحساب</button>
+        <p style="margin-top: 15px;"><span class="tr" data-key="haveAccount">لديك حساب؟</span> <a href="login.html" class="tr" data-key="login" style="color: var(--p); font-weight: bold;">دخول</a></p>
+        <button onclick="toggleTheme()" class="icon-btn" style="display:block; margin: 10px auto;">🌓</button>
     </div>
 
     <script src="ui-logic.js"></script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -87,36 +118,19 @@
             const country = document.getElementById("country").value;
             const interest = document.getElementById("interest").value;
 
-            if(!name || !email || !pass || !age || !country || !interest) {
-                alert("يرجى ملء جميع الخانات بما في ذلك العمر والدولة");
-                return;
-            }
+            if(!name || !email || !pass || !age || !country || !interest) return alert("يرجى إكمال كافة البيانات");
 
             const btn = document.getElementById("regBtn");
             btn.innerText = "...";
             btn.disabled = true;
 
             try {
-                // إنشاء الحساب
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
-                
-                // حفظ البيانات في Firestore (بما في ذلك العمر الجديد)
                 await setDoc(doc(db, "users", res.user.uid), {
-                    fullname: name,
-                    email: email,
-                    age: age,
-                    country: country,
-                    interest: interest,
-                    uid: res.user.uid,
-                    createdAt: new Date()
+                    fullname: name, email, age, country, interest, uid: res.user.uid
                 });
-
                 location.href = "dashboard.html";
-            } catch (e) {
-                alert("خطأ: " + e.message);
-                btn.innerText = "إنشاء الحساب";
-                btn.disabled = false;
-            }
+            } catch (e) { alert(e.message); btn.innerText = "Error"; btn.disabled = false; }
         };
     </script>
 </body>
