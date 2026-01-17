@@ -5,11 +5,11 @@
     <title>المحادثة 💬</title>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background: #e5ddd5; }
-        .header { background: #075e54; color: white; padding: 12px; display: flex; align-items: center; justify-content: space-between; }
-        #msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 70%; padding: 10px 15px; border-radius: 15px; font-size: 15px; line-height: 1.4; }
-        .me { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 0; }
-        .them { align-self: flex-start; background: white; border-bottom-left-radius: 0; }
+        .header { background: #075e54; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; }
+        #msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .msg { max-width: 75%; padding: 10px; border-radius: 10px; font-size: 14px; word-wrap: break-word; }
+        .me { align-self: flex-end; background: #dcf8c6; }
+        .them { align-self: flex-start; background: white; }
         .input-bar { padding: 10px; background: #f0f0f0; display: flex; gap: 10px; }
         input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
         .v-btn { background: #4CAF50; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 20px; }
@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="header">
-        <button onclick="location.href='dashboard.html'" style="background:none; border:none; color:white; font-size:20px;">🔙</button>
+        <button onclick="location.href='./dashboard.html'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">🔙</button>
         <span id="targetName">جاري التحميل...</span>
         <button class="v-btn" onclick="startVideoCall()">📹</button>
     </div>
@@ -26,7 +26,7 @@
 
     <div class="input-bar">
         <input type="text" id="mIn" placeholder="اكتب رسالة...">
-        <button id="sBtn" style="background:#075e54; color:white; border:none; border-radius:50%; width:45px; height:45px;">📤</button>
+        <button id="sBtn" style="background:#075e54; color:white; border:none; border-radius:50%; width:45px; height:45px; cursor:pointer;">📤</button>
     </div>
 
     <script type="module">
@@ -34,29 +34,37 @@
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const firebaseConfig = { /* استخدم نفس البيانات أعلاه */ };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
+            authDomain: "strangermeeting-91226.firebaseapp.com", 
+            projectId: "strangermeeting-91226", 
+            storageBucket: "strangermeeting-91226.firebasestorage.app", 
+            messagingSenderId: "575547116212", 
+            appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        const otherId = new URLSearchParams(window.location.search).get('id');
-        const mode = new URLSearchParams(window.location.search).get('mode') || 'friend';
+        const urlParams = new URLSearchParams(window.location.search);
+        const otherId = urlParams.get('id');
+        const mode = urlParams.get('mode') || 'friend';
 
-        // وظيفة الفيديو الموحدة
         window.startVideoCall = () => {
             const myId = auth.currentUser.uid;
-            // الترتيب الأبجدي يضمن أن الطرفين يدخلان نفس الغرفة تماماً
+            if(!otherId) return;
+            // توحيد منطق اسم الغرفة للطرفين
             const sortedIds = [myId, otherId].sort().join("-");
             const roomId = (mode === 'stranger' ? "STR-" : "FRD-") + sortedIds;
-            
-            window.location.href = `meeting.html?room=${roomId}&mode=${mode}`;
+            window.location.href = `./meeting.html?room=${roomId}&mode=${mode}`;
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (!user || !otherId) return;
-
+            
             const snap = await getDoc(doc(db, "users", otherId));
-            document.getElementById("targetName").innerText = snap.data()?.fullname || "مستخدم";
+            if(snap.exists()) document.getElementById("targetName").innerText = snap.data().fullname;
 
             const chatId = [user.uid, otherId].sort().join("_");
             const msgRef = collection(db, "chats", chatId, "messages");

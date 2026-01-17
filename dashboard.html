@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="mainHtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم | Stranger Meeting</title>
+    <title>لوحة التحكم 🏠 | Stranger Meeting</title>
     <style>
         :root { --bg: #f0f2f5; --card: #fff; --text: #333; --accent: #4CAF50; }
         [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #eee; --accent: #00a884; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--card); border-radius: 12px; margin-bottom: 20px; }
-        .user-card { display: flex; align-items: center; background: var(--card); padding: 12px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; padding-bottom: 20px; }
+        .nav { background: var(--card); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .btn { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .user-card { background: var(--card); margin: 10px; padding: 15px; border-radius: 15px; display: flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .status-dot { width: 12px; height: 12px; border-radius: 50%; margin-left: 10px; border: 2px solid white; }
         .online { background-color: #4CAF50; box-shadow: 0 0 5px #4CAF50; }
         .offline { background-color: #bbb; }
-        .btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
-        .find-btn { width: 100%; padding: 15px; font-size: 1.1rem; margin-bottom: 20px; }
+        .find-btn { width: 90%; margin: 20px auto; display: block; padding: 15px; font-size: 1.2rem; }
     </style>
 </head>
 <body>
     <div class="nav">
         <div>النقاط: <span id="uCoins">0</span> 💰</div>
-        <button class="btn" onclick="location.href='profile.html'">الملف الشخصي</button>
+        <div>
+            <button class="btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+            <button class="btn" onclick="location.href='./profile.html'">👤</button>
+        </div>
     </div>
 
     <button class="btn find-btn" onclick="findStranger()">البحث عن غريب الآن 🕵️‍♂️</button>
@@ -29,8 +32,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
@@ -46,16 +49,15 @@
         const db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
+            if(user) {
                 const userRef = doc(db, "users", user.uid);
                 await updateDoc(userRef, { online: true });
                 const uSnap = await getDoc(userRef);
-                document.getElementById("uCoins").innerText = uSnap.data()?.points || 0;
+                if(uSnap.exists()) document.getElementById("uCoins").innerText = uSnap.data().points || 0;
                 
-                // تحديث الحالة عند الخروج
                 window.addEventListener('beforeunload', () => updateDoc(userRef, { online: false }));
                 loadUsers();
-            } else { location.href = "login.html"; }
+            } else { window.location.href = "./login.html"; }
         });
 
         window.loadUsers = () => {
@@ -68,8 +70,8 @@
                         list.innerHTML += `
                             <div class="user-card">
                                 <div class="status-dot ${u.online ? 'online' : 'offline'}"></div>
-                                <span style="flex:1">${u.fullname}</span>
-                                <button class="btn" onclick="location.href='chat.html?id=${d.id}'">دردشة</button>
+                                <span style="flex:1"><b>${u.fullname}</b><br><small>${u.country || ''}</small></span>
+                                <button class="btn" onclick="location.href='./chat.html?id=${d.id}'">دردشة</button>
                             </div>`;
                     }
                 });
@@ -81,9 +83,19 @@
             const snap = await getDocs(q);
             let strangerId = null;
             snap.forEach(doc => { if(doc.id !== auth.currentUser.uid) strangerId = doc.id; });
-            if(strangerId) location.href = `chat.html?id=${strangerId}&mode=stranger`;
+            if(strangerId) window.location.href = `./chat.html?id=${strangerId}&mode=stranger`;
             else alert("لا يوجد غرباء متصلون حالياً 🔎");
         };
+
+        window.toggleTheme = () => {
+            let theme = localStorage.getItem("theme") === 'dark' ? 'light' : 'dark';
+            localStorage.setItem("theme", theme);
+            document.documentElement.setAttribute("data-theme", theme);
+            location.reload();
+        };
+
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
     </script>
 </body>
 </html>

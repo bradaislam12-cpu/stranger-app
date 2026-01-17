@@ -5,29 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stranger Meeting | جاري التحميل... 🚀</title>
     <style>
-        /* تعريف الألوان للوضع العادي والليلي */
         :root { --bg: #f0f2f5; --text: #4CAF50; }
         [data-theme="dark"] { --bg: #121212; --text: #00a884; }
-
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: var(--bg);
-            font-family: sans-serif;
-            transition: 0.3s;
-        }
-        .loader-text {
-            font-size: 1.2rem;
-            color: var(--text);
-            font-weight: bold;
-        }
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--bg); font-family: sans-serif; transition: 0.3s; }
+        .loader-text { font-size: 1.2rem; color: var(--text); font-weight: bold; }
     </style>
 </head>
 <body>
-
     <div class="loader-text" id="loadTxt">جاري تحضير اللقاء... 🚀</div>
 
     <script type="module">
@@ -46,29 +30,25 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // --- وظيفة تطبيق الوضع الليلي واللغة المحفوظة ---
         function applySettings() {
             const savedTheme = localStorage.getItem("theme") || "light";
             const savedLang = localStorage.getItem("lang") || "ar";
-            
             document.documentElement.setAttribute("data-theme", savedTheme);
-            
             if(savedLang === 'en') {
                 document.getElementById("mainHtml").dir = 'ltr';
                 document.getElementById("loadTxt").innerText = "Preparing the meeting... 🚀";
             }
         }
         applySettings();
-        // -------------------------------------------
 
         onAuthStateChanged(auth, (user) => {
-            setTimeout(() => { // تأخير بسيط جداً لضمان رؤية تأثير التحميل
+            setTimeout(() => { 
                 if (user) {
-                    window.location.href = "dashboard.html";
+                    window.location.href = "./dashboard.html"; 
                 } else {
-                    window.location.href = "login.html";
+                    window.location.href = "./login.html";
                 }
-            }, 500);
+            }, 1500);
         });
     </script>
 </body>

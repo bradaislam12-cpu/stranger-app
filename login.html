@@ -5,108 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول 🔑 | Stranger Meeting</title>
     <style>
-        :root { --bg: #f0f2f5; --card: #fff; --text: #333; --input-bg: #fff; }
-        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #eee; --input-bg: #2a2a2a; }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: var(--bg); 
-            color: var(--text);
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            transition: 0.3s;
-        }
-        .card { 
-            background: var(--card); 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            width: 340px; 
-            text-align: center; 
-        }
-        h2 { margin-bottom: 20px; }
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 10px 0; 
-            border: 1px solid #ddd; 
-            border-radius: 10px; 
-            box-sizing: border-box; 
-            background: var(--input-bg);
-            color: var(--text);
-        }
-        .btn-green { 
-            width: 100%; 
-            padding: 12px; 
-            background: #4CAF50; 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 16px;
-        }
-        .btn-google { 
-            width: 100%; 
-            padding: 10px; 
-            background: var(--card); 
-            border: 1px solid #ddd; 
-            border-radius: 10px; 
-            margin-top: 15px; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px; 
-            font-weight: bold;
-            color: var(--text);
-        }
-        .controls {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .f-btn { 
-            padding: 5px 10px; 
-            border-radius: 15px; 
-            border: 1px solid #ddd; 
-            background: none; 
-            color: var(--text); 
-            cursor: pointer; 
-            font-size: 12px; 
-        }
-        a { color: #2196F3; text-decoration: none; font-size: 14px; }
+        :root { --bg: #f0f2f5; --card: #fff; --text: #333; --input-bg: #fff; --accent: #4CAF50; }
+        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #eee; --input-bg: #2a2a2a; --accent: #00a884; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; transition: 0.3s; }
+        .card { background: var(--card); padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 340px; text-align: center; }
+        h2 { margin-bottom: 25px; color: var(--accent); }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; }
+        .btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .google-btn { background: white; color: #555; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; }
+        .links { margin-top: 20px; font-size: 14px; }
+        .links a { color: var(--accent); text-decoration: none; font-weight: bold; }
+        .settings-btns { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; }
     </style>
 </head>
 <body>
+
+<div class="settings-btns">
+    <button class="btn" id="themeBtn" onclick="toggleTheme()" style="padding: 5px 10px;">🌙</button>
+    <button class="btn" id="langBtn" onclick="toggleLang()" style="padding: 5px 10px;">English 🌐</button>
+</div>
 
 <div class="card">
     <h2 id="loginTitle">دخول الغرباء 🔑</h2>
     <input type="email" id="email" placeholder="البريد الإلكتروني 📧">
     <input type="password" id="pass" placeholder="كلمة المرور 🔒">
-    <button class="btn-green" onclick="login()" id="loginBtn">دخول ✅</button>
+    <button class="btn" id="loginBtn" onclick="login()">دخول ✅</button>
     
-    <button class="btn-google" onclick="loginG()"> 
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18"> 
-        <span id="googleText">متابعة باستخدام جوجل G</span>
+    <button class="btn google-btn" onclick="loginWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18">
+        <span id="googleText">متابعة باستخدام جوجل</span>
     </button>
-    
-    <p><span id="noAcc">ليس لديك حساب؟</span> <a href="register.html" id="regLink">سجل هنا ✨</a></p>
 
-    <div class="controls">
-        <button class="f-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
-        <button class="f-btn" onclick="toggleLang()" id="langBtn">English 🌐</button>
+    <div class="links">
+        <span id="noAcc">ليس لديك حساب؟</span> <a href="./register.html" id="regLink">سجل هنا ✨</a>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
     const firebaseConfig = { 
         apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
         authDomain: "strangermeeting-91226.firebaseapp.com", 
@@ -118,68 +57,55 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // دالة تسجيل الدخول العادي
-    window.login = () => {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('pass').value;
-        signInWithEmailAndPassword(auth, email, pass)
-            .then(() => window.location.href="dashboard.html")
-            .catch(() => alert("خطأ في البيانات! ❌"));
+    window.login = async () => {
+        const e = document.getElementById("email").value;
+        const p = document.getElementById("pass").value;
+        try {
+            await signInWithEmailAndPassword(auth, e, p);
+            window.location.href = "./dashboard.html";
+        } catch (err) { alert("بيانات الدخول غير صحيحة"); }
     };
 
-    // دالة تسجيل الدخول بجوجل
-    window.loginG = () => {
-        signInWithPopup(auth, new GoogleAuthProvider())
-            .then(() => window.location.href="dashboard.html")
-            .catch((err) => console.log(err));
+    window.loginWithGoogle = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const res = await signInWithPopup(auth, provider);
+            const user = res.user;
+            const docRef = doc(db, "users", user.uid);
+            const snap = await getDoc(docRef);
+            if (!snap.exists()) {
+                await setDoc(docRef, { fullname: user.displayName, email: user.email, points: 50, online: true });
+            }
+            window.location.href = "./dashboard.html";
+        } catch (err) { alert("فشل الدخول بجوجل"); }
     };
 
-    // إعدادات المظهر واللغة
+    // التبديل بين اللغات والسمات
     window.toggleTheme = () => {
         let theme = localStorage.getItem("theme") === 'dark' ? 'light' : 'dark';
         localStorage.setItem("theme", theme);
-        applySettings();
+        location.reload();
     };
 
     window.toggleLang = () => {
         let lang = localStorage.getItem("lang") === 'en' ? 'ar' : 'en';
         localStorage.setItem("lang", lang);
-        applySettings();
+        location.reload();
     };
 
     function applySettings() {
-        const lang = localStorage.getItem("lang") || 'ar';
-        const theme = localStorage.getItem("theme") || 'light';
-        
+        const theme = localStorage.getItem("theme") || "light";
+        const lang = localStorage.getItem("lang") || "ar";
         document.documentElement.setAttribute("data-theme", theme);
-        const html = document.getElementById("mainHtml");
-        
         if(lang === 'en') {
-            html.dir = 'ltr';
+            document.getElementById("mainHtml").dir = 'ltr';
             document.getElementById("loginTitle").innerText = "Stranger Login 🔑";
-            document.getElementById("email").placeholder = "Email Address 📧";
-            document.getElementById("pass").placeholder = "Password 🔒";
             document.getElementById("loginBtn").innerText = "Login ✅";
-            document.getElementById("googleText").innerText = "Continue with Google G";
-            document.getElementById("noAcc").innerText = "Don't have an account?";
-            document.getElementById("regLink").innerText = "Register here ✨";
-            document.getElementById("langBtn").innerText = "العربية 🌐";
-        } else {
-            html.dir = 'rtl';
-            document.getElementById("loginTitle").innerText = "دخول الغرباء 🔑";
-            document.getElementById("email").placeholder = "البريد الإلكتروني 📧";
-            document.getElementById("pass").placeholder = "كلمة المرور 🔒";
-            document.getElementById("loginBtn").innerText = "دخول ✅";
-            document.getElementById("googleText").innerText = "متابعة باستخدام جوجل G";
-            document.getElementById("noAcc").innerText = "ليس لديك حساب؟";
-            document.getElementById("regLink").innerText = "سجل هنا ✨";
-            document.getElementById("langBtn").innerText = "English 🌐";
         }
-        document.getElementById("themeBtn").innerText = theme === 'dark' ? '☀️' : '🌙';
     }
-
-    applySettings(); // تطبيق الإعدادات عند فتح الصفحة
+    applySettings();
 </script>
 </body>
 </html>
