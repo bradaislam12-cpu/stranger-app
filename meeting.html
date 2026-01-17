@@ -3,41 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جاري الاتصال... | SM</title>
+    <title>جاري الدخول الذكي... | Stranger Meeting</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #121212; color: white; margin: 0; text-align: center; }
-        .loader { border: 4px solid #333; border-top: 4px solid #00a884; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background: #121212; 
+            color: white; 
+            margin: 0; 
+            text-align: center; 
+        }
+        .container { padding: 20px; }
+        .loader { 
+            border: 4px solid #333; 
+            border-top: 4px solid #00a884; 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 20px; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .btn { background: #00a884; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 15px; }
+        .status-msg { font-size: 1.2rem; font-weight: bold; color: #00a884; }
+        .sub-text { color: #888; margin-top: 10px; font-size: 0.9rem; }
+        .btn { 
+            background: #00a884; 
+            color: white; 
+            padding: 12px 25px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            display: inline-block; 
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,168,132,0.2);
+        }
     </style>
 </head>
 <body>
-    <div>
+
+    <div class="container">
         <div class="loader"></div>
-        <h2 id="st">جاري الربط المباشر...</h2>
-        <a id="directLink" href="#" class="btn" style="display:none;">دخول الآن</a>
+        <div class="status-msg" id="status">جاري تخطي شاشات الانتظار...</div>
+        <div class="sub-text">يتم الآن تفعيل الكاميرا والميكروفون تلقائياً</div>
+        
+        <a id="directLink" href="#" class="btn" style="display:none;">دخول يدوي ✅</a>
     </div>
 
     <script>
+        // 1. استخراج معرف الغرفة من الرابط (URL)
         const params = new URLSearchParams(window.location.search);
-        let roomID = params.get('room') || "PublicRoom";
+        let rawRoom = params.get('room') || "GlobalRoom";
         
-        // توحيد اسم الغرفة للطرفين وتجنب الرموز المعقدة
-        const cleanRoom = "SM-" + roomID.replace(/[^a-zA-Z0-9]/g, "");
+        // 2. تنظيف اسم الغرفة (إزالة الرموز) لضمان تطابق الهاتف مع الحاسوب
+        const cleanRoom = "SM" + rawRoom.replace(/[^a-zA-Z0-9]/g, "").substring(0, 15);
 
-        // توليد اسم تلقائي
-        const nickName = "User_" + Math.floor(Math.random() * 9000);
+        // 3. توليد اسم عشوائي لتجاوز خطوة "Enter Name"
+        const nickName = "User" + Math.floor(Math.random() * 900);
 
-        // الرابط الموحد (سيرفر Jitsi العام) - يعمل على الهاتف والحاسوب بدون تسجيل
-        const finalUrl = `https://meet.jit.si/${cleanRoom}#userInfo.displayName="${nickName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
+        // 4. الرابط العبقري (The Smart Link):
+        // config.prejoinPageEnabled=false -> هذا هو "النقر الذكي" الذي يتخطى زر Join Meeting
+        // config.disableDeepLinking=true -> يمنع الهاتف من طلب فتح التطبيق ويجبره على المتصفح
+        // userInfo.displayName -> يضع اسمك تلقائياً
+        const finalUrl = `https://meet.jit.si/${cleanRoom}#userInfo.displayName="${nickName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false&config.disableDeepLinking=true&config.requireDisplayName=false`;
 
-        document.getElementById("directLink").href = finalUrl;
+        // تعيين الرابط للزر (للطوارئ)
+        const linkBtn = document.getElementById("directLink");
+        linkBtn.href = finalUrl;
 
-        // تحويل فوري
-        window.location.href = finalUrl;
+        // 5. التحويل الآلي الفوري
+        setTimeout(() => {
+            document.getElementById("status").innerText = "جاري فتح المحادثة...";
+            window.location.href = finalUrl;
+        }, 800);
 
-        // إظهار الزر إذا فشل التحويل التلقائي
-        setTimeout(() => { document.getElementById("directLink").style.display = "inline-block"; }, 2000);
+        // إظهار الزر إذا لم ينجح المتصفح في التحويل التلقائي خلال 3 ثوانٍ
+        setTimeout(() => {
+            linkBtn.style.display = "inline-block";
+        }, 3000);
     </script>
 </body>
 </html>
