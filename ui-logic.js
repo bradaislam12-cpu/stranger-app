@@ -1,42 +1,64 @@
-/**
- * Stranger Meeting - UI Logic Engine 2026
- * هذا الملف مسؤول عن مزامنة المظهر واللغة عبر كافة صفحات الموقع
- */
-
-// 1. دالة تبديل الوضع الليلي والنهاري
-window.toggleTheme = function() {
-    const body = document.body;
-    
-    if (body.classList.contains('light-mode')) {
-        // التحويل للوضع الليلي
-        body.classList.replace('light-mode', 'dark-mode');
-        localStorage.setItem('sm-theme', 'dark');
-    } else {
-        // التحويل للوضع النهاري
-        body.classList.replace('dark-mode', 'light-mode');
-        localStorage.setItem('sm-theme', 'light');
+const i18n = {
+    ar: {
+        title: "Stranger Meeting",
+        subTitle: "تواصل مع الآخرين بخصوصية وأمان تام",
+        login: "تسجيل الدخول",
+        register: "إنشاء حساب",
+        fullname: "الاسم الكامل",
+        email: "البريد الإلكتروني",
+        pass: "كلمة المرور",
+        country: "الدولة",
+        interests: "الاهتمامات",
+        select: "اختر...",
+        // الاهتمامات
+        music: "موسيقى", sports: "رياضة", tech: "تكنولوجيا", gaming: "ألعاب", coding: "برمجة",
+        // الدول
+        egypt: "مصر", saudi: "السعودية", algeria: "الجزائر", morocco: "المغرب", jordan: "الأردن", palestine: "فلسطين", Iraq: "العراق"
+    },
+    en: {
+        title: "Stranger Meeting",
+        subTitle: "Connect with others with total privacy",
+        login: "Login",
+        register: "Register",
+        fullname: "Full Name",
+        email: "Email Address",
+        pass: "Password",
+        country: "Country",
+        interests: "Interests",
+        select: "Select...",
+        // Interests
+        music: "Music", sports: "Sports", tech: "Technology", gaming: "Gaming", coding: "Coding",
+        // Countries
+        egypt: "Egypt", saudi: "Saudi Arabia", algeria: "Algeria", morocco: "Morocco", jordan: "Jordan", palestine: "Palestine", Iraq: "Iraq"
     }
 };
 
-// 2. دالة تشغيل الإعدادات المحفوظة (تنفذ تلقائياً عند تحميل أي صفحة)
-(function applySavedSettings() {
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('sm-theme');
-        
-        // إذا كان المستخدم قد اختار الوضع الليلي مسبقاً، نقوم بتطبيقه فوراً
-        if (savedTheme === 'dark') {
-            document.body.classList.replace('light-mode', 'dark-mode');
-        } else {
-            // الوضع الافتراضي هو النهاري
-            document.body.classList.add('light-mode');
-        }
-        
-        // ملاحظة: يمكنك إضافة منطق حفظ اللغة هنا مستقبلاً بنفس الطريقة
-    });
-})();
+window.toggleLang = function() {
+    const currentLang = localStorage.getItem('sm-lang') === 'en' ? 'ar' : 'en';
+    localStorage.setItem('sm-lang', currentLang);
+    location.reload(); 
+};
 
-// 3. منع "الومضة البيضاء" (اختياري)
-// هذا السطر يساعد في تطبيق اللون قبل اكتمال تحميل عناصر HTML الثقيلة
-if (localStorage.getItem('sm-theme') === 'dark') {
-    document.documentElement.classList.add('dark-mode');
+window.toggleTheme = function() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('sm-theme', isDark ? 'dark' : 'light');
+};
+
+function applySettings() {
+    const lang = localStorage.getItem('sm-lang') || 'ar';
+    const theme = localStorage.getItem('sm-theme') || 'light';
+    
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    if (theme === 'dark') document.body.classList.add('dark-mode');
+
+    document.querySelectorAll('.tr').forEach(el => {
+        const key = el.getAttribute('data-key');
+        if (i18n[lang][key]) {
+            if (el.tagName === 'INPUT') el.placeholder = i18n[lang][key];
+            else el.innerText = i18n[lang][key];
+        }
+    });
 }
+
+document.addEventListener('DOMContentLoaded', applySettings);
