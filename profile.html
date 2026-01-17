@@ -3,42 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الملف الشخصي | SM</title>
+    <title class="tr" data-key="profile">الملف الشخصي | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .profile-card { text-align: center; padding: 20px; }
-        .avatar-large { 
-            width: 80px; height: 80px; background: var(--p); color: white; 
-            font-size: 2rem; border-radius: 50%; display: flex; 
-            justify-content: center; align-items: center; margin: 0 auto 15px; 
-        }
-        .info-row { 
-            background: var(--bg); padding: 10px; border-radius: 8px; 
-            margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.1); 
-        }
-        .danger-link { color: #ff4d4d; cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
+        .profile-container { max-width: 500px; margin: 30px auto; padding: 20px; }
+        .info-card { background: var(--card); padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .avatar-circle { width: 80px; height: 80px; background: var(--p); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; }
+        .data-row { margin-bottom: 15px; text-align: right; }
+        .data-row label { display: block; font-weight: bold; margin-bottom: 5px; opacity: 0.8; font-size: 0.9rem; }
+        .data-value { background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); }
+        .action-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="header">
         <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
-        <span>إعدادات الحساب</span>
-        <div style="width: 40px;"></div> </div>
+        <span class="tr" data-key="profile">الملف الشخصي</span>
+        <button onclick="toggleTheme()" class="icon-btn">🌓</button>
+    </div>
 
-    <div class="container">
-        <div class="auth-box profile-card">
-            <div id="uAvatar" class="avatar-large">؟</div>
-            <h2 id="uName">جاري التحميل...</h2>
+    <div class="profile-container">
+        <div class="info-card">
+            <div id="uAvatar" class="avatar-circle">?</div>
             
-            <div class="info-row">
-                <small>البريد الإلكتروني</small>
-                <div id="uEmail">...</div>
+            <div class="data-row">
+                <label class="tr" data-key="fullname">الاسم الكامل</label>
+                <div id="dispName" class="data-value">...</div>
             </div>
 
-            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button onclick="toggleTheme()">تبديل المظهر 🌓</button>
-                <span class="danger-link" id="logoutLink">تسجيل الخروج من الحساب</span>
+            <div class="data-row">
+                <label class="tr" data-key="age">العمر</label>
+                <div id="dispAge" class="data-value">...</div>
+            </div>
+
+            <div class="data-row">
+                <label class="tr" data-key="country">البلد</label>
+                <div id="dispCountry" class="data-value">...</div>
+            </div>
+
+            <div class="data-row">
+                <label class="tr" data-key="interests">الاهتمامات</label>
+                <div id="dispInterest" class="data-value">...</div>
+            </div>
+
+            <div class="action-btns">
+                <button onclick="toggleLang()" style="background: #555;">🌐 Change Language / تغيير اللغة</button>
+                <button id="logoutBtn" style="background: #ff4d4d;" class="tr" data-key="logout">تسجيل الخروج</button>
             </div>
         </div>
     </div>
@@ -72,15 +83,23 @@
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                document.getElementById("uName").innerText = data.fullname;
-                document.getElementById("uEmail").innerText = data.email;
+                const lang = localStorage.getItem('sm-lang') || 'ar';
+
+                // عرض البيانات في الخانات
+                document.getElementById("dispName").innerText = data.fullname || "---";
+                document.getElementById("dispAge").innerText = data.age || "---";
+                
+                // ترجمة البلد والاهتمام من القاموس قبل العرض
+                document.getElementById("dispCountry").innerText = i18n[lang][data.country] || data.country;
+                document.getElementById("dispInterest").innerText = i18n[lang][data.interest] || data.interest;
+                
+                // تحديث الأفاتار
                 document.getElementById("uAvatar").innerText = data.fullname.charAt(0).toUpperCase();
             }
         });
 
-        // منطق تسجيل الخروج
-        document.getElementById("logoutLink").onclick = () => {
-            signOut(auth).then(() => location.href = "login.html");
+        document.getElementById("logoutBtn").onclick = () => {
+            if(confirm("هل تريد تسجيل الخروج؟")) signOut(auth).then(() => location.href = "index.html");
         };
     </script>
 </body>
