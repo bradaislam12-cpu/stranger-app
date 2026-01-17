@@ -3,80 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جاري الاتصال المباشر... | SM</title>
+    <title>جاري الاتصال... | SM</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            background: #121212; 
-            color: white; 
-            margin: 0; 
-            text-align: center; 
-        }
-        .loader { 
-            border: 4px solid #333; 
-            border-top: 4px solid #00a884; 
-            border-radius: 50%; 
-            width: 50px; 
-            height: 50px; 
-            animation: spin 1s linear infinite; 
-            margin: 0 auto 20px; 
-        }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #121212; color: white; margin: 0; text-align: center; }
+        .loader { border: 4px solid #333; border-top: 4px solid #00a884; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .status-text { font-size: 1.2rem; margin-bottom: 10px; }
-        .btn { 
-            background: #00a884; 
-            color: white; 
-            padding: 12px 25px; 
-            border-radius: 8px; 
-            text-decoration: none; 
-            font-weight: bold; 
-            display: inline-block; 
-            margin-top: 20px;
-        }
+        .btn { background: #00a884; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 15px; }
     </style>
 </head>
 <body>
-
-    <div class="container">
+    <div>
         <div class="loader"></div>
-        <div class="status-text" id="statusMsg">جاري فتح الكاميرا...</div>
-        <p>يتم الآن تخطي شاشات التسجيل تلقائياً</p>
-        <a id="directLink" href="#" class="btn" style="display:none;">دخول يدوي ✅</a>
+        <h2 id="st">جاري الربط المباشر...</h2>
+        <a id="directLink" href="#" class="btn" style="display:none;">دخول الآن</a>
     </div>
 
     <script>
-        // 1. جلب معرف الغرفة من الرابط
         const params = new URLSearchParams(window.location.search);
-        let roomID = params.get('room') || "GlobalRoom";
+        let roomID = params.get('room') || "PublicRoom";
         
-        // 2. تقصير اسم الغرفة برمجياً لتجنب حماية السيرفر (8 أحرف كافية)
-        const safeRoomName = "SM-" + roomID.substring(0, 12);
+        // توحيد اسم الغرفة للطرفين وتجنب الرموز المعقدة
+        const cleanRoom = "SM-" + roomID.replace(/[^a-zA-Z0-9]/g, "");
 
-        // 3. توليد اسم عشوائي (مثلاً: Anonymous_782) لتجاوز خانة الاسم
-        const randomID = Math.floor(Math.random() * 9000) + 1000;
-        const nickName = "User_" + randomID;
+        // توليد اسم تلقائي
+        const nickName = "User_" + Math.floor(Math.random() * 9000);
 
-        // 4. الرابط السحري لسيرفر Jitsi العام
-        // نستخدم #config لتخطي شاشة الانتظار و #userInfo لتحديد الاسم تلقائياً
-        const finalUrl = `https://meet.jit.si/${safeRoomName}#userInfo.displayName="${nickName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false&config.requireDisplayName=false`;
+        // الرابط الموحد (سيرفر Jitsi العام) - يعمل على الهاتف والحاسوب بدون تسجيل
+        const finalUrl = `https://meet.jit.si/${cleanRoom}#userInfo.displayName="${nickName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
 
-        const linkBtn = document.getElementById("directLink");
-        linkBtn.href = finalUrl;
+        document.getElementById("directLink").href = finalUrl;
 
-        // 5. التحويل التلقائي السريع
-        setTimeout(() => {
-            document.getElementById("statusMsg").innerText = "جاري التحويل...";
-            window.location.href = finalUrl;
-        }, 800);
+        // تحويل فوري
+        window.location.href = finalUrl;
 
-        // إظهار زر النسخ الاحتياطي في حال تأخر المتصفح
-        setTimeout(() => {
-            linkBtn.style.display = "inline-block";
-        }, 3000);
+        // إظهار الزر إذا فشل التحويل التلقائي
+        setTimeout(() => { document.getElementById("directLink").style.display = "inline-block"; }, 2000);
     </script>
 </body>
 </html>
