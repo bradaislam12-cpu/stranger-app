@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جاري الدخول للمكالمة... | SM</title>
+    <title>دخول المكالمة... | SM</title>
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
-            background: #121212; 
+            background: #1a1a1a; 
             color: white; 
             margin: 0; 
             text-align: center; 
@@ -20,8 +20,8 @@
             border: 4px solid #333; 
             border-top: 4px solid #00a884; 
             border-radius: 50%; 
-            width: 60px; 
-            height: 60px; 
+            width: 50px; 
+            height: 50px; 
             animation: spin 1s linear infinite; 
             margin: 0 auto 20px; 
         }
@@ -41,37 +41,31 @@
 
     <div class="container">
         <div class="loader"></div>
-        <h2 id="msg">جاري توليد اسمك المستعار...</h2>
-        <p>سيتم فتح الغرفة تلقائياً خلال لحظات</p>
-        <a id="directLink" href="#" class="btn" style="display:none;">دخول يدوي ✅</a>
+        <h2>جاري تهيئة الغرفة المفتوحة...</h2>
+        <p>سيتم نقلك للمحادثة فوراً وبدون تسجيل دخول</p>
+        <a id="directLink" href="#" class="btn">اضغط هنا للدخول المباشر ✅</a>
     </div>
 
     <script>
-        // 1. جلب معرف الغرفة من الرابط
+        // 1. جلب اسم الغرفة
         const params = new URLSearchParams(window.location.search);
         const roomID = params.get('room') || "PublicRoom";
         
-        // 2. توليد اسم عشوائي (مثلاً: Stranger_452) لتخطي خانة الاسم
+        // 2. توليد اسم مستعار عشوائي لتخطي شاشة الاسم
         const randomID = Math.floor(Math.random() * 9000) + 1000;
-        const randomName = "Stranger_" + randomID;
+        const nickName = "User_" + randomID;
 
-        // 3. الرابط السحري: 
-        // نرسل الاسم عبر userInfo.displayName وتخطي شاشة الانتظار عبر prejoinPageEnabled=false
-        const finalUrl = `https://8x8.vc/vpaas-magic-cookie-3d605658097b4b72803b9e400495393a/${roomID}#userInfo.displayName="${randomName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
+        // 3. الرابط الجديد (استخدام سيرفر Jitsi العام والمجاني)
+        // أضفنا بارامترات لإجبار الواجهة على تخطي شاشات الانتظار والاسم
+        const finalUrl = `https://meet.jit.si/${roomID}#userInfo.displayName="${nickName}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
 
         const linkBtn = document.getElementById("directLink");
         linkBtn.href = finalUrl;
 
-        // 4. تحويل تلقائي فوري
+        // 4. تحويل تلقائي بعد ثانية واحدة
         setTimeout(() => {
-            document.getElementById("msg").innerText = "جاري التحويل للغرفة...";
             window.location.href = finalUrl;
-        }, 800);
-
-        // إظهار الزر في حال فشل التحويل التلقائي
-        setTimeout(() => {
-            linkBtn.style.display = "inline-block";
-        }, 3000);
+        }, 1000);
     </script>
 </body>
 </html>
