@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم 🏠 | Stranger Meeting</title>
     <style>
-        :root { --bg: #f0f2f5; --card: #fff; --text: #333; --accent: #4CAF50; }
-        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #eee; --accent: #00a884; }
+        :root { --bg: #f0f2f5; --card: #fff; --text: #333; --accent: #4CAF50; --danger: #ff4757; }
+        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #eee; --accent: #00a884; --danger: #ff6b81; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; padding-bottom: 20px; }
         .nav { background: var(--card); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .btn { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .user-card { background: var(--card); margin: 10px; padding: 15px; border-radius: 15px; display: flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .user-card { background: var(--card); margin: 10px; padding: 15px; border-radius: 15px; display: flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
         .status-dot { width: 12px; height: 12px; border-radius: 50%; margin-left: 10px; border: 2px solid white; }
         .online { background-color: #4CAF50; box-shadow: 0 0 5px #4CAF50; }
         .offline { background-color: #bbb; }
         .find-btn { width: 90%; margin: 20px auto; display: block; padding: 15px; font-size: 1.2rem; background: #e67e22; }
+        .delete-btn { background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 12px; }
+        .actions { display: flex; gap: 5px; align-items: center; }
     </style>
 </head>
 <body>
@@ -26,14 +28,14 @@
         </div>
     </div>
 
-    <button class="btn find-btn" onclick="findStranger()">البحث عن غريب الآن 🕵️‍♂️ (لقاء عشوائي)</button>
+    <button class="btn find-btn" onclick="findStranger()">البحث عن غريب الآن 🕵️‍♂️</button>
 
     <div id="userList"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, updateDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
@@ -67,15 +69,30 @@
                 snap.forEach(d => {
                     if(d.id !== auth.currentUser.uid) {
                         const u = d.data();
+                        // نتحقق مما إذا كان المستخدم محظوراً في الـ LocalStorage (بشكل مؤقت وبسيط)
+                        if (localStorage.getItem("blocked_" + d.id)) return;
+
                         list.innerHTML += `
-                            <div class="user-card">
+                            <div class="user-card" id="card-${d.id}">
                                 <div class="status-dot ${u.online ? 'online' : 'offline'}"></div>
                                 <span style="flex:1"><b>${u.fullname}</b></span>
-                                <button class="btn" onclick="location.href='./chat.html?id=${d.id}&mode=friend'">دردشة خاصة</button>
+                                <div class="actions">
+                                    <button class="btn" onclick="location.href='./chat.html?id=${d.id}&mode=friend'">دردشة</button>
+                                    <button class="delete-btn" onclick="deleteFriend('${d.id}')">إزالة 🗑️</button>
+                                </div>
                             </div>`;
                     }
                 });
             });
+        };
+
+        window.deleteFriend = async (friendId) => {
+            if(confirm("هل أنت متأكد من إزالة هذا الصديق من قائمتك؟")) {
+                // الطريقة البسيطة: إخفاؤه من جهازك فقط
+                localStorage.setItem("blocked_" + friendId, "true");
+                document.getElementById("card-" + friendId).style.display = "none";
+                alert("تمت إزالة المستخدم من قائمتك.");
+            }
         };
 
         window.findStranger = async () => {
@@ -86,7 +103,6 @@
 
             if(strangers.length > 0) {
                 const randomId = strangers[Math.floor(Math.random() * strangers.length)];
-                // التوجيه فوراً لصفحة الفيديو لضمان لقاء "الغريب"
                 const sortedIds = [auth.currentUser.uid, randomId].sort().join("-");
                 window.location.href = `./meeting.html?room=STR-${sortedIds}&mode=stranger`;
             } else {
