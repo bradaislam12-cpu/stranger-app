@@ -5,40 +5,50 @@
     <title>مكالمة فيديو | SM</title>
     <script src="https://meet.jit.si/external_api.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
-        #video-container { width: 100%; height: 100vh; }
-        .exit-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+        #video-container { width: 100%; height: 100%; }
+        .overlay-bar { position: fixed; top: 0; width: 100%; padding: 10px; z-index: 1000; background: rgba(0,0,0,0.6); color: white; text-align: center; font-size: 14px; }
+        .exit-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #ff4757; color: white; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-    <button class="exit-btn" onclick="location.href='dashboard.html'">إنهاء المكالمة ❌</button>
+    <div class="overlay-bar" id="status">جاري الاتصال المباشر...</div>
+    <button class="exit-btn" onclick="location.href='./dashboard.html'">إنهاء المكالمة ❌</button>
     <div id="video-container"></div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        const roomID = params.get('room') || "PublicRoom";
+        const roomID = params.get('room') || "GlobalRoom";
+        const mode = params.get('mode') || "friend";
         
+        document.getElementById("status").innerText = mode === 'stranger' ? "🕵️ محادثة غريب آمنة" : "🔒 مكالمة صديق";
+
         const domain = "meet.jit.si";
         const options = {
             roomName: "StrangerMeeting-" + roomID,
             width: "100%",
             height: "100%",
             parentNode: document.querySelector('#video-container'),
-            configOverwrite: {
-                prejoinPageEnabled: false,
-                disableDeepLinking: true,
-                startWithAudioMuted: false,
-                startWithVideoMuted: false
+            // الإعدادات أدناه هي المسؤولة عن الدخول المباشر تلقائياً
+            configOverwrite: { 
+                prejoinPageEnabled: false,    // تعطيل شاشة "انضم للملتقى" (حل المشكلة الأساسي)
+                disableDeepLinking: true, 
+                startWithAudioMuted: false,   // تشغيل الصوت فوراً
+                startWithVideoMuted: false    // تشغيل الكاميرا فوراً
             },
             interfaceConfigOverwrite: {
-                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview', 'chat']
+                // إخفاء الأزرار غير الضرورية لتبسيط الواجهة
+                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview', 'chat'],
+                SETTINGS_SECTIONS: ['devices', 'language', 'profile'],
+                VIDEO_LAYOUT_FIT: 'both'
             }
         };
 
         const api = new JitsiMeetExternalAPI(domain, options);
+
+        // التأكد من أن المستخدم يرى الكاميرا فور انضمامه
         api.addEventListener('videoConferenceJoined', () => {
-            const iframe = api.getIFrame();
-            iframe.setAttribute("allow", "camera; microphone; fullscreen; display-capture; autoplay");
+            document.getElementById("status").style.display = 'none';
         });
     </script>
 </body>
