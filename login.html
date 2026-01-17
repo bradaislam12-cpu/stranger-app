@@ -1,111 +1,77 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="mainHtml">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول 🔑 | Stranger Meeting</title>
-    <style>
-        :root { --bg: #f0f2f5; --card: #fff; --text: #333; --input-bg: #fff; --accent: #4CAF50; }
-        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #eee; --input-bg: #2a2a2a; --accent: #00a884; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; transition: 0.3s; }
-        .card { background: var(--card); padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 340px; text-align: center; }
-        h2 { margin-bottom: 25px; color: var(--accent); }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; background: var(--input-bg); color: var(--text); box-sizing: border-box; outline: none; }
-        .btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .google-btn { background: white; color: #555; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; }
-        .links { margin-top: 20px; font-size: 14px; }
-        .links a { color: var(--accent); text-decoration: none; font-weight: bold; }
-        .settings-btns { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; }
-    </style>
+    <title>تسجيل الدخول | Stranger Meeting</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light-mode">
 
-<div class="settings-btns">
-    <button class="btn" id="themeBtn" onclick="toggleTheme()" style="padding: 5px 10px;">🌙</button>
-    <button class="btn" id="langBtn" onclick="toggleLang()" style="padding: 5px 10px;">English 🌐</button>
-</div>
+    <div class="auth-box">
+        <h2 id="loginTitle">تسجيل الدخول</h2>
+        <p style="font-size: 0.9rem; opacity: 0.8;">مرحباً بعودتك! ادخل بياناتك للمتابعة</p>
 
-<div class="card">
-    <h2 id="loginTitle">دخول الغرباء 🔑</h2>
-    <input type="email" id="email" placeholder="البريد الإلكتروني 📧">
-    <input type="password" id="pass" placeholder="كلمة المرور 🔒">
-    <button class="btn" id="loginBtn" onclick="login()">دخول ✅</button>
-    
-    <button class="btn google-btn" onclick="loginWithGoogle()">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18">
-        <span id="googleText">متابعة باستخدام جوجل</span>
-    </button>
+        <div style="text-align: right; width: 100%; margin-top: 15px;">
+            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+            <input type="password" id="pass" placeholder="كلمة المرور" required>
+        </div>
 
-    <div class="links">
-        <span id="noAcc">ليس لديك حساب؟</span> <a href="./register.html" id="regLink">سجل هنا ✨</a>
+        <button id="loginBtn" style="width: 100%; margin-top: 10px;">دخول</button>
+        
+        <p style="margin-top: 20px;">
+            ليس لديك حساب؟ <a href="register.html" style="color: var(--p); font-weight: bold;">سجل هنا</a>
+        </p>
+
+        <div class="settings-bar" style="margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
+            <button onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
+            <button onclick="location.href='index.html'" style="background:none; color:var(--txt); font-size: 0.8rem;">الرئيسية</button>
+        </div>
     </div>
-</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script src="ui-logic.js"></script>
 
-    const firebaseConfig = { 
-        apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
-        authDomain: "strangermeeting-91226.firebaseapp.com", 
-        projectId: "strangermeeting-91226", 
-        storageBucket: "strangermeeting-91226.firebasestorage.app", 
-        messagingSenderId: "575547116212", 
-        appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
-    };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
+            authDomain: "strangermeeting-91226.firebaseapp.com", 
+            projectId: "strangermeeting-91226", 
+            storageBucket: "strangermeeting-91226.firebasestorage.app", 
+            messagingSenderId: "575547116212", 
+            appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
+        };
 
-    window.login = async () => {
-        const e = document.getElementById("email").value;
-        const p = document.getElementById("pass").value;
-        try {
-            await signInWithEmailAndPassword(auth, e, p);
-            window.location.href = "./dashboard.html";
-        } catch (err) { alert("بيانات الدخول غير صحيحة"); }
-    };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-    window.loginWithGoogle = async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-            const res = await signInWithPopup(auth, provider);
-            const user = res.user;
-            const docRef = doc(db, "users", user.uid);
-            const snap = await getDoc(docRef);
-            if (!snap.exists()) {
-                await setDoc(docRef, { fullname: user.displayName, email: user.email, points: 50, online: true });
+        const loginBtn = document.getElementById("loginBtn");
+        const emailField = document.getElementById("email");
+        const passField = document.getElementById("pass");
+
+        loginBtn.onclick = async () => {
+            const email = emailField.value;
+            const pass = passField.value;
+
+            if(!email || !pass) {
+                alert("يرجى إدخال البريد وكلمة المرور");
+                return;
             }
-            window.location.href = "./dashboard.html";
-        } catch (err) { alert("فشل الدخول بجوجل"); }
-    };
 
-    // التبديل بين اللغات والسمات
-    window.toggleTheme = () => {
-        let theme = localStorage.getItem("theme") === 'dark' ? 'light' : 'dark';
-        localStorage.setItem("theme", theme);
-        location.reload();
-    };
+            loginBtn.innerText = "جاري التحقق...";
+            loginBtn.disabled = true;
 
-    window.toggleLang = () => {
-        let lang = localStorage.getItem("lang") === 'en' ? 'ar' : 'en';
-        localStorage.setItem("lang", lang);
-        location.reload();
-    };
-
-    function applySettings() {
-        const theme = localStorage.getItem("theme") || "light";
-        const lang = localStorage.getItem("lang") || "ar";
-        document.documentElement.setAttribute("data-theme", theme);
-        if(lang === 'en') {
-            document.getElementById("mainHtml").dir = 'ltr';
-            document.getElementById("loginTitle").innerText = "Stranger Login 🔑";
-            document.getElementById("loginBtn").innerText = "Login ✅";
-        }
-    }
-    applySettings();
-</script>
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                location.href = "dashboard.html";
+            } catch (error) {
+                loginBtn.innerText = "دخول";
+                loginBtn.disabled = false;
+                alert("فشل الدخول: تأكد من صحة البيانات");
+            }
+        };
+    </script>
 </body>
 </html>
