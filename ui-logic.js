@@ -1,15 +1,19 @@
 const i18n = {
     ar: {
         title: "Stranger Meeting",
-        subTitle: "تواصل مع الآخرين بخصوصية وأمان تام",
+        welcome: "مرحباً بك",
         login: "تسجيل الدخول",
         register: "إنشاء حساب",
-        fullname: "الاسم الكامل",
+        logout: "خروج",
+        fullname: "الاسم",
         email: "البريد الإلكتروني",
         pass: "كلمة المرور",
         country: "الدولة",
-        interests: "الاهتمامات",
+        interests: "الاهتمام",
+        age: "العمر",
         select: "اختر...",
+        profile: "الملف الشخصي",
+        chat: "دردشة",
         // الاهتمامات
         music: "موسيقى", sports: "رياضة", tech: "تكنولوجيا", gaming: "ألعاب", coding: "برمجة",
         // الدول
@@ -17,15 +21,19 @@ const i18n = {
     },
     en: {
         title: "Stranger Meeting",
-        subTitle: "Connect with others with total privacy",
+        welcome: "Welcome",
         login: "Login",
         register: "Register",
-        fullname: "Full Name",
-        email: "Email Address",
+        logout: "Logout",
+        fullname: "Name",
+        email: "Email",
         pass: "Password",
         country: "Country",
-        interests: "Interests",
+        interests: "Interest",
+        age: "Age",
         select: "Select...",
+        profile: "Profile",
+        chat: "Chat",
         // Interests
         music: "Music", sports: "Sports", tech: "Technology", gaming: "Gaming", coding: "Coding",
         // Countries
@@ -59,6 +67,12 @@ function applySettings() {
             else el.innerText = i18n[lang][key];
         }
     });
+
+    // تحديث زر اللغة ليصبح AR أو EN فقط
+    const langBtn = document.getElementById('langBtn');
+    if (langBtn) {
+        langBtn.innerText = (lang === 'ar') ? 'EN' : 'AR';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', applySettings);
