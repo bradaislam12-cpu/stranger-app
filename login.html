@@ -3,30 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | Stranger Meeting</title>
+    <title class="tr" data-key="login">تسجيل الدخول | SM</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="light-mode">
 
     <div class="auth-box">
-        <h2 id="loginTitle">تسجيل الدخول</h2>
-        <p style="font-size: 0.9rem; opacity: 0.8;">مرحباً بعودتك! ادخل بياناتك للمتابعة</p>
-
-        <div style="text-align: right; width: 100%; margin-top: 15px;">
-            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-            <input type="password" id="pass" placeholder="كلمة المرور" required>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 class="tr" data-key="login" style="margin: 0;">تسجيل الدخول</h2>
+            <button onclick="toggleLang()" id="langBtn" style="width: 35px; height: 35px; border-radius: 50%; padding: 0; font-size: 0.7rem; background: var(--p); color: white; border: none; cursor: pointer;">EN</button>
         </div>
 
-        <button id="loginBtn" style="width: 100%; margin-top: 10px;">دخول</button>
+        <p class="tr" data-key="subTitle" style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 20px;">مرحباً بعودتك! ادخل بياناتك للمتابعة</p>
+
+        <div style="text-align: right; width: 100%;">
+            <input type="email" id="email" class="tr" data-key="email" placeholder="البريد الإلكتروني" required>
+            <input type="password" id="pass" class="tr" data-key="pass" placeholder="كلمة المرور" required>
+        </div>
+
+        <button id="loginBtn" class="tr" data-key="login" style="width: 100%; margin-top: 15px; padding: 12px;">دخول</button>
         
-        <p style="margin-top: 20px;">
-            ليس لديك حساب؟ <a href="register.html" style="color: var(--p); font-weight: bold;">سجل هنا</a>
+        <p style="margin-top: 25px; font-size: 0.9rem;">
+            <span class="tr" data-key="haveAccount">ليس لديك حساب؟</span> 
+            <a href="register.html" class="tr" data-key="register" style="color: var(--p); font-weight: bold;">سجل هنا</a>
         </p>
 
-        <div class="settings-bar" style="margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
-            <button onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
-            <button onclick="location.href='index.html'" style="background:none; color:var(--txt); font-size: 0.8rem;">الرئيسية</button>
-        </div>
+        <button onclick="toggleTheme()" class="icon-btn" style="margin-top: 10px; display: block; margin-left: auto; margin-right: auto;">🌓</button>
     </div>
 
     <script src="ui-logic.js"></script>
@@ -47,29 +49,27 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        const loginBtn = document.getElementById("loginBtn");
-        const emailField = document.getElementById("email");
-        const passField = document.getElementById("pass");
+        const loginBtn = document.getElementById(\"loginBtn\");
 
         loginBtn.onclick = async () => {
-            const email = emailField.value;
-            const pass = passField.value;
+            const email = document.getElementById(\"email\").value.trim();
+            const pass = document.getElementById(\"pass\").value;
 
             if(!email || !pass) {
-                alert("يرجى إدخال البريد وكلمة المرور");
+                alert(\"يرجى ملء كافة الخانات\");
                 return;
             }
 
-            loginBtn.innerText = "جاري التحقق...";
+            loginBtn.innerText = \"...\";
             loginBtn.disabled = true;
 
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
-                location.href = "dashboard.html";
-            } catch (error) {
-                loginBtn.innerText = "دخول";
+                location.href = \"dashboard.html\";
+            } catch (e) {
+                alert(\"خطأ في بيانات الدخول: \" + e.message);
+                loginBtn.innerText = \"دخول\";
                 loginBtn.disabled = false;
-                alert("فشل الدخول: تأكد من صحة البيانات");
             }
         };
     </script>
