@@ -3,42 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إنشاء حساب | SM</title>
+    <title class="tr" data-key="register">إنشاء حساب | SM</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="light-mode">
 
     <div class="auth-box">
-        <h2 class="tr" data-key="register">إنشاء حساب</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 class="tr" data-key="register" style="margin: 0;">إنشاء حساب</h2>
+            <button onclick="toggleLang()" id="langBtn" style="width: 35px; height: 35px; border-radius: 50%; padding: 0; font-size: 0.7rem; background: var(--p); color: white;">EN</button>
+        </div>
         
-        <input type="text" id="fullname" class="tr" data-key="fullname" placeholder="الاسم">
-        <input type="email" id="email" class="tr" data-key="email" placeholder="البريد">
+        <input type="text" id="fullname" class="tr" data-key="fullname" placeholder="الاسم الكامل">
+        <input type="email" id="email" class="tr" data-key="email" placeholder="البريد الإلكتروني">
         <input type="password" id="pass" class="tr" data-key="pass" placeholder="كلمة المرور">
 
-        <label class="tr" data-key="country">الدولة</label>
-        <select id="country">
-            <option value="" class="tr" data-key="select">اختر...</option>
-            <option value="egypt" class="tr" data-key="egypt">مصر</option>
-            <option value="saudi" class="tr" data-key="saudi">السعودية</option>
-            <option value="algeria" class="tr" data-key="algeria">الجزائر</option>
-            <option value="Iraq" class="tr" data-key="Iraq">العراق</option>
-        </select>
-
-        <label class="tr" data-key="interests">الاهتمام الرئيسي</label>
-        <select id="interest">
-            <option value="" class="tr" data-key="select">اختر...</option>
-            <option value="tech" class="tr" data-key="tech">تكنولوجيا</option>
-            <option value="gaming" class="tr" data-key="gaming">ألعاب</option>
-            <option value="sports" class="tr" data-key="sports">رياضة</option>
-            <option value="coding" class="tr" data-key="coding">برمجة</option>
-        </select>
-
-        <button id="regBtn" class="tr" data-key="register" style="width: 100%; margin-top: 20px;">إنشاء الحساب</button>
-        
-        <div style="margin-top: 15px;">
-            <button onclick="toggleLang()">🌐 Change Language</button>
-            <button onclick="toggleTheme()">🌓</button>
+        <div style="text-align: right; margin-top: 10px;">
+            <label class="tr" data-key="age" style="font-size: 0.8rem; font-weight: bold;">العمر</label>
+            <input type="number" id="age" placeholder="20" min="12" max="99">
         </div>
+
+        <div style="text-align: right; margin-top: 10px;">
+            <label class="tr" data-key="country" style="font-size: 0.8rem; font-weight: bold;">الدولة</label>
+            <select id="country" style="width: 100%; padding: 10px; border-radius: 10px; background: var(--card); color: var(--txt); border: 1px solid #ddd;">
+                <option value="" class="tr" data-key="select">اختر...</option>
+                <option value="egypt" class="tr" data-key="egypt">مصر</option>
+                <option value="saudi" class="tr" data-key="saudi">السعودية</option>
+                <option value="algeria" class="tr" data-key="algeria">الجزائر</option>
+                <option value="Iraq" class="tr" data-key="Iraq">العراق</option>
+                <option value="palestine" class="tr" data-key="palestine">فلسطين</option>
+                <option value="jordan" class="tr" data-key="jordan">الأردن</option>
+                <option value="morocco" class="tr" data-key="morocco">المغرب</option>
+            </select>
+        </div>
+
+        <div style="text-align: right; margin-top: 10px;">
+            <label class="tr" data-key="interests" style="font-size: 0.8rem; font-weight: bold;">الاهتمام الرئيسي</label>
+            <select id="interest" style="width: 100%; padding: 10px; border-radius: 10px; background: var(--card); color: var(--txt); border: 1px solid #ddd;">
+                <option value="" class="tr" data-key="select">اختر...</option>
+                <option value="tech" class="tr" data-key="tech">تكنولوجيا</option>
+                <option value="gaming" class="tr" data-key="gaming">ألعاب</option>
+                <option value="sports" class="tr" data-key="sports">رياضة</option>
+                <option value="coding" class="tr" data-key="coding">برمجة</option>
+                <option value="music" class="tr" data-key="music">موسيقى</option>
+            </select>
+        </div>
+
+        <button id="regBtn" class="tr" data-key="register" style="width: 100%; margin-top: 25px;">إنشاء الحساب</button>
+        
+        <p style="margin-top: 15px; font-size: 0.9rem;">
+            <span class="tr" data-key="haveAccount">لديك حساب؟</span> 
+            <a href="login.html" class="tr" data-key="login" style="color: var(--p); font-weight: bold;">تسجيل الدخول</a>
+        </p>
+
+        <button onclick="toggleTheme()" class="icon-btn" style="margin-top: 10px;">🌓</button>
     </div>
 
     <script src="ui-logic.js"></script>
@@ -62,25 +80,43 @@
         const db = getFirestore(app);
 
         document.getElementById("regBtn").onclick = async () => {
-            const name = document.getElementById("fullname").value;
-            const email = document.getElementById("email").value;
+            const name = document.getElementById("fullname").value.trim();
+            const email = document.getElementById("email").value.trim();
             const pass = document.getElementById("pass").value;
+            const age = document.getElementById("age").value;
             const country = document.getElementById("country").value;
             const interest = document.getElementById("interest").value;
 
-            if(!name || !email || !pass || !country || !interest) return alert("أكمل البيانات");
+            if(!name || !email || !pass || !age || !country || !interest) {
+                alert("يرجى ملء جميع الخانات بما في ذلك العمر والدولة");
+                return;
+            }
+
+            const btn = document.getElementById("regBtn");
+            btn.innerText = "...";
+            btn.disabled = true;
 
             try {
+                // إنشاء الحساب
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
+                
+                // حفظ البيانات في Firestore (بما في ذلك العمر الجديد)
                 await setDoc(doc(db, "users", res.user.uid), {
                     fullname: name,
                     email: email,
+                    age: age,
                     country: country,
                     interest: interest,
-                    uid: res.user.uid
+                    uid: res.user.uid,
+                    createdAt: new Date()
                 });
+
                 location.href = "dashboard.html";
-            } catch (e) { alert(e.message); }
+            } catch (e) {
+                alert("خطأ: " + e.message);
+                btn.innerText = "إنشاء الحساب";
+                btn.disabled = false;
+            }
         };
     </script>
 </body>
