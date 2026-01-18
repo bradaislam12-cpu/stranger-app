@@ -6,64 +6,117 @@
     <title class="tr" data-key="register">إنشاء حساب | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .auth-box { max-width: 450px; margin: 20px auto; padding: 25px; background: var(--card); border-radius: 15px; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; }
-        #regBtn { width: 100%; padding: 12px; background: var(--p); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .auth-box { max-width: 480px; margin: 20px auto; padding: 30px; background: var(--card); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .auth-box h2 { text-align: center; margin-bottom: 25px; color: var(--p); }
+        .input-group { margin-bottom: 15px; text-align: right; }
+        .input-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; font-weight: bold; opacity: 0.8; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--txt); outline: none; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--p); }
+        #regBtn { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.3s; }
+        #regBtn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .footer-link { text-align: center; margin-top: 20px; font-size: 0.9rem; }
     </style>
 </head>
 <body class="light-mode">
     <div class="auth-box">
         <h2 class="tr" data-key="register">إنشاء حساب جديد</h2>
         
-        <input type="text" id="fullname" placeholder="الاسم الكامل">
-        <input type="email" id="email" placeholder="البريد الإلكتروني">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        
-        <label style="font-size: 0.8rem; opacity: 0.7;">جنسك:</label>
-        <select id="gender">
-            <option value="male">ذكر</option>
-            <option value="female">أنثى</option>
-        </select>
+        <div class="input-group">
+            <label>الاسم الكامل</label>
+            <input type="text" id="fullname" placeholder="مثال: أحمد محمد">
+        </div>
 
-        <label style="font-size: 0.8rem; opacity: 0.7;">أهتم بـ:</label>
-        <select id="interest">
-            <option value="travel">السفر</option>
-            <option value="coding">البرمجة</option>
-            <option value="music">الموسيقى</option>
-        </select>
+        <div class="input-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="email" placeholder="example@mail.com">
+        </div>
 
-        <button id="regBtn">إنشاء الحساب</button>
-        <p style="text-align: center; margin-top: 15px;"><a href="login.html">لديك حساب؟ سجل دخولك</a></p>
+        <div class="input-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="pass" placeholder="6 أحرف على الأقل">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;">
+                <label>جنسك</label>
+                <select id="gender">
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label>تريد مقابلة</label>
+                <select id="seeking">
+                    <option value="both">الجميع</option>
+                    <option value="male">رجال</option>
+                    <option value="female">نساء</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>البلد</label>
+            <input type="text" id="country" placeholder="مثال: مصر">
+        </div>
+
+        <div class="input-group">
+            <label>الاهتمامات (اختياري)</label>
+            <input type="text" id="interest" placeholder="مثال: رياضة، موسيقى">
+        </div>
+
+        <button id="regBtn" class="tr" data-key="register">إنشاء الحساب 🚀</button>
+
+        <p class="footer-link">
+            <span class="tr" data-key="haveAccount">لديك حساب بالفعل؟</span>
+            <a href="login.html" style="color: var(--p); font-weight: bold; text-decoration: none;">سجل دخولك</a>
+        </p>
     </div>
 
     <script type="module">
         import { auth, db } from './ui-logic.js';
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         document.getElementById("regBtn").onclick = async () => {
-            const name = document.getElementById("fullname").value;
-            const email = document.getElementById("email").value;
+            const btn = document.getElementById("regBtn");
+            const name = document.getElementById("fullname").value.trim();
+            const email = document.getElementById("email").value.trim();
             const pass = document.getElementById("pass").value;
             const gender = document.getElementById("gender").value;
-            const interest = document.getElementById("interest").value;
+            const seeking = document.getElementById("seeking").value;
+            const country = document.getElementById("country").value.trim();
+            const interest = document.getElementById("interest").value.trim();
 
-            if(!name || !email || !pass) return alert("الرجاء ملء كافة البيانات");
+            if(!name || !email || !pass || !country) {
+                return alert("الرجاء إكمال البيانات الأساسية (الاسم، البريد، كلمة السر، والبلد)");
+            }
 
             try {
+                btn.disabled = true;
+                btn.innerText = "جاري إنشاء الحساب...";
+
+                // 1. إنشاء الحساب في Firebase Auth
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
+                
+                // 2. تخزين البيانات الإضافية في Firestore
                 await setDoc(doc(db, "users", res.user.uid), {
                     uid: res.user.uid,
                     fullname: name,
                     email: email,
                     gender: gender,
-                    interest: interest,
-                    seeking: "both",
-                    isOnline: true
+                    seeking: seeking,
+                    country: country,
+                    interest: interest || "General",
+                    isOnline: true,
+                    lastSeen: serverTimestamp(),
+                    createdAt: serverTimestamp()
                 });
+
                 location.href = "dashboard.html";
             } catch (e) {
-                alert("خطأ: " + e.message);
+                btn.disabled = false;
+                btn.innerText = "إنشاء الحساب 🚀";
+                alert("خطأ أثناء التسجيل: " + e.message);
             }
         };
     </script>
