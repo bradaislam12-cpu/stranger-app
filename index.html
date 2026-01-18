@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <style>
-        /* تنسيقات خاصة بصفحة الترحيب لزيادة الجاذبية */
         .welcome-container {
             display: flex;
             flex-direction: column;
@@ -31,7 +30,6 @@
         .hero-text { margin-bottom: 35px; opacity: 0.9; font-size: 1.2rem; font-weight: 300; }
         .btns-group { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
         
-        /* تصميم زر جوجل الاحترافي */
         .google-btn {
             background: white;
             color: #444;
@@ -47,7 +45,6 @@
             transition: 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .google-btn:hover { background: #f8f8f8; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
         .main-btn {
             background: var(--p);
@@ -59,7 +56,6 @@
             box-shadow: 0 4px 15px rgba(7, 94, 84, 0.3);
             transition: 0.3s;
         }
-        .main-btn:hover { transform: translateY(-2px); opacity: 0.9; }
     </style>
 </head>
 <body class="light-mode">
@@ -86,61 +82,37 @@
         </div>
 
         <div class="settings-bar" style="margin-top: 50px; display: flex; gap: 25px;">
-            <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.8rem; cursor:pointer;" title="تغيير الوضع">🌓</button>
-            <button onclick="toggleLang()" id="langBtn" style="background:var(--p); color:white; border:none; border-radius:20px; padding:8px 20px; cursor:pointer; font-weight:bold;">EN</button>
+            <button id="themeBtn" style="background:none; border:none; font-size:1.8rem; cursor:pointer;" title="تغيير الوضع">🌓</button>
+            <button id="langBtn" style="background:var(--p); color:white; border:none; border-radius:20px; padding:8px 20px; cursor:pointer; font-weight:bold;">EN</button>
         </div>
     </div>
 
     <script type="module">
-        // استيراد الدوال الأساسية من ملف المنطق الموحد
-        import { auth, loginWithGoogle } from './ui-logic.js';
+        // استيراد كل شيء من الملف المركزي لضمان التزامن
+        import { auth, loginWithGoogle, toggleTheme, toggleLang } from './ui-logic.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // تفعيل زر تسجيل الدخول عبر جوجل
+        // ربط الأزرار بالدوال المركزية
+        document.getElementById('themeBtn').onclick = toggleTheme;
+        document.getElementById('langBtn').onclick = toggleLang;
+        
         const gBtn = document.getElementById('googleLoginBtn');
         if(gBtn) {
             gBtn.onclick = async () => {
                 try {
                     await loginWithGoogle();
                 } catch (error) {
-                    console.error("Google Login Error:", error);
-                    alert("عذراً، تعذر الاتصال بحساب جوجل حالياً.");
+                    alert("عذراً، فشل تسجيل الدخول عبر جوجل.");
                 }
             };
         }
 
-        // فحص ذكي لحالة المستخدم
+        // فحص حالة المستخدم
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // إذا كان المستخدم مسجلاً بالفعل، يتم توجيهه للداخل تلقائياً
                 window.location.href = "dashboard.html";
             }
         });
-
-        // وظائف الواجهة (اللغة والوضع الليلي)
-        window.toggleTheme = () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        };
-
-        window.toggleLang = () => {
-            const html = document.documentElement;
-            if (html.lang === 'ar') {
-                html.lang = 'en';
-                html.dir = 'ltr';
-                document.getElementById('langBtn').innerText = 'AR';
-            } else {
-                html.lang = 'ar';
-                html.dir = 'rtl';
-                document.getElementById('langBtn').innerText = 'EN';
-            }
-        };
-
-        // استعادة الوضع المفضل للمستخدم
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
     </script>
 </body>
 </html>
