@@ -3,131 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title class="tr" data-key="title">Stranger Meeting</title>
+    <title class="tr" data-key="title">لوحة التحكم</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .user-list-container { padding: 15px; max-width: 600px; margin: 0 auto; }
-        /* ستايل زر البحث العشوائي */
-        .random-box { margin-bottom: 20px; }
-        #randomBtn { 
-            width: 100%; 
-            background: linear-gradient(45deg, #075e54, #128c7e); 
-            color: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            font-size: 1.1rem; 
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(7, 94, 84, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        .discovery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .filter-card {
+            background: var(--card); padding: 20px; border-radius: 15px; text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s;
         }
-        #randomBtn:active { transform: scale(0.98); }
-
-        .user-card { 
-            background: var(--card); border-radius: 15px; padding: 15px; 
-            margin-bottom: 15px; display: flex; justify-content: space-between; 
-            align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .avatar { width: 55px; height: 55px; background: var(--p); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .tag { background: var(--bg); padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; margin-top: 5px; border: 1px solid rgba(0,0,0,0.1); }
-        .chat-btn { background: var(--p); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+        .filter-card:active { transform: scale(0.95); }
+        .filter-card i { font-size: 2rem; display: block; margin-bottom: 10px; }
+        .opposite { background: linear-gradient(135deg, #075e54, #128c7e); color: white; grid-column: span 2; }
     </style>
 </head>
 <body class="light-mode">
-
     <div class="header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="avatar" id="myAvatar" style="width: 35px; height: 35px; font-size: 0.8rem; cursor: pointer;" onclick="location.href='profile.html'">?</div>
-            <strong class="tr" data-key="title">Stranger Meeting</strong>
+        <h2 class="tr" data-key="title">Stranger Meeting</h2>
+        <button onclick="location.href='profile.html'" class="icon-btn">👤</button>
+    </div>
+
+    <div class="discovery-grid">
+        <div class="filter-card opposite" onclick="startDiscovery('opposite')">
+            <i>🔥</i>
+            <span class="tr" data-key="matchOpposite">مطابقة مع الجنس الآخر</span>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button onclick="toggleLang()" id="langBtn" class="icon-btn" style="font-size: 0.8rem;">EN</button>
-            <button onclick="toggleTheme()" class="icon-btn">🌓</button>
+
+        <div class="filter-card" onclick="startDiscovery('same')">
+            <i>🌈</i>
+            <span class="tr" data-key="matchSame">نفس الجنس</span>
+        </div>
+
+        <div class="filter-card" onclick="startDiscovery('both')">
+            <i>🎲</i>
+            <span>بحث عشوائي</span>
         </div>
     </div>
 
-    <div class="user-list-container">
-        <div class="random-box">
-            <button id="randomBtn">
-                <span>🎲</span> <span class="tr" data-key="randomMatch">بدء محادثة عشوائية</span>
-            </button>
-        </div>
-
-        <div id="userList">
-            <p style="text-align: center; opacity: 0.5;" class="tr" data-key="loading">جاري البحث عن متصلين...</p>
-        </div>
-    </div>
-
-    <script src="ui-logic.js"></script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
-            authDomain: "strangermeeting-91226.firebaseapp.com", 
-            projectId: "strangermeeting-91226", 
-            storageBucket: "strangermeeting-91226.firebasestorage.app", 
-            messagingSenderId: "575547116212", 
-            appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) return location.href = "login.html";
-
-            const myDoc = await getDoc(doc(db, "users", user.uid));
-            if(myDoc.exists()) document.getElementById("myAvatar").innerText = myDoc.data().fullname.charAt(0).toUpperCase();
-
-            const lang = localStorage.getItem('sm-lang') || 'ar';
-
-            onSnapshot(collection(db, "users"), (snap) => {
-                const listDiv = document.getElementById("userList");
-                listDiv.innerHTML = "";
-
-                snap.forEach((userDoc) => {
-                    if (userDoc.id !== user.uid) {
-                        const userData = userDoc.data();
-                        const countryName = i18n[lang][userData.country] || userData.country;
-                        const interestName = i18n[lang][userData.interest] || userData.interest;
-
-                        const card = document.createElement("div");
-                        card.className = "user-card";
-                        card.innerHTML = `
-                            <div class="user-info">
-                                <div class="avatar">${userData.fullname.charAt(0).toUpperCase()}</div>
-                                <div class="user-details">
-                                    <strong>${userData.fullname}</strong>
-                                    <p><span class="tag">📍 ${countryName}</span></p>
-                                    <span style="color:var(--p); font-size:0.7rem; font-weight:bold;">#${interestName}</span>
-                                </div>
-                            </div>
-                            <button onclick="location.href='chat.html?id=${userDoc.id}'" class="chat-btn tr" data-key="chat">دردشة</button>
-                        `;
-                        listDiv.appendChild(card);
-                    }
-                });
-            });
-        });
-
-        // سكريبت البحث العشوائي
-        document.getElementById("randomBtn").onclick = () => {
-            const btns = document.querySelectorAll(".chat-btn");
-            if (btns.length > 0) {
-                const randomIdx = Math.floor(Math.random() * btns.length);
-                btns[randomIdx].click();
-            } else {
-                alert(localStorage.getItem('sm-lang') === 'en' ? "No one online!" : "لا يوجد أحد متصل الآن!");
-            }
-        };
-    </script>
+    <script type="module" src="ui-logic.js"></script>
 </body>
 </html>
