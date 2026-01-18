@@ -7,29 +7,36 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .discovery-container { max-width: 600px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-        .main-card { background: linear-gradient(135deg, var(--p), var(--p-dark)); border-radius: 20px; padding: 40px 20px; text-align: center; color: white; box-shadow: 0 10px 25px rgba(7, 94, 84, 0.2); }
-        .main-card h2 { margin-bottom: 10px; font-size: 1.8rem; }
-        .main-card p { opacity: 0.9; font-size: 0.9rem; margin-bottom: 25px; }
+        .main-card { background: linear-gradient(135deg, var(--p), var(--p-dark)); border-radius: 20px; padding: 30px 20px; text-align: center; color: white; box-shadow: 0 10px 25px rgba(7, 94, 84, 0.2); }
+        .main-card h2 { margin-bottom: 8px; font-size: 1.5rem; }
+        .main-card p { opacity: 0.9; font-size: 0.85rem; margin-bottom: 20px; }
         
-        /* أقسام جديدة للأصدقاء والطلبات */
-        .section-title { font-weight: bold; margin: 15px 0 10px; display: flex; justify-content: space-between; align-items: center; }
-        .badge { background: #ff3b30; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
-        .user-item { background: var(--card); padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn-accept { background: #25d366; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .btn-chat { background: var(--p); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 8px; border: none; background: #ddd; border-radius: 8px; cursor: pointer; }
+        /* تصميم التبويبات الحديث */
+        .tabs { display: flex; background: var(--card); padding: 5px; border-radius: 12px; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--txt); transition: 0.3s; position: relative; }
         .tab-btn.active { background: var(--p); color: white; }
+        
+        .badge { background: #ff3b30; color: white; padding: 2px 6px; border-radius: 50%; font-size: 0.65rem; position: absolute; top: 2px; right: 5px; border: 2px solid var(--card); }
+        
+        /* قوائم المستخدمين */
+        .user-item { background: var(--card); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.03); transition: 0.2s; }
+        .user-item:hover { transform: scale(1.02); }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 40px; height: 40px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--p); }
+
+        .btn-accept { background: #25d366; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+        .btn-chat { background: var(--p); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="header">
         <h2 class="tr" data-key="appName">Stranger Meeting</h2>
-        <div style="display: flex; gap: 15px;">
+        <div style="display: flex; gap: 10px;">
             <button onclick="toggleTheme()" class="icon-btn">🌓</button>
             <button id="logoutBtn" class="icon-btn">🚪</button>
         </div>
@@ -38,101 +45,114 @@
     <div class="discovery-container">
         
         <div class="main-card">
-            <h2 class="tr" data-key="startDiscovery">استكشاف أشخاص جدد</h2>
-            <p class="tr" data-key="discoveryDesc">اضغط للبدء في محادثة فيديو عشوائية حسب تفضيلاتك</p>
-            <button class="start-btn" onclick="startDiscovery()">ابدأ البحث الآن 🚀</button>
+            <h2 class="tr" data-key="startDiscovery">استكشاف جديد 🚀</h2>
+            <p class="tr" data-key="discoveryDesc">تحدث مع غرباء يشاركونك نفس الاهتمامات</p>
+            <button class="start-btn" onclick="startDiscovery()">ابدأ البحث الآن</button>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('friends')">الأصدقاء</button>
-            <button class="tab-btn" onclick="showTab('requests')">الطلبات <span id="reqBadge" class="badge" style="display:none;">0</span></button>
+            <button class="tab-btn active" id="tab-friends" onclick="showTab('friends')">الأصدقاء</button>
+            <button class="tab-btn" id="tab-requests" onclick="showTab('requests')">
+                الطلبات <span id="reqBadge" class="badge" style="display:none;">0</span>
+            </button>
         </div>
 
         <div id="friends" class="tab-content active">
-            <div class="section-title">أصدقائي المحببون</div>
-            <div id="friendsList">جاري تحميل الأصدقاء...</div>
+            <div id="friendsList" style="margin-top: 10px;">جاري التحميل...</div>
         </div>
 
         <div id="requests" class="tab-content">
-            <div class="section-title">طلبات الصداقة الواردة</div>
-            <div id="requestsList">لا يوجد طلبات حالياً</div>
+            <div id="requestsList" style="margin-top: 10px;">لا يوجد طلبات حالياً</div>
         </div>
 
     </div>
 
-    <div style="height: 70px;"></div>
-    <div style="position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; z-index: 100;">
-        <button class="icon-btn" style="color: var(--p);">🏠</button>
-        <button class="icon-btn" onclick="location.href='chat.html'">💬</button>
-        <button class="icon-btn" onclick="location.href='profile.html'">⚙️</button>
+    <div style="height: 75px;"></div>
+    <div style="position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100;">
+        <button class="icon-btn" style="color: var(--p); font-size: 1.6rem;">🏠</button>
+        <button class="icon-btn" onclick="location.href='chat.html'" style="font-size: 1.6rem;">💬</button>
+        <button class="icon-btn" onclick="location.href='profile.html'" style="font-size: 1.6rem;">⚙️</button>
     </div>
 
     <script type="module">
-        import { auth, db, startDiscovery } from './ui-logic.js';
+        import { auth, db, startDiscovery, toggleTheme } from './ui-logic.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { collection, query, where, onSnapshot, doc, getDoc, updateDoc, deleteDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { collection, query, where, onSnapshot, doc, getDoc, deleteDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         window.startDiscovery = startDiscovery;
+        window.toggleTheme = toggleTheme;
+
+        // دالة التنقل بين التبويبات
         window.showTab = (tabId) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
         };
 
         onAuthStateChanged(auth, (user) => {
             if (!user) return location.href = "login.html";
 
-            // 1. استماع لطلبات الصداقة الواردة
+            // 1. مراقبة طلبات الصداقة
             onSnapshot(query(collection(db, "friend_requests"), where("to", "==", user.uid), where("status", "==", "pending")), (snap) => {
                 const list = document.getElementById("requestsList");
                 const badge = document.getElementById("reqBadge");
-                list.innerHTML = snap.empty ? "لا توجد طلبات جديدة" : "";
+                list.innerHTML = snap.empty ? "<p style='text-align:center; opacity:0.5;'>لا توجد طلبات واردة</p>" : "";
                 badge.style.display = snap.empty ? "none" : "inline";
                 badge.innerText = snap.size;
 
                 snap.forEach(async (d) => {
                     const req = d.data();
                     const sender = await getDoc(doc(db, "users", req.from));
+                    const sData = sender.data();
                     const div = document.createElement("div");
                     div.className = "user-item";
                     div.innerHTML = `
-                        <span>${sender.data()?.fullname || 'مستخدم'}</span>
+                        <div class="user-info">
+                            <div class="user-avatar">${sData?.fullname.charAt(0)}</div>
+                            <span>${sData?.fullname}</span>
+                        </div>
                         <button class="btn-accept" onclick="acceptFriend('${d.id}', '${req.from}', '${user.uid}')">قبول</button>
                     `;
                     list.appendChild(div);
                 });
             });
 
-            // 2. استماع لقائمة الأصدقاء (المقبولين)
+            // 2. مراقبة قائمة الأصدقاء
             onSnapshot(query(collection(db, "friends"), where("users", "array-contains", user.uid)), (snap) => {
                 const list = document.getElementById("friendsList");
-                list.innerHTML = snap.empty ? "لم تقم بإضافة أصدقاء بعد" : "";
+                list.innerHTML = snap.empty ? "<p style='text-align:center; opacity:0.5;'>لم تضف أصدقاء بعد</p>" : "";
                 
                 snap.forEach(async (d) => {
-                    const friendData = d.data();
-                    const friendId = friendData.users.find(id => id !== user.uid);
-                    const friendDoc = await getDoc(doc(db, "users", friendId));
+                    const fData = d.data();
+                    const fId = fData.users.find(id => id !== user.uid);
+                    const fDoc = await getDoc(doc(db, "users", fId));
+                    const uData = fDoc.data();
                     
                     const div = document.createElement("div");
                     div.className = "user-item";
                     div.innerHTML = `
-                        <span>${friendDoc.data()?.fullname || 'صديق'}</span>
-                        <button class="btn-chat" onclick="location.href='chat.html?id=${friendId}'">دردشة</button>
+                        <div class="user-info">
+                            <div class="user-avatar" style="background:var(--p); color:white;">${uData?.fullname.charAt(0)}</div>
+                            <span>${uData?.fullname}</span>
+                        </div>
+                        <button class="btn-chat" onclick="location.href='chat.html?id=${fId}'">دردشة</button>
                     `;
                     list.appendChild(div);
                 });
             });
         });
 
-        // وظيفة قبول الصداقة
+        // تنفيذ قبول الصداقة
         window.acceptFriend = async (reqId, fromId, toId) => {
-            await deleteDoc(doc(db, "friend_requests", reqId));
-            await setDoc(doc(db, "friends", `${fromId}_${toId}`), {
-                users: [fromId, toId],
-                timestamp: serverTimestamp()
-            });
-            alert("تم قبول الصداقة! يمكنك الآن مراسلته.");
+            try {
+                await deleteDoc(doc(db, "friend_requests", reqId));
+                await setDoc(doc(db, "friends", `${fromId}_${toId}`), {
+                    users: [fromId, toId],
+                    timestamp: serverTimestamp()
+                });
+                alert("🎉 مبروك! أصبح لديك صديق جديد.");
+            } catch (e) { alert("حدث خطأ في القبول"); }
         };
 
         document.getElementById("logoutBtn").onclick = () => signOut(auth).then(() => location.href="login.html");
