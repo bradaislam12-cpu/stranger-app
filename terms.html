@@ -3,45 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شروط الخدمة | SM</title>
+    <title>شروط الخدمة والخصوصية | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .terms-container {
-            max-width: 600px;
+            max-width: 650px;
             margin: 40px auto;
-            padding: 20px;
+            padding: 30px;
             background: var(--card);
-            border-radius: 15px;
+            border-radius: 20px;
             line-height: 1.8;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        h2 { color: var(--p); border-bottom: 2px solid var(--p); padding-bottom: 10px; }
-        ul { padding-right: 20px; }
-        li { margin-bottom: 15px; }
-        .back-btn { margin-top: 20px; width: 100%; }
+        h2 { 
+            color: var(--p); 
+            border-bottom: 2px solid var(--p); 
+            padding-bottom: 10px; 
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        h3 { color: var(--p-dark); font-size: 1.1rem; margin-top: 20px; }
+        ul { padding-right: 20px; list-style-type: none; }
+        li { margin-bottom: 15px; position: relative; padding-right: 25px; }
+        li::before { content: "✅"; position: absolute; right: 0; top: 0; }
+        
+        .disclaimer {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 25px;
+            border: 1px solid #ffeeba;
+        }
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--p);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: 0.3s;
+        }
+        .back-btn:hover { opacity: 0.9; }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="container">
         <div class="terms-container">
-            <h2>شروط الاستخدام والخصوصية</h2>
-            <p>أهلاً بك في <strong>Stranger Meeting</strong>. باستخدامك لهذا الموقع، أنت توافق على الالتزام بالقواعد التالية:</p>
+            <h2>شروط الاستخدام والخصوصية 🛡️</h2>
+            <p>أهلاً بك في <strong>Stranger Meeting</strong>. لضمان تجربة آمنة وممتعة لجميع المستخدمين، يرجى قراءة والموافقة على البنود التالية:</p>
             
+            <h3>1. الخصوصية والأمان</h3>
             <ul>
-                <li><strong>الخصوصية:</strong> نحن لا نقوم بتسجيل أو تخزين محادثات الفيديو الخاصة بك. الاتصال يتم بشكل مباشر وآمن.</li>
-                <li><strong>السلوك العام:</strong> يمنع استخدام المنصة في أي أعمال تسيء للآخرين أو تخالف القوانين المحلية والدولية.</li>
-                <li><strong>المسؤولية:</strong> أنت المسؤول الوحيد عن الحفاظ على سرية بيانات حسابك وكلمة مرورك.</li>
-                <li><strong>البيانات:</strong> نقوم بتخزين اسمك وبريدك الإلكتروني فقط لغرض تمكين الآخرين من العثور عليك والدردشة معك.</li>
+                <li><strong>تشفير المكالمات:</strong> جميع مكالمات الفيديو تتم عبر تقنية P2P المشفرة، ونحن لا نقوم بتسجيل أو تخزين أي محتوى مرئي أو صوتي.</li>
+                <li><strong>بيانات الحساب:</strong> نقوم بتخزين اسمك وجنسك واهتماماتك فقط لتحسين تجربة الربط بين المستخدمين.</li>
             </ul>
 
-            <div style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px; font-size: 0.9rem;">
-                نحن نسعى دائماً لتوفير بيئة آمنة وهادئة للتواصل بين الأصدقاء والغرباء.
+            <h3>2. قواعد السلوك</h3>
+            <ul>
+                <li>يمنع منعاً باتاً استغلال المنصة للمضايقات، التحرش، أو نشر أي محتوى غير لائق.</li>
+                <li>نحن نحتفظ بالحق في حظر أي حساب يتم الإبلاغ عنه من قبل المستخدمين الآخرين بشكل متكرر.</li>
+            </ul>
+
+            <h3>3. شروط عامة</h3>
+            <ul>
+                <li>يجب أن لا يقل عمر المستخدم عن 18 عاماً لاستخدام ميزة الفيديو العشوائي.</li>
+                <li>الموقع غير مسؤول عن أي اتفاقات أو تبادل بيانات شخصية يتم خارج نظام الدردشة الخاص بنا.</li>
+            </ul>
+
+            <div class="disclaimer">
+                <strong>تنبيه:</strong> باستخدامك لخدماتنا، أنت تقر بأنك قرأت وفهمت هذه الشروط وتلتزم بالعمل بها.
             </div>
 
-            <button class="back-btn" onclick="history.back()">فهمت، العودة للخلف</button>
+            <a href="index.html" class="back-btn">أوافق والعودة للرئيسية</a>
         </div>
     </div>
 
-    <script src="ui-logic.js"></script>
+    <script>
+        // تفعيل الوضع الليلي تلقائياً إذا كان مفعلاً في المتصفح
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </body>
 </html>
