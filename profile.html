@@ -9,63 +9,56 @@
         .profile-card { max-width: 450px; margin: 30px auto; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center; }
         .avatar { width: 90px; height: 90px; background: var(--p); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .data-box { background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 12px; text-align: right; border: 1px solid rgba(0,0,0,0.05); }
-        .data-box span { display: block; font-size: 0.75rem; opacity: 0.6; font-weight: bold; }
-        .data-box strong { font-size: 1.05rem; color: var(--txt); }
+        .data-box span { display: block; font-size: 0.75rem; opacity: 0.6; font-weight: bold; margin-bottom: 4px; }
+        select, input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: var(--card); color: var(--txt); margin-top: 5px; }
+        .save-btn { width: 100%; background: var(--p); color: white; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body class="light-mode">
-
     <div class="header">
         <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
-        <span class="tr" data-key="profile">الملف الشخصي</span>
-        <button onclick="toggleLang()" id="langBtn" style="width: 35px; height: 35px; border-radius: 50%; font-size: 0.7rem; background: rgba(255,255,255,0.2); color: white; border: none;">EN</button>
+        <h2 class="tr" data-key="profile">الملف الشخصي</h2>
+        <button class="icon-btn" id="logoutBtn">🚪</button>
     </div>
 
-    <div class="container">
-        <div class="profile-card">
-            <div id="uAvatar" class="avatar">?</div>
-            <h2 id="uName" style="margin-bottom: 25px;">...</h2>
+    <div class="profile-card">
+        <div class="avatar" id="uAvatar">?</div>
+        <h3 id="uName">...</h3>
 
-            <div class="data-box">
-                <span class="tr" data-key="age">العمر</span>
-                <strong id="dispAge">...</strong>
-            </div>
-
-            <div class="data-box">
-                <span class="tr" data-key="country">الدولة</span>
-                <strong id="dispCountry">...</strong>
-            </div>
-
-            <div class="data-box">
-                <span class="tr" data-key="interests">الاهتمامات</span>
-                <strong id="dispInterest">...</strong>
-            </div>
-
-            <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
-                <button onclick="toggleTheme()" class="tr" data-key="theme" style="background: #555;">تبديل المظهر 🌓</button>
-                <button id="logoutBtn" class="tr" data-key="logout" style="background: #ff4d4d;">خروج</button>
-            </div>
+        <div class="data-box">
+            <span>الجنس:</span>
+            <select id="userGender">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
         </div>
+
+        <div class="data-box">
+            <span>أبحث عن:</span>
+            <select id="seekingGender">
+                <option value="female">إناث</option>
+                <option value="male">ذكور</option>
+                <option value="both">الكل</option>
+            </select>
+        </div>
+
+        <div class="data-box">
+            <span>الاهتمامات:</span>
+            <select id="userInterest">
+                <option value="coding">البرمجة</option>
+                <option value="music">الموسيقى</option>
+                <option value="travel">السفر</option>
+                <option value="gaming">الألعاب</option>
+            </select>
+        </div>
+
+        <button class="save-btn" id="saveProfile">حفظ التغييرات</button>
     </div>
 
-    <script src="ui-logic.js"></script>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
-            authDomain: "strangermeeting-91226.firebaseapp.com", 
-            projectId: "strangermeeting-91226", 
-            storageBucket: "strangermeeting-91226.firebasestorage.app", 
-            messagingSenderId: "575547116212", 
-            appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        import { auth, db } from './ui-logic.js';
+        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) return location.href = "login.html";
@@ -73,21 +66,30 @@
             const docSnap = await getDoc(doc(db, "users", user.uid));
             if (docSnap.exists()) {
                 const u = docSnap.data();
-                const lang = localStorage.getItem('sm-lang') || 'ar';
-
                 document.getElementById("uName").innerText = u.fullname;
-                document.getElementById("dispAge").innerText = u.age;
                 document.getElementById("uAvatar").innerText = u.fullname.charAt(0).toUpperCase();
-                
-                // ترجمة البلد والاهتمام باستخدام القاموس في ui-logic.js
-                document.getElementById("dispCountry").innerText = i18n[lang][u.country] || u.country;
-                document.getElementById("dispInterest").innerText = i18n[lang][u.interest] || u.interest;
+                document.getElementById("userGender").value = u.gender || "male";
+                document.getElementById("seekingGender").value = u.seeking || "both";
+                document.getElementById("userInterest").value = u.interest || "coding";
             }
         });
 
-        document.getElementById("logoutBtn").onclick = () => {
-            signOut(auth).then(() => location.href = "index.html");
+        document.getElementById("saveProfile").onclick = async () => {
+            const user = auth.currentUser;
+            const btn = document.getElementById("saveProfile");
+            btn.innerText = "جاري الحفظ...";
+            
+            await updateDoc(doc(db, "users", user.uid), {
+                gender: document.getElementById("userGender").value,
+                seeking: document.getElementById("seekingGender").value,
+                interest: document.getElementById("userInterest").value
+            });
+            
+            btn.innerText = "تم الحفظ ✅";
+            setTimeout(() => btn.innerText = "حفظ التغييرات", 2000);
         };
+
+        document.getElementById("logoutBtn").onclick = () => signOut(auth).then(() => location.href="login.html");
     </script>
 </body>
 </html>
