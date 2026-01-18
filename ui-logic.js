@@ -119,3 +119,33 @@ window.addEventListener('beforeunload', () => {
         updateDoc(doc(db, "users", auth.currentUser.uid), { isOnline: false });
     }
 });
+// مصفوفة الترجمة
+const translations = {
+    ar: { startDiscovery: "ابدأ البحث", profile: "الملف الشخصي", login: "دخول" },
+    en: { startDiscovery: "Start Search", profile: "Profile", login: "Login" }
+};
+
+// وظيفة تغيير اللغة الموحدة
+export const toggleLang = () => {
+    const currentLang = document.documentElement.lang === 'ar' ? 'en' : 'ar';
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    localStorage.setItem('preferredLang', currentLang);
+    applyTranslations(currentLang);
+};
+
+// وظيفة الوضع الليلي الموحدة
+export const toggleTheme = () => {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    const isDark = body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+};
+
+// تطبيق الإعدادات عند تحميل أي صفحة
+window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    const savedLang = localStorage.getItem('preferredLang') || 'ar';
+    document.documentElement.lang = savedLang;
+    document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+});
