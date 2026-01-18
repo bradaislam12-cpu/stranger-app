@@ -1,149 +1,184 @@
-/* 1. إعدادات المتغيرات والألوان */
+/* 1. إعدادات المتغيرات والألوان الأساسية */
 :root {
-    --p: #075e54;         /* اللون الأساسي (أخضر) */
-    --p-dark: #128c7e;    /* درجة أخضر مختلفة */
-    --bg: #f0f2f5;        /* خلفية الوضع النهاري */
-    --card: #ffffff;      /* لون البطاقات والصناديق */
-    --txt: #1c1e21;       /* لون النص */
-    --me: #dcf8c6;        /* لون رسائلي */
-    --them: #ffffff;      /* لون رسائل الطرف الآخر */
+    --p: #075e54;         /* الأخضر الأساسي */
+    --p-dark: #128c7e;    /* أخضر غامق للدرجات */
+    --bg: #f0f2f5;        /* خلفية نهارية */
+    --card: #ffffff;      /* لون البطاقات */
+    --txt: #1c1e21;       /* لون النص الأساسي */
+    --me: #dcf8c6;        /* لون فقاعة رسائلي */
+    --them: #ffffff;      /* لون فقاعة الطرف الآخر */
+    --accent: #34b7f1;    /* لون أزرق للأصدقاء */
+    --danger: #ff3b30;    /* لون التنبيهات والأخطاء */
 }
 
-/* 2. إعدادات الوضع الليلي */
+/* 2. إعدادات الوضع الليلي الشامل */
 .dark-mode {
-    --p: #121212;
-    --bg: #000000;
-    --card: #1e1e1e;
-    --txt: #e4e6eb;
-    --me: #054d44;
-    --them: #262626;
+    --p: #1f2c34;
+    --bg: #0b141a;
+    --card: #111b21;
+    --txt: #e9edef;
+    --me: #005c4b;
+    --them: #202c33;
 }
 
 /* 3. التنسيق العام للجسم */
 body {
     background: var(--bg);
     color: var(--txt);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    transition: background 0.3s, color 0.3s;
+    transition: all 0.3s ease;
     overflow-x: hidden;
 }
 
-/* 4. صناديق الدخول والتسجيل */
-.auth-box {
-    max-width: 400px;
-    margin: 60px auto;
-    padding: 30px;
-    background: var(--card);
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-/* 5. الحقول والأزرار */
-input {
-    width: 100%;
-    padding: 14px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    background: var(--card);
-    color: var(--txt);
-    box-sizing: border-box;
-    font-size: 1rem;
-}
-
-button {
-    padding: 12px 24px;
-    background: var(--p);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
-
-/* 6. الهيدر (Header) */
+/* 4. الهيدر (Header) */
 .header {
     background: var(--p);
     color: white;
-    padding: 15px 20px;
+    padding: 12px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .icon-btn {
     background: none;
+    border: none;
     font-size: 1.4rem;
-    padding: 5px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
 }
 
-/* 7. نظام الدردشة */
+/* 5. صناديق الهوية (Auth & Profile Boxes) */
+.auth-box, .profile-card {
+    background: var(--card);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: var(--bg);
+    color: var(--txt);
+    box-sizing: border-box;
+}
+
+/* 6. نظام الدردشة (Chat UI) */
 .msg-container {
-    height: calc(100vh - 140px);
+    height: calc(100vh - 130px);
     overflow-y: auto;
     padding: 15px;
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 .msg {
-    padding: 10px 15px;
-    margin: 6px;
-    border-radius: 15px;
-    max-width: 80%;
-    word-wrap: break-word;
+    padding: 8px 14px;
+    border-radius: 12px;
+    max-width: 75%;
     font-size: 0.95rem;
-    line-height: 1.4;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .me {
     align-self: flex-end;
     background: var(--me);
-    color: #000;
     border-bottom-right-radius: 2px;
 }
 
 .them {
     align-self: flex-start;
     background: var(--them);
-    color: var(--txt);
     border-bottom-left-radius: 2px;
 }
 
-/* 8. شريط الإدخال في الدردشة */
 .input-bar {
     position: fixed;
     bottom: 0;
     width: 100%;
-    display: flex;
     background: var(--card);
     padding: 10px;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    box-sizing: border-box;
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
 }
 
-.input-bar input {
-    margin: 0 10px 0 0;
-    border-radius: 25px;
+/* 7. الأزرار المخصصة */
+.start-btn {
+    background: #25d366;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
 }
 
-/* 9. تحسينات الجوال */
+.friend-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* 8. قائمة الأصدقاء والطلبات في الداشبورد */
+.user-item {
+    background: var(--card);
+    padding: 12px 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.badge {
+    background: var(--danger);
+    color: white;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+/* 9. تحسين العرض للجوال */
 @media (max-width: 600px) {
-    .auth-box {
-        margin: 20px;
-        width: auto;
-    }
+    .header h2 { font-size: 1.1rem; }
+    .msg { max-width: 85%; }
+}
+
+/* تأثير النبض للوجو */
+.pulse {
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
