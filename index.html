@@ -1,51 +1,41 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stranger Meeting | الرئيسية</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <style>
-        .welcome-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 90vh;
-            text-align: center;
-            padding: 20px;
+<script type="module">
+    // 1. استيراد الدوال الأساسية
+    import { auth, loginWithGoogle, toggleTheme, toggleLang } from './ui-logic.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // 2. ربط الأزرار بالدوال
+    document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = toggleLang;
+
+    // 3. منطق تسجيل الدخول عبر جوجل (تصحيح الأقواس هنا)
+    const gBtn = document.getElementById('googleLoginBtn');
+    if (gBtn) {
+        gBtn.onclick = async () => {
+            try {
+                await loginWithGoogle();
+            } catch (error) {
+                console.error(error);
+                alert("عذراً، فشل تسجيل الدخول عبر جوجل.");
+            }
+        }; // إغلاق دالة onclick
+    } // إغلاق شرط وجود الزر
+
+    // 4. تسجيل الـ Service Worker لجعل التطبيق PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log("SW Registered!", reg))
+                .catch(err => console.log("SW Register Failed!", err));
+        });
+    }
+
+    // 5. فحص حالة المستخدم والتوجيه التلقائي
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            window.location.href = "dashboard.html";
         }
-        .logo-area { 
-            font-size: 5rem; 
-            margin-bottom: 10px; 
-            animation: pulse 2s infinite;
-            filter: drop-shadow(0 5px 15px rgba(7, 94, 84, 0.3));
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .hero-text { margin-bottom: 35px; opacity: 0.9; font-size: 1.2rem; font-weight: 300; }
-        .btns-group { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
-        
-        .google-btn {
-            background: white;
-            color: #444;
-            border: 1px solid #ddd;
-            padding: 12px;
-            border-radius: 25px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
+    });
+</script>        
         .main-btn {
             background: var(--p);
             color: white;
@@ -123,4 +113,5 @@
     </script>
 </body>
 </html>
+
 
