@@ -182,3 +182,19 @@ input, select, textarea {
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
+/* أضف هذا الجزء في نهاية ملف style.css */
+.interest-tag {
+    display: inline-block;
+    background: var(--p);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin: 5px;
+    font-size: 0.8rem;
+}
+.country-select {
+    background-image: url('https://cdn-icons-png.flaticon.com/512/921/921444.png');
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: left 10px center;
+}
