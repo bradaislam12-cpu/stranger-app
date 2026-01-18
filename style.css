@@ -197,4 +197,34 @@ input, select, textarea {
     background-size: 20px;
     background-repeat: no-repeat;
     background-position: left 10px center;
+}/* تحسين شكل السكرول بار (شريط التمرير) ليناسب التصميم */
+::-webkit-scrollbar {
+    width: 6px;
 }
+::-webkit-scrollbar-thumb {
+    background: var(--p);
+    border-radius: 10px;
+}
+
+/* تأثير عند الضغط على الأزرار لتبدو تفاعلية */
+button:active {
+    transform: scale(0.95);
+}
+
+/* جعل حقول الإدخال "تنبض" عند التركيز عليها */
+input:focus, select:focus {
+    border-color: var(--p);
+    outline: none;
+    box-shadow: 0 0 8px rgba(7, 94, 84, 0.2);
+    transition: 0.3s;
+}
+
+/* تنسيق خاص للأفاتار (Avatar) الدائري */
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #ccc;
+}
+
