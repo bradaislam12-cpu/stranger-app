@@ -9,24 +9,32 @@
         .profile-card { max-width: 450px; margin: 30px auto; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center; }
         .avatar { width: 90px; height: 90px; background: var(--p); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .data-box { background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 12px; text-align: right; border: 1px solid rgba(0,0,0,0.05); }
-        .data-box span { display: block; font-size: 0.75rem; opacity: 0.6; font-weight: bold; margin-bottom: 4px; }
-        select, input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: var(--card); color: var(--txt); margin-top: 5px; }
-        .save-btn { width: 100%; background: var(--p); color: white; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        .data-box span { display: block; font-size: 0.75rem; opacity: 0.6; font-weight: bold; margin-bottom: 5px; }
+        input, select { width: 100%; border: none; background: transparent; font-size: 1rem; color: var(--txt); outline: none; }
+        .save-btn { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .save-btn:hover { opacity: 0.9; transform: translateY(-2px); }
     </style>
 </head>
 <body class="light-mode">
+
     <div class="header">
         <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
         <h2 class="tr" data-key="profile">الملف الشخصي</h2>
-        <button class="icon-btn" id="logoutBtn">🚪</button>
+        <button id="logoutBtn" class="icon-btn">🚪</button>
     </div>
 
     <div class="profile-card">
         <div class="avatar" id="uAvatar">?</div>
-        <h3 id="uName">...</h3>
+        <h3 id="uName">جاري التحميل...</h3>
+        <p id="uEmail" style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 25px;"></p>
 
         <div class="data-box">
-            <span>الجنس:</span>
+            <span>الاسم الكامل</span>
+            <input type="text" id="fullnameInput">
+        </div>
+
+        <div class="data-box">
+            <span>جنسي</span>
             <select id="userGender">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
@@ -34,31 +42,32 @@
         </div>
 
         <div class="data-box">
-            <span>أبحث عن:</span>
+            <span>أبحث عن (في البحث العشوائي)</span>
             <select id="seekingGender">
-                <option value="female">إناث</option>
-                <option value="male">ذكور</option>
-                <option value="both">الكل</option>
+                <option value="male">رجال فقط</option>
+                <option value="female">نساء فقط</option>
+                <option value="both">الجميع (عشوائي)</option>
+                <option value="same">نفس جنسي</option>
             </select>
         </div>
 
         <div class="data-box">
-            <span>الاهتمامات:</span>
-            <select id="userInterest">
-                <option value="coding">البرمجة</option>
-                <option value="music">الموسيقى</option>
-                <option value="travel">السفر</option>
-                <option value="gaming">الألعاب</option>
-            </select>
+            <span>البلد</span>
+            <input type="text" id="userCountry" placeholder="مثال: مصر، الجزائر...">
         </div>
 
-        <button class="save-btn" id="saveProfile">حفظ التغييرات</button>
+        <div class="data-box">
+            <span>الاهتمامات</span>
+            <input type="text" id="userInterest" placeholder="مثال: رياضة، سفر، تقنية">
+        </div>
+
+        <button class="save-btn" id="saveProfile">حفظ التغييرات ✅</button>
     </div>
 
     <script type="module">
         import { auth, db } from './ui-logic.js';
-        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) return location.href = "login.html";
@@ -67,26 +76,44 @@
             if (docSnap.exists()) {
                 const u = docSnap.data();
                 document.getElementById("uName").innerText = u.fullname;
+                document.getElementById("fullnameInput").value = u.fullname;
+                document.getElementById("uEmail").innerText = u.email;
                 document.getElementById("uAvatar").innerText = u.fullname.charAt(0).toUpperCase();
+                
+                // تعبئة الخيارات الحالية
                 document.getElementById("userGender").value = u.gender || "male";
                 document.getElementById("seekingGender").value = u.seeking || "both";
-                document.getElementById("userInterest").value = u.interest || "coding";
+                document.getElementById("userCountry").value = u.country || "";
+                document.getElementById("userInterest").value = u.interest || "";
             }
         });
 
+        // حفظ التعديلات
         document.getElementById("saveProfile").onclick = async () => {
             const user = auth.currentUser;
             const btn = document.getElementById("saveProfile");
-            btn.innerText = "جاري الحفظ...";
             
-            await updateDoc(doc(db, "users", user.uid), {
-                gender: document.getElementById("userGender").value,
-                seeking: document.getElementById("seekingGender").value,
-                interest: document.getElementById("userInterest").value
-            });
-            
-            btn.innerText = "تم الحفظ ✅";
-            setTimeout(() => btn.innerText = "حفظ التغييرات", 2000);
+            try {
+                btn.innerText = "جاري الحفظ...";
+                btn.disabled = true;
+
+                await updateDoc(doc(db, "users", user.uid), {
+                    fullname: document.getElementById("fullnameInput").value,
+                    gender: document.getElementById("userGender").value,
+                    seeking: document.getElementById("seekingGender").value,
+                    country: document.getElementById("userCountry").value,
+                    interest: document.getElementById("userInterest").value
+                });
+
+                btn.innerText = "تم الحفظ بنجاح! ✨";
+                setTimeout(() => {
+                    btn.innerText = "حفظ التغييرات ✅";
+                    btn.disabled = false;
+                }, 2000);
+            } catch (error) {
+                alert("حدث خطأ أثناء الحفظ");
+                btn.disabled = false;
+            }
         };
 
         document.getElementById("logoutBtn").onclick = () => signOut(auth).then(() => location.href="login.html");
