@@ -10,9 +10,26 @@
         .avatar { width: 90px; height: 90px; background: var(--p); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .data-box { background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 12px; text-align: right; border: 1px solid rgba(0,0,0,0.05); }
         .data-box span { display: block; font-size: 0.75rem; opacity: 0.6; font-weight: bold; margin-bottom: 5px; }
-        input, select { width: 100%; border: none; background: transparent; font-size: 1rem; color: var(--txt); outline: none; }
+        input[type="text"], select { width: 100%; border: none; background: transparent; font-size: 1rem; color: var(--txt); outline: none; }
+        
+        /* تنسيق مربعات الاهتمامات */
+        .checkbox-group { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            text-align: right; 
+            gap: 10px; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            padding: 10px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 8px;
+        }
+        .checkbox-group label { font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
         .save-btn { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .save-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        
+        .settings-nav { display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; }
     </style>
 </head>
 <body class="light-mode">
@@ -24,17 +41,22 @@
     </div>
 
     <div class="profile-card">
+        <div class="settings-nav">
+            <button onclick="toggleTheme()" class="icon-btn" style="color:var(--txt)">🌓</button>
+            <button onclick="toggleLang()" id="langBtn" class="friend-btn">EN</button>
+        </div>
+
         <div class="avatar" id="uAvatar">?</div>
         <h3 id="uName">جاري التحميل...</h3>
         <p id="uEmail" style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 25px;"></p>
 
         <div class="data-box">
-            <span>الاسم الكامل</span>
+            <span class="tr" data-key="fullname">الاسم الكامل</span>
             <input type="text" id="fullnameInput">
         </div>
 
         <div class="data-box">
-            <span>جنسي</span>
+            <span class="tr" data-key="gender">جنسي</span>
             <select id="userGender">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
@@ -42,7 +64,7 @@
         </div>
 
         <div class="data-box">
-            <span>أبحث عن (في البحث العشوائي)</span>
+            <span class="tr" data-key="seeking">أبحث عن</span>
             <select id="seekingGender">
                 <option value="male">رجال فقط</option>
                 <option value="female">نساء فقط</option>
@@ -51,112 +73,44 @@
         </div>
 
         <div class="data-box">
-    <span>اختر الدولة</span>
-    <select id="userCountry">
-        <option value="Afghanistan">أفغانستان</option>
-        <option value="Albania">ألبانيا</option>
-        <option value="Algeria">الجزائر</option>
-        <option value="Andorra">أندورا</option>
-        <option value="Angola">أنغولا</option>
-        <option value="Argentina">الأرجنتين</option>
-        <option value="Armenia">أرمينيا</option>
-        <option value="Australia">أستراليا</option>
-        <option value="Austria">النمسا</option>
-        <option value="Bahrain">البحرين</option>
-        <option value="Bangladesh">بنغلاديش</option>
-        <option value="Belgium">بلجيكا</option>
-        <option value="Brazil">البرازيل</option>
-        <option value="Canada">كندا</option>
-        <option value="China">الصين</option>
-        <option value="Colombia">كولومبيا</option>
-        <option value="Denmark">الدنمارك</option>
-        <option value="Egypt">مصر</option>
-        <option value="France">فرنسا</option>
-        <option value="Germany">ألمانيا</option>
-        <option value="India">الهند</option>
-        <option value="Indonesia">إندونيسيا</option>
-        <option value="Iran">إيران</option>
-        <option value="Iraq">العراق</option>
-        <option value="Italy">إيطاليا</option>
-        <option value="Japan">اليابان</option>
-        <option value="Jordan">الأردن</option>
-        <option value="Kuwait">الكويت</option>
-        <option value="Lebanon">لبنان</option>
-        <option value="Libya">ليبيا</option>
-        <option value="Malaysia">ماليزيا</option>
-        <option value="Mexico">المكسيك</option>
-        <option value="Morocco">المغرب</option>
-        <option value="Netherlands">هولندا</option>
-        <option value="New Zealand">نيوزيلندا</option>
-        <option value="Nigeria">نيجيريا</option>
-        <option value="Norway">النرويج</option>
-        <option value="Oman">عُمان</option>
-        <option value="Pakistan">باكستان</option>
-        <option value="Palestine">فلسطين</option>
-        <option value="Philippines">الفلبين</option>
-        <option value="Poland">بولندا</option>
-        <option value="Portugal">البرتغال</option>
-        <option value="Qatar">قطر</option>
-        <option value="Russia">روسيا</option>
-        <option value="Saudi Arabia">السعودية</option>
-        <option value="South Africa">جنوب أفريقيا</option>
-        <option value="South Korea">كوريا الجنوبية</option>
-        <option value="Spain">إسبانيا</option>
-        <option value="Sudan">السودان</option>
-        <option value="Sweden">السويد</option>
-        <option value="Switzerland">سويسرا</option>
-        <option value="Syria">سوريا</option>
-        <option value="Tunisia">تونس</option>
-        <option value="Turkey">تركيا</option>
-        <option value="UAE">الإمارات</option>
-        <option value="UK">المملكة المتحدة</option>
-        <option value="USA">الولايات المتحدة</option>
-        <option value="Yemen">اليمن</option>
-        <option value="Others">دول أخرى</option>
-    </select>
-</div>
-        
+            <span class="tr" data-key="country">الدولة</span>
+            <select id="userCountry">
+                <option value="Egypt">مصر</option>
+                <option value="Saudi Arabia">السعودية</option>
+                <option value="Algeria">الجزائر</option>
+                <option value="Morocco">المغرب</option>
+                <option value="Iraq">العراق</option>
+                <option value="Jordan">الأردن</option>
+                <option value="UAE">الإمارات</option>
+                <option value="Others">دول أخرى</option>
+            </select>
+        </div>
 
-       <div class="data-box">
-    <span>الاهتمامات الرئيسية</span>
-    <div class="checkbox-group">
-        <label><input type="checkbox" name="userInterest" value="Sports"> الرياضة</label><br>
-        <label><input type="checkbox" name="userInterest" value="Gaming"> الألعاب</label><br>
-        <label><input type="checkbox" name="userInterest" value="Music"> الموسيقى</label><br>
-        <label><input type="checkbox" name="userInterest" value="Movies"> الأفلام والمسلسلات</label><br>
-        <label><input type="checkbox" name="userInterest" value="Books"> الكتب والقراءة</label><br>
-        <label><input type="checkbox" name="userInterest" value="Tech"> التقنية</label><br>
-        <label><input type="checkbox" name="userInterest" value="AI"> الذكاء الاصطناعي</label><br>
-        <label><input type="checkbox" name="userInterest" value="Programming"> البرمجة</label><br>
-        <label><input type="checkbox" name="userInterest" value="Travel"> السفر</label><br>
-        <label><input type="checkbox" name="userInterest" value="Cooking"> الطبخ</label><br>
-        <label><input type="checkbox" name="userInterest" value="Fashion"> الموضة والأزياء</label><br>
-        <label><input type="checkbox" name="userInterest" value="Pets"> الحيوانات الأليفة</label><br>
-        <label><input type="checkbox" name="userInterest" value="Photography"> التصوير</label><br>
-        <label><input type="checkbox" name="userInterest" value="Art"> الفنون والرسم</label><br>
-        <label><input type="checkbox" name="userInterest" value="Volunteering"> العمل التطوعي</label><br>
-        <label><input type="checkbox" name="userInterest" value="Fitness"> الصحة واللياقة</label><br>
-        <label><input type="checkbox" name="userInterest" value="Chat"> دردشة عامة</label><br>
-        <label><input type="checkbox" name="userInterest" value="Business"> الأعمال والتجارة</label><br>
-        <label><input type="checkbox" name="userInterest" value="Science"> العلوم</label><br>
-        <label><input type="checkbox" name="userInterest" value="History"> التاريخ</label><br>
-        <label><input type="checkbox" name="userInterest" value="Languages"> تعلم اللغات</label><br>
-        <label><input type="checkbox" name="userInterest" value="Nature"> الطبيعة والرحلات</label><br>
-        <label><input type="checkbox" name="userInterest" value="Food"> المأكولات</label><br>
-        <label><input type="checkbox" name="userInterest" value="Others"> اهتمامات أخرى</label>
-    </div>
-</div>
+        <div class="data-box">
+            <span class="tr" data-key="interests">الاهتمامات</span>
+            <div class="checkbox-group" id="interestsContainer">
+                <label><input type="checkbox" name="interest" value="Sports"> الرياضة</label>
+                <label><input type="checkbox" name="interest" value="Gaming"> الألعاب</label>
+                <label><input type="checkbox" name="interest" value="Music"> الموسيقى</label>
+                <label><input type="checkbox" name="interest" value="Movies"> الأفلام</label>
+                <label><input type="checkbox" name="interest" value="Tech"> التقنية</label>
+                <label><input type="checkbox" name="interest" value="Travel"> السفر</label>
+                <label><input type="checkbox" name="interest" value="Chat"> دردشة</label>
+                <label><input type="checkbox" name="interest" value="Others"> أخرى</label>
+            </div>
+        </div>
 
-</div>
-
-
-        <button class="save-btn" id="saveProfile">حفظ التغييرات ✅</button>
+        <button class="save-btn tr" id="saveProfile" data-key="save">حفظ التغييرات ✅</button>
     </div>
 
     <script type="module">
-        import { auth, db } from './ui-logic.js';
+        import { auth, db, toggleLang, toggleTheme } from './ui-logic.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // جعل الدوال متاحة للأزرار
+        window.toggleLang = toggleLang;
+        window.toggleTheme = toggleTheme;
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) return location.href = "login.html";
@@ -169,21 +123,32 @@
                 document.getElementById("uEmail").innerText = u.email;
                 document.getElementById("uAvatar").innerText = u.fullname.charAt(0).toUpperCase();
                 
-                // تعبئة الخيارات الحالية
                 document.getElementById("userGender").value = u.gender || "male";
                 document.getElementById("seekingGender").value = u.seeking || "both";
-                document.getElementById("userCountry").value = u.country || "";
-                document.getElementById("userInterest").value = u.interest || "";
+                document.getElementById("userCountry").value = u.country || "Egypt";
+
+                // تعبئة الاهتمامات المختارة مسبقاً
+                if (u.interests && Array.isArray(u.interests)) {
+                    const checkboxes = document.querySelectorAll('input[name="interest"]');
+                    checkboxes.forEach(cb => {
+                        if (u.interests.includes(cb.value)) cb.checked = true;
+                    });
+                }
             }
         });
 
-        // حفظ التعديلات
         document.getElementById("saveProfile").onclick = async () => {
             const user = auth.currentUser;
             const btn = document.getElementById("saveProfile");
             
+            // تجميع الاهتمامات المختارة في مصفوفة (Array)
+            const selectedInterests = [];
+            document.querySelectorAll('input[name="interest"]:checked').forEach(cb => {
+                selectedInterests.push(cb.value);
+            });
+
             try {
-                btn.innerText = "جاري الحفظ...";
+                btn.innerText = "...";
                 btn.disabled = true;
 
                 await updateDoc(doc(db, "users", user.uid), {
@@ -191,16 +156,13 @@
                     gender: document.getElementById("userGender").value,
                     seeking: document.getElementById("seekingGender").value,
                     country: document.getElementById("userCountry").value,
-                    interest: document.getElementById("userInterest").value
+                    interests: selectedInterests // حفظها كمصفوفة
                 });
 
-                btn.innerText = "تم الحفظ بنجاح! ✨";
-                setTimeout(() => {
-                    btn.innerText = "حفظ التغييرات ✅";
-                    btn.disabled = false;
-                }, 2000);
+                btn.innerText = "تم الحفظ ✨";
+                setTimeout(() => { btn.innerText = "حفظ التغييرات ✅"; btn.disabled = false; }, 2000);
             } catch (error) {
-                alert("حدث خطأ أثناء الحفظ");
+                alert("خطأ في الحفظ");
                 btn.disabled = false;
             }
         };
@@ -209,6 +171,3 @@
     </script>
 </body>
 </html>
-
-
-
