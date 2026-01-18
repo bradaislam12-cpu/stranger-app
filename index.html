@@ -6,64 +6,109 @@
     <title>Stranger Meeting | الرئيسية</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* تنسيقات خاصة بصفحة الترحيب فقط */
+        /* تنسيقات خاصة بصفحة الترحيب */
         .welcome-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 80vh;
+            min-height: 90vh;
             text-align: center;
+            padding: 20px;
         }
-        .logo-area { font-size: 3rem; margin-bottom: 10px; }
-        .hero-text { margin-bottom: 30px; opacity: 0.9; }
-        .btns-group { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 15px; }
-        .secondary { background: #555 !important; }
+        .logo-area { 
+            font-size: 4rem; 
+            margin-bottom: 10px; 
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .hero-text { margin-bottom: 35px; opacity: 0.9; font-size: 1.1rem; }
+        .btns-group { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* زر جوجل بتصميم عصري */
+        .google-btn {
+            background: white;
+            color: #444;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .google-btn:hover { background: #f8f8f8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        
+        .secondary-btn {
+            background: rgba(0,0,0,0.05);
+            color: var(--txt);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        #loadingOverlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: var(--bg); display: flex; align-items: center;
+            justify-content: center; z-index: 9999;
+        }
     </style>
 </head>
 <body class="light-mode">
 
+    <div id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
     <div class="welcome-container">
         <div class="logo-area">🤝</div>
-        <h1 id="title">Stranger Meeting</h1>
-        <p id="subTitle" class="hero-text">تواصل مع الآخرين بخصوصية وأمان تام</p>
+        <h1 id="title" class="tr" data-key="title">Stranger Meeting</h1>
+        <p id="subTitle" class="hero-text tr" data-key="subTitle">تواصل مع الآخرين بخصوصية وأمان تام عبر الفيديو والدردشة</p>
         
         <div class="btns-group">
-            <button onclick="location.href='register.html'" id="btnReg">إنشاء حساب جديد</button>
-            <button class="secondary" onclick="location.href='login.html'" id="btnLogin">تسجيل الدخول</button>
+            <button class="google-btn" id="googleLoginBtn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+                <span class="tr" data-key="googleLogin">المتابعة باستخدام Google</span>
+            </button>
+
+            <button class="secondary-btn tr" data-key="login" onclick="location.href='login.html'">تسجيل الدخول بالبريد</button>
+            
+            <p style="font-size: 0.85rem; margin-top: 10px;">
+                <span class="tr" data-key="haveAccount">ليس لديك حساب؟</span>
+                <a href="register.html" class="tr" data-key="register" style="color: var(--p); font-weight: bold;">اشترك الآن</a>
+            </p>
         </div>
 
-        <div class="settings-bar" style="margin-top: 40px; display: flex; gap: 20px;">
-            <button onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
-            <button onclick="location.href='terms.html'" style="background: none; color: var(--txt); font-size: 0.8rem; text-decoration: underline;">الشروط والخصوصية</button>
+        <div class="settings-bar" style="margin-top: 50px; display: flex; gap: 25px;">
+            <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌓</button>
+            <button onclick="toggleLang()" id="langBtn" style="background:var(--p); color:white; border:none; border-radius:20px; padding:5px 15px; cursor:pointer;">EN</button>
         </div>
     </div>
 
-    <script src="ui-logic.js"></script>
+    <script type="module">
+        import { auth, loginWithGoogle } from './ui-logic.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <script>
-        // فحص حالة تسجيل الدخول: إذا كان المستخدم مسجلاً، وجهه للوحة التحكم فوراً
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
-            authDomain: "strangermeeting-91226.firebaseapp.com", 
-            projectId: "strangermeeting-91226", 
-            storageBucket: "strangermeeting-91226.firebasestorage.app", 
-            messagingSenderId: "575547116212", 
-            appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
-        };
+        // ربط زر جوجل بالدالة
+        document.getElementById('googleLoginBtn').onclick = loginWithGoogle;
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
+        // فحص حالة المستخدم عند فتح الصفحة
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // إذا كان مسجلاً دخول بالفعل، نختصر عليه الطريق
-                location.href = "dashboard.html";
+                // إذا كان مسجل دخول، انقله فوراً للوحة التحكم
+                window.location.href = "dashboard.html";
+            } else {
+                // إذا لم يكن مسجل دخول، اخفِ شاشة التحميل واظهر الصفحة
+                document.getElementById('loadingOverlay').style.display = 'none';
             }
         });
     </script>
+
+    <script src="ui-logic.js"></script>
 </body>
 </html>
