@@ -6,131 +6,65 @@
     <title class="tr" data-key="register">إنشاء حساب | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        select { width: 100%; padding: 12px; border-radius: 10px; margin-bottom: 15px; background: var(--card); color: var(--txt); border: 1px solid #ddd; font-size: 0.9rem; }
-        optgroup { font-weight: bold; color: var(--p); background: var(--bg); }
-        .auth-box { max-width: 450px; margin: 20px auto; padding: 25px; }
+        .auth-box { max-width: 450px; margin: 20px auto; padding: 25px; background: var(--card); border-radius: 15px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; }
+        #regBtn { width: 100%; padding: 12px; background: var(--p); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body class="light-mode">
-
     <div class="auth-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 class="tr" data-key="register" style="margin: 0;">إنشاء حساب</h2>
-            <button onclick="toggleLang()" id="langBtn" style="width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 0.8rem; background: var(--p); color: white; border: none; cursor: pointer;">EN</button>
-        </div>
+        <h2 class="tr" data-key="register">إنشاء حساب جديد</h2>
         
-        <input type="text" id="fullname" class="tr" data-key="fullname" placeholder="الاسم الكامل">
-        <input type="email" id="email" class="tr" data-key="email" placeholder="البريد">
-        <input type="password" id="pass" class="tr" data-key="pass" placeholder="كلمة المرور">
-        <input type="number" id="age" class="tr" data-key="age" placeholder="العمر">
-
-        <label class="tr" data-key="country" style="display:block; margin-bottom:5px; font-size:0.8rem;">الدولة</label>
-        <select id="country">
-            <option value="" class="tr" data-key="select">اختر الدولة...</option>
-            <optgroup label="🌍 Africa">
-                <option value="algeria" class="tr" data-key="algeria">الجزائر</option>
-                <option value="egypt" class="tr" data-key="egypt">مصر</option>
-                <option value="morocco" class="tr" data-key="morocco">المغرب</option>
-                <option value="tunisia" class="tr" data-key="tunisia">تونس</option>
-                <option value="libya" class="tr" data-key="libya">ليبيا</option>
-                <option value="nigeria" class="tr" data-key="nigeria">نيجيريا</option>
-                <option value="safrica" class="tr" data-key="safrica">جنوب أفريقيا</option>
-            </optgroup>
-            <optgroup label="🌍 Asia">
-                <option value="saudi" class="tr" data-key="saudi">السعودية</option>
-                <option value="uae" class="tr" data-key="uae">الإمارات</option>
-                <option value="qatar" class="tr" data-key="qatar">قطر</option>
-                <option value="iraq" class="tr" data-key="iraq">العراق</option>
-                <option value="kuwait" class="tr" data-key="kuwait">الكويت</option>
-                <option value="turkey" class="tr" data-key="turkey">تركيا</option>
-            </optgroup>
-            <optgroup label="🌍 Europe">
-                <option value="france" class="tr" data-key="france">فرنسا</option>
-                <option value="germany" class="tr" data-key="germany">ألمانيا</option>
-                <option value="uk" class="tr" data-key="uk">المملكة المتحدة</option>
-                <option value="russia" class="tr" data-key="russia">روسيا</option>
-            </optgroup>
-            <optgroup label="🌍 Americas">
-                <option value="usa" class="tr" data-key="usa">الولايات المتحدة</option>
-                <option value="canada" class="tr" data-key="canada">كندا</option>
-                <option value="brazil" class="tr" data-key="brazil">البرازيل</option>
-            </optgroup>
+        <input type="text" id="fullname" placeholder="الاسم الكامل">
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        
+        <label style="font-size: 0.8rem; opacity: 0.7;">جنسك:</label>
+        <select id="gender">
+            <option value="male">ذكر</option>
+            <option value="female">أنثى</option>
         </select>
 
-        <label class="tr" data-key="interests" style="display:block; margin-bottom:5px; font-size:0.8rem;">الاهتمامات</label>
+        <label style="font-size: 0.8rem; opacity: 0.7;">أهتم بـ:</label>
         <select id="interest">
-            <option value="" class="tr" data-key="select">اختر الاهتمام...</option>
-            <optgroup label="🧑‍🎓 Education">
-                <option value="reading" class="tr" data-key="reading">القراءة</option>
-                <option value="languages" class="tr" data-key="languages">اللغات</option>
-                <option value="science" class="tr" data-key="science">العلوم</option>
-            </optgroup>
-            <optgroup label="🎨 Creativity">
-                <option value="drawing" class="tr" data-key="drawing">الرسم</option>
-                <option value="music" class="tr" data-key="music">الموسيقى</option>
-                <option value="movies" class="tr" data-key="movies">الأفلام</option>
-            </optgroup>
-            <optgroup label="⚽ Sports">
-                <option value="football" class="tr" data-key="football">كرة القدم</option>
-                <option value="esports" class="tr" data-key="esports">إلكترونية</option>
-                <option value="fitness" class="tr" data-key="fitness">لياقة</option>
-            </optgroup>
-            <optgroup label="💻 Technology">
-                <option value="coding" class="tr" data-key="coding">البرمجة</option>
-                <option value="ai" class="tr" data-key="ai">ذكاء اصطناعي</option>
-                <option value="games" class="tr" data-key="games">ألعاب</option>
-            </optgroup>
-            <optgroup label="❤️ Personal">
-                <option value="cooking" class="tr" data-key="cooking">الطبخ</option>
-                <option value="travel" class="tr" data-key="travel">السفر</option>
-            </optgroup>
+            <option value="travel">السفر</option>
+            <option value="coding">البرمجة</option>
+            <option value="music">الموسيقى</option>
         </select>
 
-        <button id="regBtn" class="tr" data-key="register" style="width: 100%; margin-top: 10px; padding: 15px;">إنشاء الحساب</button>
-        <p style="margin-top: 15px;"><span class="tr" data-key="haveAccount">لديك حساب؟</span> <a href="login.html" class="tr" data-key="login" style="color: var(--p); font-weight: bold;">دخول</a></p>
-        <button onclick="toggleTheme()" class="icon-btn" style="display:block; margin: 10px auto;">🌓</button>
+        <button id="regBtn">إنشاء الحساب</button>
+        <p style="text-align: center; margin-top: 15px;"><a href="login.html">لديك حساب؟ سجل دخولك</a></p>
     </div>
 
-    <script src="ui-logic.js"></script>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg", 
-            authDomain: "strangermeeting-91226.firebaseapp.com", 
-            projectId: "strangermeeting-91226", 
-            storageBucket: "strangermeeting-91226.firebasestorage.app", 
-            messagingSenderId: "575547116212", 
-            appId: "1:575547116212:web:333a4732abf59903e7e5e1" 
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        import { auth, db } from './ui-logic.js';
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         document.getElementById("regBtn").onclick = async () => {
-            const name = document.getElementById("fullname").value.trim();
-            const email = document.getElementById("email").value.trim();
+            const name = document.getElementById("fullname").value;
+            const email = document.getElementById("email").value;
             const pass = document.getElementById("pass").value;
-            const age = document.getElementById("age").value;
-            const country = document.getElementById("country").value;
+            const gender = document.getElementById("gender").value;
             const interest = document.getElementById("interest").value;
 
-            if(!name || !email || !pass || !age || !country || !interest) return alert("يرجى إكمال كافة البيانات");
-
-            const btn = document.getElementById("regBtn");
-            btn.innerText = "...";
-            btn.disabled = true;
+            if(!name || !email || !pass) return alert("الرجاء ملء كافة البيانات");
 
             try {
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, "users", res.user.uid), {
-                    fullname: name, email, age, country, interest, uid: res.user.uid
+                    uid: res.user.uid,
+                    fullname: name,
+                    email: email,
+                    gender: gender,
+                    interest: interest,
+                    seeking: "both",
+                    isOnline: true
                 });
                 location.href = "dashboard.html";
-            } catch (e) { alert(e.message); btn.innerText = "Error"; btn.disabled = false; }
+            } catch (e) {
+                alert("خطأ: " + e.message);
+            }
         };
     </script>
 </body>
