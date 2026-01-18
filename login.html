@@ -2,92 +2,203 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title class="tr" data-key="login">تسجيل الدخول | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .google-btn {
-            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd;
-            background: white; color: #444; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;
-            transition: 0.3s;
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
         }
-        .google-btn:hover { background: #f1f1f1; transform: translateY(-1px); }
-        
-        .divider { margin: 25px 0; text-align: center; position: relative; }
-        .divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #ddd; z-index: 1; }
-        .divider span { background: var(--card); padding: 0 15px; position: relative; z-index: 2; font-size: 0.85rem; color: #888; }
-        
-        /* تأثيرات بسيطة للحقول */
-        input:focus { border-color: var(--p); outline: none; box-shadow: 0 0 5px rgba(7, 94, 84, 0.2); }
+
+        .auth-card {
+            background: var(--card);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .auth-header { margin-bottom: 30px; }
+        .auth-header h1 { font-size: 1.8rem; color: var(--p); margin-bottom: 10px; }
+        .auth-header p { opacity: 0.6; font-size: 0.9rem; }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--txt);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: var(--bg);
+            color: var(--txt);
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+            border-color: var(--p);
+            box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1);
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary { background: var(--p); color: white; }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+        .btn-google {
+            background: white;
+            color: #444;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-google:hover { background: #f8f8f8; }
+        .btn-google img { width: 20px; }
+
+        .divider {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.3;
+            font-size: 0.8rem;
+        }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--txt); }
+
+        .auth-footer { margin-top: 20px; font-size: 0.9rem; }
+        .auth-footer a { color: var(--p); text-decoration: none; font-weight: bold; }
+
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
     </style>
 </head>
 <body class="light-mode">
-    <div class="auth-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <h2 class="tr" data-key="login">تسجيل الدخول</h2>
-            <button id="changeLangBtn" style="width: 35px; height: 35px; border-radius: 50%; border: none; background: var(--p); color: white; cursor: pointer; font-weight: bold;">EN</button>
+
+    <div class="lang-switcher">
+        <button id="langBtn" class="friend-btn">EN</button>
+    </div>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="tr" data-key="login">تسجيل الدخول</h1>
+            <p class="tr" data-key="welcome">مرحباً بك مجدداً في Stranger Meeting</p>
         </div>
 
-        <input type="email" id="email" class="tr" data-key="emailPlaceholder" placeholder="البريد الإلكتروني">
-        <input type="password" id="pass" class="tr" data-key="passPlaceholder" placeholder="كلمة المرور">
-        <button id="loginBtn" class="tr" data-key="loginBtn">دخول</button>
+        <div id="errorMessage" class="error-msg"></div>
 
-        <div class="divider"><span class="tr" data-key="orText">أو</span></div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label class="tr" data-key="email">البريد الإلكتروني</label>
+                <input type="email" id="email" class="tr" data-key="email" placeholder="example@mail.com" required>
+            </div>
 
-        <button class="google-btn" id="googleBtn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="G">
-            <span class="tr" data-key="googleLogin">الدخول عبر Google</span>
+            <div class="input-group">
+                <label class="tr" data-key="password">كلمة المرور</label>
+                <input type="password" id="password" class="tr" data-key="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-full btn-primary tr" data-key="login">دخول</button>
+        </form>
+
+        <div class="divider">أو عبر</div>
+
+        <button id="googleBtn" class="btn-full btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google">
+            <span>Google</span>
         </button>
 
-        <p style="text-align: center; margin-top: 25px; font-size: 0.9rem;">
-            <span class="tr" data-key="noAccount">ليس لديك حساب؟</span>
-            <a href="register.html" class="tr" data-key="registerLink" style="color: var(--p); font-weight: bold; text-decoration: none;">اشترك الآن</a>
-        </p>
+        <div class="auth-footer">
+            <span class="tr" data-key="no_account">ليس لديك حساب؟</span>
+            <a href="register.html" class="tr" data-key="register">سجل الآن</a>
+        </div>
     </div>
 
     <script type="module">
-        // استيراد الدوال من ملفك الأساسي لضمان التزامن
-        import { auth, loginWithGoogle, toggleLang } from './ui-logic.js';
-        import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { auth, loginWithGoogle, toggleLang, applyTranslations } from './ui-logic.js';
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // تفعيل زر اللغة
-        document.getElementById("changeLangBtn").onclick = toggleLang;
+        // 1. إعدادات اللغة والترجمة
+        document.getElementById('langBtn').onclick = toggleLang;
+        const currentLang = localStorage.getItem('preferredLang') || 'ar';
+        applyTranslations(currentLang);
 
-        // 1. فحص حالة المستخدم
-        onAuthStateChanged(auth, (user) => {
-            if (user) location.href = "dashboard.html";
-        });
+        const errorDiv = document.getElementById('errorMessage');
 
-        // 2. تسجيل الدخول بالبريد
-        document.getElementById("loginBtn").onclick = async () => {
-            const email = document.getElementById("email").value.trim();
-            const pass = document.getElementById("pass").value;
-            const btn = document.getElementById("loginBtn");
-
-            if(!email || !pass) return alert("يرجى ملء كافة الحقول");
+        // 2. تسجيل الدخول بالبريد وكلمة المرور
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('submitBtn');
 
             try {
                 btn.disabled = true;
-                btn.innerText = "جاري الدخول...";
-                await signInWithEmailAndPassword(auth, email, pass);
-                // التوجيه سيحدث تلقائياً عبر onAuthStateChanged
-            } catch (e) {
+                btn.innerText = currentLang === 'ar' ? "جاري الدخول..." : "Logging in...";
+                
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = "dashboard.html";
+            } catch (error) {
                 btn.disabled = false;
-                btn.innerText = "دخول";
-                let msg = "خطأ في تسجيل الدخول";
-                if(e.code === 'auth/user-not-found') msg = "المستخدم غير موجود";
-                if(e.code === 'auth/wrong-password') msg = "كلمة المرور خاطئة";
-                alert(msg);
+                btn.innerText = currentLang === 'ar' ? "دخول" : "Login";
+                errorDiv.style.display = "block";
+                
+                // عرض رسائل خطأ مبسطة
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorDiv.innerText = currentLang === 'ar' ? "بيانات الدخول غير صحيحة" : "Invalid login credentials";
+                } else {
+                    errorDiv.innerText = currentLang === 'ar' ? "حدث خطأ ما، حاول ثانية" : "An error occurred, try again";
+                }
             }
         };
 
         // 3. تسجيل الدخول عبر جوجل
-        document.getElementById("googleBtn").onclick = async () => {
+        document.getElementById('googleBtn').onclick = async () => {
             try {
                 await loginWithGoogle();
-            } catch (e) {
-                alert("فشل الاتصال بجوجل");
+            } catch (error) {
+                console.error("Google login failed", error);
             }
         };
     </script>
