@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stranger Meeting | الرئيسية</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
     <style>
-        /* تنسيقات خاصة بصفحة الترحيب */
+        /* تنسيقات خاصة بصفحة الترحيب لزيادة الجاذبية */
         .welcome-container {
             display: flex;
             flex-direction: column;
@@ -17,98 +18,129 @@
             padding: 20px;
         }
         .logo-area { 
-            font-size: 4rem; 
+            font-size: 5rem; 
             margin-bottom: 10px; 
             animation: pulse 2s infinite;
+            filter: drop-shadow(0 5px 15px rgba(7, 94, 84, 0.3));
         }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        .hero-text { margin-bottom: 35px; opacity: 0.9; font-size: 1.1rem; }
+        .hero-text { margin-bottom: 35px; opacity: 0.9; font-size: 1.2rem; font-weight: 300; }
         .btns-group { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
         
-        /* زر جوجل بتصميم عصري */
+        /* تصميم زر جوجل الاحترافي */
         .google-btn {
             background: white;
             color: #444;
             border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 25px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: bold;
+            gap: 10px;
             cursor: pointer;
             transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .google-btn:hover { background: #f8f8f8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .google-btn:hover { background: #f8f8f8; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        .secondary-btn {
-            background: rgba(0,0,0,0.05);
-            color: var(--txt);
-            border: 1px solid rgba(0,0,0,0.1);
+        .main-btn {
+            background: var(--p);
+            color: white;
+            padding: 15px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(7, 94, 84, 0.3);
+            transition: 0.3s;
         }
-
-        #loadingOverlay {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: var(--bg); display: flex; align-items: center;
-            justify-content: center; z-index: 9999;
-        }
+        .main-btn:hover { transform: translateY(-2px); opacity: 0.9; }
     </style>
 </head>
 <body class="light-mode">
 
-    <div id="loadingOverlay">
-        <div class="loader"></div>
-    </div>
-
     <div class="welcome-container">
         <div class="logo-area">🤝</div>
-        <h1 id="title" class="tr" data-key="title">Stranger Meeting</h1>
-        <p id="subTitle" class="hero-text tr" data-key="subTitle">تواصل مع الآخرين بخصوصية وأمان تام عبر الفيديو والدردشة</p>
-        
+        <h1 id="mainTitle">Stranger Meeting</h1>
+        <p class="hero-text tr" data-key="heroText">تواصل مع العالم بلمسة واحدة. فيديو، دردشة، وأصدقاء جدد بانتظارك.</p>
+
         <div class="btns-group">
+            <a href="login.html" class="main-btn tr" data-key="loginBtnText">تسجيل الدخول</a>
+            
+            <div style="margin: 10px 0; color: #888;" class="tr" data-key="orText">أو</div>
+
             <button class="google-btn" id="googleLoginBtn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                <span class="tr" data-key="googleLogin">المتابعة باستخدام Google</span>
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
+                <span class="tr" data-key="googleLogin">الدخول بواسطة Gmail</span>
             </button>
 
-            <button class="secondary-btn tr" data-key="login" onclick="location.href='login.html'">تسجيل الدخول بالبريد</button>
-            
-            <p style="font-size: 0.85rem; margin-top: 10px;">
+            <p style="margin-top: 20px; font-size: 0.9rem;">
                 <span class="tr" data-key="haveAccount">ليس لديك حساب؟</span>
-                <a href="register.html" class="tr" data-key="register" style="color: var(--p); font-weight: bold;">اشترك الآن</a>
+                <a href="register.html" class="tr" data-key="register" style="color: var(--p); font-weight: bold; text-decoration: none;">اشترك الآن</a>
             </p>
         </div>
 
         <div class="settings-bar" style="margin-top: 50px; display: flex; gap: 25px;">
-            <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌓</button>
-            <button onclick="toggleLang()" id="langBtn" style="background:var(--p); color:white; border:none; border-radius:20px; padding:5px 15px; cursor:pointer;">EN</button>
+            <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.8rem; cursor:pointer;" title="تغيير الوضع">🌓</button>
+            <button onclick="toggleLang()" id="langBtn" style="background:var(--p); color:white; border:none; border-radius:20px; padding:8px 20px; cursor:pointer; font-weight:bold;">EN</button>
         </div>
     </div>
 
     <script type="module">
+        // استيراد الدوال الأساسية من ملف المنطق الموحد
         import { auth, loginWithGoogle } from './ui-logic.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ربط زر جوجل بالدالة
-        document.getElementById('googleLoginBtn').onclick = loginWithGoogle;
+        // تفعيل زر تسجيل الدخول عبر جوجل
+        const gBtn = document.getElementById('googleLoginBtn');
+        if(gBtn) {
+            gBtn.onclick = async () => {
+                try {
+                    await loginWithGoogle();
+                } catch (error) {
+                    console.error("Google Login Error:", error);
+                    alert("عذراً، تعذر الاتصال بحساب جوجل حالياً.");
+                }
+            };
+        }
 
-        // فحص حالة المستخدم عند فتح الصفحة
+        // فحص ذكي لحالة المستخدم
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // إذا كان مسجل دخول، انقله فوراً للوحة التحكم
+                // إذا كان المستخدم مسجلاً بالفعل، يتم توجيهه للداخل تلقائياً
                 window.location.href = "dashboard.html";
-            } else {
-                // إذا لم يكن مسجل دخول، اخفِ شاشة التحميل واظهر الصفحة
-                document.getElementById('loadingOverlay').style.display = 'none';
             }
         });
-    </script>
 
-    <script src="ui-logic.js"></script>
+        // وظائف الواجهة (اللغة والوضع الليلي)
+        window.toggleTheme = () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        };
+
+        window.toggleLang = () => {
+            const html = document.documentElement;
+            if (html.lang === 'ar') {
+                html.lang = 'en';
+                html.dir = 'ltr';
+                document.getElementById('langBtn').innerText = 'AR';
+            } else {
+                html.lang = 'ar';
+                html.dir = 'rtl';
+                document.getElementById('langBtn').innerText = 'EN';
+            }
+        };
+
+        // استعادة الوضع المفضل للمستخدم
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </body>
 </html>
