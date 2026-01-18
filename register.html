@@ -11,15 +11,15 @@
         .input-group { margin-bottom: 15px; text-align: right; }
         .input-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; font-weight: bold; opacity: 0.8; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--txt); outline: none; box-sizing: border-box; }
-        input:focus, select:focus { border-color: var(--p); }
+        input:focus, select:focus { border-color: var(--p); box-shadow: 0 0 5px rgba(7,94,84,0.2); }
         #regBtn { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.3s; }
-        #regBtn:hover { opacity: 0.9; transform: translateY(-2px); }
+        #regBtn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .footer-link { text-align: center; margin-top: 20px; font-size: 0.9rem; }
     </style>
 </head>
 <body class="light-mode">
     <div class="auth-box">
-        <h2 class="tr" data-key="register">إنشاء حساب جديد</h2>
+        <h2 class="tr" data-key="registerTitle">إنشاء حساب جديد</h2>
         
         <div class="input-group">
             <label>الاسم الكامل</label>
@@ -54,17 +54,8 @@
             </div>
         </div>
 
-        <div class="input-group">
-            <label>البلد</label>
-            <input type="text" id="country" placeholder="مثال: مصر">
-        </div>
 
-        <div class="input-group">
-            <label>الاهتمامات (اختياري)</label>
-            <input type="text" id="interest" placeholder="مثال: رياضة، موسيقى">
-        </div>
-
-        <button id="regBtn" class="tr" data-key="register">إنشاء الحساب 🚀</button>
+        <button id="regBtn" class="tr" data-key="registerBtn">إنشاء الحساب 🚀</button>
 
         <p class="footer-link">
             <span class="tr" data-key="haveAccount">لديك حساب بالفعل؟</span>
@@ -85,20 +76,27 @@
             const gender = document.getElementById("gender").value;
             const seeking = document.getElementById("seeking").value;
             const country = document.getElementById("country").value.trim();
-            const interest = document.getElementById("interest").value.trim();
+            const interestInput = document.getElementById("interest").value.trim();
 
             if(!name || !email || !pass || !country) {
-                return alert("الرجاء إكمال البيانات الأساسية (الاسم، البريد، كلمة السر، والبلد)");
+                return alert("الرجاء إكمال البيانات الأساسية");
+            }
+
+            if(pass.length < 6) {
+                return alert("يجب أن تكون كلمة المرور 6 أحرف على الأقل");
             }
 
             try {
                 btn.disabled = true;
-                btn.innerText = "جاري إنشاء الحساب...";
+                btn.innerText = "جاري الحفظ...";
 
-                // 1. إنشاء الحساب في Firebase Auth
+                // 1. إنشاء الحساب
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
                 
-                // 2. تخزين البيانات الإضافية في Firestore
+                // 2. معالجة الاهتمامات وتحويلها لمصفوفة
+                const interestsArray = interestInput ? interestInput.split(',').map(s => s.trim()) : ["General"];
+
+                // 3. تخزين البيانات في Firestore
                 await setDoc(doc(db, "users", res.user.uid), {
                     uid: res.user.uid,
                     fullname: name,
@@ -106,7 +104,7 @@
                     gender: gender,
                     seeking: seeking,
                     country: country,
-                    interest: interest || "General",
+                    interests: interestsArray, // مصفوفة منظمة
                     isOnline: true,
                     lastSeen: serverTimestamp(),
                     createdAt: serverTimestamp()
@@ -116,7 +114,12 @@
             } catch (e) {
                 btn.disabled = false;
                 btn.innerText = "إنشاء الحساب 🚀";
-                alert("خطأ أثناء التسجيل: " + e.message);
+                
+                let errorMsg = "حدث خطأ أثناء التسجيل";
+                if (e.code === 'auth/email-already-in-use') errorMsg = "هذا البريد الإلكتروني مسجل بالفعل";
+                if (e.code === 'auth/invalid-email') errorMsg = "البريد الإلكتروني غير صحيح";
+                
+                alert(errorMsg);
             }
         };
     </script>
