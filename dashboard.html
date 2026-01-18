@@ -6,152 +6,226 @@
     <title class="tr" data-key="dashboard">الرئيسية | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* تنسيقات إضافية مخصصة للداشبورد */
         .main-container { padding: 20px; max-width: 600px; margin: 0 auto; }
         
-        /* قسم البحث العشوائي */
-        .search-section { 
-            background: var(--p); 
+        .hero-section { 
+            background: linear-gradient(135deg, var(--p), #128c7e); 
             color: white; 
-            padding: 30px; 
-            border-radius: 20px; 
+            padding: 40px 20px; 
+            border-radius: 25px; 
             text-align: center; 
-            margin-bottom: 25px;
-            box-shadow: 0 10px 20px rgba(7, 94, 84, 0.2);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(7, 94, 84, 0.2);
         }
 
-        /* قوائم المستخدمين */
-        .list-section { margin-bottom: 25px; }
-        .list-section h3 { font-size: 1rem; margin-bottom: 15px; opacity: 0.8; display: flex; align-items: center; gap: 8px; }
-        
-        .empty-state { text-align: center; padding: 20px; opacity: 0.5; font-size: 0.9rem; border: 2px dashed rgba(0,0,0,0.1); border-radius: 15px; }
+        .hero-section h1 { font-size: 1.8rem; margin-bottom: 10px; }
+        .hero-section p { font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px; }
 
-        /* حالة المتصل */
-        .online-dot { width: 10px; height: 10px; background: #25d366; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .start-btn { 
+            background: white; 
+            color: var(--p); 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .start-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+
+        .section-title { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin: 25px 0 15px; 
+            font-size: 1.1rem; 
+            color: var(--txt);
+        }
+
+        .empty-list { 
+            text-align: center; 
+            padding: 30px; 
+            background: var(--card); 
+            border-radius: 15px; 
+            border: 2px dashed rgba(0,0,0,0.05);
+            opacity: 0.6;
+        }
+
+        /* تنسيق طلبات الصداقة */
+        #requestsList .user-item { 
+            border-left: 4px solid var(--p); 
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .status-badge {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-inline-end: 5px;
+        }
+        .online { background: #25d366; }
+        .offline { background: #999; }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="header">
         <button class="icon-btn" onclick="location.href='profile.html'">⚙️</button>
-        <h2 class="pulse">Stranger Meeting</h2>
-        <button id="themeBtn" class="icon-btn">🌓</button>
+        <h2 class="tr" data-key="app_name">Stranger Meeting</h2>
+        <div style="display: flex; gap: 8px;">
+            <button id="themeBtn" class="icon-btn">🌓</button>
+            <button id="langBtn" class="friend-btn">EN</button>
+        </div>
     </div>
 
     <div class="main-container">
-        <div class="search-section">
-            <h1 class="tr" data-key="welcome">مرحباً بك!</h1>
-            <p class="tr" data-key="startHint">ابدأ مكالمة فيديو عشوائية مع أشخاص يشاركونك اهتماماتك</p>
-            <button id="startMatchBtn" class="start-btn pulse">ابدأ البحث الآن 🚀</button>
+        <div class="hero-section">
+            <h1 class="tr" data-key="welcome">مرحباً بك مجدداً!</h1>
+            <p class="tr" data-key="startHint">ابدأ مكالمة فيديو عشوائية الآن</p>
+            <button id="startMatchBtn" class="start-btn tr" data-key="start_search">ابدأ البحث عن صديق 🚀</button>
         </div>
 
-        <div class="list-section" id="requestsSection" style="display: none;">
-            <h3 class="tr" data-key="requests">🔔 طلبات صداقة جديدة</h3>
+        <div id="requestsWrapper" style="display: none;">
+            <h3 class="section-title"><span class="tr" data-key="friend_requests">🔔 طلبات الصداقة</span></h3>
             <div id="requestsList"></div>
         </div>
 
-        <div class="list-section">
-            <h3 class="tr" data-key="friends">👥 أصدقاؤك</h3>
-            <div id="friendsList">
-                <div class="empty-state tr" data-key="noFriends">لا يوجد أصدقاء بعد. ابدأ بمقابلة الناس!</div>
-            </div>
+        <h3 class="section-title"><span class="tr" data-key="friends_list">👥 أصدقاؤك</span></h3>
+        <div id="friendsList">
+            <div class="empty-list tr" data-key="no_friends">لا يوجد أصدقاء بعد. ابدأ بمقابلة الناس!</div>
         </div>
     </div>
 
     <script type="module">
-        import { auth, db, toggleTheme } from './ui-logic.js';
+        import { auth, db, toggleLang, toggleTheme, applyTranslations, startDiscovery } from './ui-logic.js';
         import { collection, query, where, onSnapshot, doc, getDoc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { startRandomMatch } from './matchmaking.js';
 
+        // 1. إعدادات اللغة والثيم
         document.getElementById('themeBtn').onclick = toggleTheme;
-        document.getElementById('startMatchBtn').onclick = startRandomMatch;
+        document.getElementById('langBtn').onclick = toggleLang;
+        const currentLang = localStorage.getItem('preferredLang') || 'ar';
+        applyTranslations(currentLang);
 
-        // 1. الاستماع لطلبات الصداقة (الواردة لي فقط)
-        function listenToRequests(uid) {
-            const q = query(collection(db, "friend_requests"), where("to", "==", uid), where("status", "==", "pending"));
-            onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('requestsList');
-                const section = document.getElementById('requestsSection');
-                container.innerHTML = "";
-                
+        // 2. تشغيل البحث العشوائي
+        document.getElementById('startMatchBtn').onclick = () => {
+            document.getElementById('startMatchBtn').innerText = currentLang === 'ar' ? "جاري البحث..." : "Searching...";
+            startDiscovery();
+        };
+
+        // 3. الاستماع لطلبات الصداقة الواردة
+        function initRequestsListener(uid) {
+            const q = query(collection(db, "friend_requests"), where("to", "==", uid));
+            onSnapshot(q, async (snapshot) => {
+                const wrapper = document.getElementById('requestsWrapper');
+                const list = document.getElementById('requestsList');
+                list.innerHTML = "";
+
                 if (snapshot.empty) {
-                    section.style.display = "none";
+                    wrapper.style.display = "none";
                     return;
                 }
 
-                section.style.display = "block";
-                snapshot.forEach(async (requestDoc) => {
-                    const reqData = requestDoc.data();
-                    const senderSnap = await getDoc(doc(db, "users", reqData.from));
+                wrapper.style.display = "block";
+                for (const requestDoc of snapshot.docs) {
+                    const req = requestDoc.data();
+                    const senderSnap = await getDoc(doc(db, "users", req.from));
                     const sender = senderSnap.data();
 
-                    const div = document.createElement('div');
-                    div.className = "user-item";
-                    div.innerHTML = `
+                    const item = document.createElement('div');
+                    item.className = "user-item";
+                    item.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <div class="user-avatar">${sender.fullname.charAt(0)}</div>
+                            <div class="user-avatar">${sender.fullname.charAt(0).toUpperCase()}</div>
                             <span>${sender.fullname}</span>
                         </div>
-                        <div style="display:flex; gap:5px;">
-                            <button class="friend-btn" onclick="acceptFriend('${requestDoc.id}', '${reqData.from}', '${uid}')">✅</button>
-                            <button class="friend-btn" style="background:var(--danger)" onclick="rejectFriend('${requestDoc.id}')">❌</button>
+                        <div style="display:flex; gap:8px;">
+                            <button class="friend-btn" onclick="window.manageRequest('${requestDoc.id}', '${req.from}', true)">✅</button>
+                            <button class="friend-btn" style="background:#e74c3c" onclick="window.manageRequest('${requestDoc.id}', '${req.from}', false)">❌</button>
                         </div>
                     `;
-                    container.appendChild(div);
-                });
+                    list.appendChild(item);
+                }
             });
         }
 
-        // 2. الاستماع لقائمة الأصدقاء
-        function listenToFriends(uid) {
+        // 4. الاستماع لقائمة الأصدقاء
+        function initFriendsListener(uid) {
             const q = query(collection(db, "friends"), where("users", "array-contains", uid));
             onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('friendsList');
+                const list = document.getElementById('friendsList');
                 if (snapshot.empty) return;
 
-                container.innerHTML = "";
-                snapshot.forEach(async (fDoc) => {
-                    const friendID = fDoc.data().users.find(id => id !== uid);
+                list.innerHTML = "";
+                snapshot.forEach(async (friendDoc) => {
+                    const friendID = friendDoc.data().users.find(id => id !== uid);
                     const friendSnap = await getDoc(doc(db, "users", friendID));
                     const friend = friendSnap.data();
 
-                    const div = document.createElement('div');
-                    div.className = "user-item";
-                    div.style.cursor = "pointer";
-                    div.onclick = () => location.href = `chat.html?id=${friendID}`;
-                    div.innerHTML = `
+                    const item = document.createElement('div');
+                    item.className = "user-item";
+                    item.style.cursor = "pointer";
+                    item.onclick = () => location.href = `chat.html?id=${friendID}`;
+                    
+                    const statusClass = friend.isOnline ? 'online' : 'offline';
+                    const statusText = friend.isOnline 
+                        ? (currentLang === 'ar' ? 'متصل' : 'Online') 
+                        : (currentLang === 'ar' ? 'غير متصل' : 'Offline');
+
+                    item.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <div class="user-avatar">${friend.fullname.charAt(0)}</div>
+                            <div class="user-avatar">${friend.fullname.charAt(0).toUpperCase()}</div>
                             <div>
-                                <div>${friend.fullname}</div>
-                                <small style="opacity:0.6">${friend.isOnline ? '🟢 متصل الآن' : '⚪ غير متصل'}</small>
+                                <div style="font-weight:bold;">${friend.fullname}</div>
+                                <div style="font-size:0.75rem; opacity:0.7;">
+                                    <span class="status-badge ${statusClass}"></span> ${statusText}
+                                </div>
                             </div>
                         </div>
-                        <span class="badge">دردشة</span>
+                        <div class="friend-btn">💬</div>
                     `;
-                    container.appendChild(div);
+                    list.appendChild(item);
                 });
             });
         }
 
-        // وظائف القبول والرفض (نجعلها عالمية ليراها HTML)
-        window.acceptFriend = async (reqId, fromId, myId) => {
-            await setDoc(doc(db, "friends", `${fromId}_${myId}`), { users: [fromId, myId], timestamp: Date.now() });
-            await deleteDoc(doc(db, "friend_requests", reqId));
-            alert("تمت إضافة الصديق بنجاح! 🎉");
+        // 5. وظيفة إدارة الطلبات (قبول/رفض)
+        window.manageRequest = async (docId, fromUid, isAccept) => {
+            const myUid = auth.currentUser.uid;
+            try {
+                if (isAccept) {
+                    // إضافة في مجموعة الأصدقاء
+                    await setDoc(doc(db, "friends", `${fromUid}_${myUid}`), {
+                        users: [fromUid, myUid],
+                        createdAt: Date.now()
+                    });
+                }
+                // حذف الطلب في كلتا الحالتين
+                await deleteDoc(doc(db, "friend_requests", docId));
+            } catch (err) {
+                console.error("Error managing request:", err);
+            }
         };
 
-        window.rejectFriend = async (reqId) => {
-            await deleteDoc(doc(db, "friend_requests", reqId));
-        };
-
+        // التحقق من حالة المستخدم عند الدخول
         auth.onAuthStateChanged(user => {
             if (user) {
-                listenToRequests(user.uid);
-                listenToFriends(user.uid);
+                initRequestsListener(user.uid);
+                initFriendsListener(user.uid);
             } else {
                 location.href = "login.html";
             }
         });
+
     </script>
 </body>
 </html>
