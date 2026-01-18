@@ -1,35 +1,54 @@
 {
-  "name": "Stranger Meeting",
-  "short_name": "SM App",
-  "description": "منصة التعارف العالمية - فيديو مباشر ودردشة مشفرة",
-  "start_url": "/index.html",
-  "display": "standalone",
-  "background_color": "#075e54",
-  "theme_color": "#075e54",
-  "orientation": "portrait",
-  "scope": "/",
-  "categories": ["social", "entertainment"],
+  "short_name": "SM Chat",
+  "name": "Stranger Meeting - Global Chat",
+  "description": "قابل أشخاصاً جدد حول العالم عبر الفيديو والدردشة الفورية",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3649/3649460.png",
-      "sizes": "192x192",
+      "src": "icons/icon-192.png",
       "type": "image/png",
+      "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3649/3649460.png",
-      "sizes": "512x512",
+      "src": "icons/icon-512.png",
       "type": "image/png",
+      "sizes": "512x512",
       "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/index.html",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#075e54",
+  "orientation": "portrait-primary",
+  "categories": ["social", "entertainment", "communications"],
+  "shortcuts": [
+    {
+      "name": "الملف الشخصي",
+      "short_name": "Profile",
+      "url": "/profile.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "بدء البحث",
+      "short_name": "Discovery",
+      "url": "/dashboard.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "screenshots": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3649/3649460.png",
-      "sizes": "512x512",
+      "src": "screenshots/screen1.png",
       "type": "image/png",
-      "form_factor": "wide",
-      "label": "Stranger Meeting Home"
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/screen2.png",
+      "type": "image/png",
+      "sizes": "1920x1080",
+      "form_factor": "wide"
     }
   ]
 }
