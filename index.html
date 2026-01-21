@@ -20,58 +20,68 @@
             justify-content: center;
             background: var(--bg);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s ease;
+            overflow: hidden;
         }
 
         .splash-container {
             text-align: center;
-            animation: fadeIn 1s ease-in;
+            animation: fadeIn 0.8s ease-in;
+            z-index: 10;
         }
 
         .logo-animation {
-            font-size: 5rem;
+            font-size: 5.5rem;
             margin-bottom: 20px;
             display: inline-block;
-            animation: pulse 2s infinite;
+            animation: pulseCustom 2.5s infinite ease-in-out;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
         }
 
         .loader {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border: 4px solid rgba(7, 94, 84, 0.1);
             border-left-color: var(--p);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            animation: spin 0.8s linear infinite;
+            margin: 25px auto;
         }
 
         .welcome-text {
             color: var(--txt);
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.8rem;
+            font-weight: 800;
             margin-bottom: 10px;
+            letter-spacing: -0.5px;
         }
 
         .tagline {
             color: var(--txt);
             opacity: 0.6;
-            font-size: 0.9rem;
+            font-size: 1rem;
+        }
+
+        /* تحسين أزرار البداية */
+        .auth-buttons {
+            margin-top: 35px;
+            display: none; 
+            flex-direction: column;
+            gap: 12px;
+            width: 280px;
+            animation: slideUp 0.5s ease-out;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        @keyframes pulseCustom {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* أزرار البداية إذا لم يكن هناك تسجيل دخول */
-        .auth-buttons {
-            margin-top: 30px;
-            display: none; /* تظهر فقط عند التأكد من عدم وجود جلسة */
-            flex-direction: column;
-            gap: 15px;
-        }
+        /* تخصيص الوضع الليلي لصفحة البداية */
+        .dark-mode .loader { border-color: rgba(255,255,255,0.05); border-left-color: var(--p); }
     </style>
 </head>
 <body class="light-mode">
@@ -85,7 +95,7 @@
 
         <div id="authArea" class="auth-buttons">
             <button class="save-btn tr" data-key="login" onclick="location.href='login.html'">تسجيل الدخول</button>
-            <button class="friend-btn tr" data-key="register" onclick="location.href='register.html'" style="padding: 15px;">إنشاء حساب جديد</button>
+            <button class="friend-btn tr" data-key="register" onclick="location.href='register.html'" style="padding: 15px; border: 1px solid var(--p);">إنشاء حساب جديد</button>
         </div>
     </div>
 
@@ -93,35 +103,53 @@
         import { auth, applyTranslations } from './ui-logic.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // 1. تطبيق اللغة المفضلة فوراً
+        // 1. معالجة الثيم فوراً قبل أي شيء لمنع الوميض الأبيض
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = savedTheme + '-mode';
+
+        // 2. تطبيق اللغة
         const savedLang = localStorage.getItem('preferredLang') || 'ar';
         applyTranslations(savedLang);
 
-        // 2. فحص حالة المستخدم (Auth Observer)
+        // 3. فحص حالة المستخدم مع تأخير جمالي بسيط
+        const startTime = Date.now();
+        
         onAuthStateChanged(auth, (user) => {
             const loader = document.getElementById('mainLoader');
             const authArea = document.getElementById('authArea');
+            
+            // حساب الوقت المستغرق لضمان بقاء شاشة الترحيب لفترة كافية (مثلاً ثانية واحدة)
+            const elapsedTime = Date.now() - startTime;
+            const delay = Math.max(0, 1200 - elapsedTime);
 
-            setTimeout(() => { // مهلة بسيطة لضمان سلاسة حركة شاشة الترحيب
+            setTimeout(() => {
                 if (user) {
-                    // إذا كان المستخدم مسجل، توجه فوراً للداشبورد
-                    window.location.href = "dashboard.html";
+                    // إذا كان مسجلاً، اذهب للرئيسية
+                    window.location.replace("dashboard.html");
                 } else {
-                    // إذا لم يكن مسجلاً، أخفِ اللودر واظهر أزرار الدخول
+                    // إذا لم يكن مسجلاً، اظهر خيارات الدخول
                     loader.style.display = "none";
                     authArea.style.display = "flex";
                 }
-            }, 1500);
+            }, delay);
         });
 
-        // 3. تسجيل الـ Service Worker لتمكين الـ PWA
+        // 4. تسجيل الـ Service Worker للـ PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW Registered!', reg))
-                    .catch(err => console.log('SW Failed!', err));
+                    .then(reg => console.log('PWA ServiceWorker ready.'))
+                    .catch(err => console.error('PWA ServiceWorker failed.', err));
             });
         }
+
+        // تحسين أمان الصفحة لمنع العودة لشاشة التحميل بالخلف
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
     </script>
 </body>
 </html>
+
