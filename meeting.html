@@ -9,89 +9,139 @@
             background: #000; 
             color: #fff; 
             margin: 0; 
-            font-family: sans-serif; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
             overflow: hidden;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
-        #jitsi-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         
-        .loading-ui { text-align: center; z-index: 10; }
+        #jitsi-container { width: 100%; height: 100%; position: absolute; z-index: 1; }
+        
+        .loading-ui { 
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            text-align: center; z-index: 10; 
+        }
+
         .loader { 
-            border: 4px solid #333; border-top: 4px solid #00a884; 
+            border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #00a884; 
             border-radius: 50%; width: 50px; height: 50px; 
             animation: spin 1s linear infinite; margin: 0 auto 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .video-controls {
-            position: fixed; bottom: 30px; left: 50%;
+            position: fixed; bottom: 40px; left: 50%;
             transform: translateX(-50%); display: none;
             gap: 15px; z-index: 1000;
+            width: 90%; max-width: 400px;
+            justify-content: center;
         }
+
         .action-btn {
-            padding: 12px 20px; border-radius: 30px; border: none;
+            flex: 1; padding: 14px 10px; border-radius: 50px; border: none;
             font-weight: bold; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 0.9rem;
+            white-space: nowrap;
         }
         .friend-btn { background: #25d366; color: white; }
         .exit-btn { background: #ff3b30; color: white; }
+        
+        .action-btn:active { transform: scale(0.95); }
+        .action-btn:disabled { background: #555; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <div class="loading-ui" id="loadingUI">
         <div class="loader"></div>
-        <p>جاري تأمين اتصال الفيديو...</p>
+        <p id="loadingText">جاري تأمين اتصال الفيديو المشفر...</p>
     </div>
 
     <div id="jitsi-container"></div>
 
     <div class="video-controls" id="controls">
         <button id="addFriendBtn" class="action-btn friend-btn">إرسال طلب صداقة ➕</button>
-        <button onclick="location.href='dashboard.html'" class="action-btn exit-btn">إنهاء المكالمة ❌</button>
+        <button id="hangupBtn" class="action-btn exit-btn">إنهاء المكالمة ❌</button>
     </div>
 
     <script src="https://meet.jit.si/external_api.js"></script>
     
     <script type="module">
         import { auth, db } from './ui-logic.js';
-        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // جلب البيانات من الرابط
         const urlParams = new URLSearchParams(window.location.search);
-        const roomID = urlParams.get('room') || "Global";
+        const roomID = urlParams.get('room');
         const otherUserId = urlParams.get('target'); 
+
+        // التحقق من وجود المعطيات الأساسية
+        if (!roomID) {
+            location.href = 'dashboard.html';
+        }
 
         window.onload = () => {
             const domain = "meet.jit.si";
             const options = {
-                roomName: "SM_Room_" + roomID,
+                roomName: "SM_Secure_Room_" + roomID,
                 width: "100%",
                 height: "100%",
                 parentNode: document.querySelector('#jitsi-container'),
-                configOverwrite: { prejoinPageEnabled: false },
+                configOverwrite: { 
+                    prejoinPageEnabled: false,
+                    startWithAudioMuted: false,
+                    disableDeepLinking: true // يمنع فتح تطبيق Jitsi الخارجي
+                },
                 interfaceConfigOverwrite: {
-                    TOOLBAR_BUTTONS: ['microphone', 'camera', 'chat', 'tileview', 'hangup'],
+                    SHOW_JITSI_WATERMARK: false,
+                    SHOW_WATERMARK_FOR_GUESTS: false,
+                    TOOLBAR_BUTTONS: ['microphone', 'camera', 'chat', 'hangup', 'videoquality']
+                },
+                userInfo: {
+                    displayName: auth.currentUser?.displayName || "Stranger"
                 }
             };
 
             const api = new JitsiMeetExternalAPI(domain, options);
 
+            // عند انضمام المستخدم بنجاح
             api.addEventListener('videoConferenceJoined', () => {
                 document.getElementById("loadingUI").style.display = "none";
                 document.getElementById("controls").style.display = "flex";
+                updateUserBusyStatus(true);
             });
 
-            // منطق زر الصداقة
-            document.getElementById("addFriendBtn").onclick = async () => {
-                if (!auth.currentUser || !otherUserId) {
-                    alert("لا يمكن إرسال الطلب حالياً.");
-                    return;
+            // عند ضغط زر الإنهاء داخل Jitsi
+            api.addEventListener('videoConferenceLeft', () => {
+                exitRoom();
+            });
+
+            // زر إنهاء المكالمة المخصص
+            document.getElementById("hangupBtn").onclick = () => {
+                api.executeCommand('hangup');
+                exitRoom();
+            };
+
+            async function exitRoom() {
+                await updateUserBusyStatus(false);
+                location.href = 'dashboard.html';
+            }
+
+            async function updateUserBusyStatus(isBusy) {
+                if (auth.currentUser) {
+                    try {
+                        await updateDoc(doc(db, "users", auth.currentUser.uid), { isBusy: isBusy });
+                    } catch (e) { console.error("Status update error", e); }
                 }
+            }
+
+            // منطق طلب الصداقة
+            document.getElementById("addFriendBtn").onclick = async () => {
+                const btn = document.getElementById("addFriendBtn");
+                if (!auth.currentUser || !otherUserId) return;
+
+                btn.disabled = true;
+                btn.innerText = "جاري الإرسال...";
+
                 try {
                     await setDoc(doc(db, "friend_requests", `${auth.currentUser.uid}_${otherUserId}`), {
                         from: auth.currentUser.uid,
@@ -99,11 +149,15 @@
                         status: "pending",
                         timestamp: serverTimestamp()
                     });
-                    document.getElementById("addFriendBtn").innerText = "تم الإرسال ✅";
-                    document.getElementById("addFriendBtn").disabled = true;
-                } catch (e) { alert("خطأ في الإرسال"); }
+                    btn.innerText = "تم إرسال الطلب ✅";
+                } catch (e) { 
+                    btn.disabled = false;
+                    btn.innerText = "حاول مرة أخرى ➕";
+                    alert("فشل الإرسال"); 
+                }
             };
         };
     </script>
 </body>
 </html>
+
