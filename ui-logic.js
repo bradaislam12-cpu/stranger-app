@@ -1,12 +1,12 @@
-// 1. استيراد مكتبات Firebase الأساسية
+// 1. استيراد مكتبات Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, collection, 
     query, where, getDocs, serverTimestamp, limit 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 2. إعدادات المشروع
+// 2. إعدادات المشروع (تأكد من مطابقتها لإعدادات Firebase Console الخاصة بك)
 const firebaseConfig = {
     apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg",
     authDomain: "strangermeeting-91226.firebaseapp.com",
@@ -21,8 +21,8 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// 3. قاموس اللغات الشامل
-const translations = {
+// 3. قاموس اللغات (تمت مراجعته وتدقيقه)
+export const translations = {
     ar: {
         app_name: "Stranger Meeting",
         welcome: "مرحباً بك مجدداً!",
@@ -30,96 +30,41 @@ const translations = {
         register: "إنشاء حساب جديد",
         dashboard: "الرئيسية",
         profile: "الملف الشخصي",
-        settings: "الإعدادات",
-        terms: "شروط الخدمة",
-        chat: "المحادثة",
         fullname: "الاسم الكامل",
         email: "البريد الإلكتروني",
-        password: "كلمة المرور",
         gender: "جنسك",
         male: "ذكر",
         female: "أنثى",
-        seeking: "تريد مقابلة",
+        seeking: "اهتمامك",
         both: "الجميع",
-        country: "البلد",
-        interests: "الاهتمامات (هواياتك)",
         save_changes: "حفظ التغييرات ✅",
-        logout: "تسجيل الخروج 🚪",
-        start_search: "ابدأ البحث عن صديق 🚀",
+        logout: "خروج 🚪",
+        start_search: "بحث عن صديق 🚀",
         searching: "جاري البحث عن شريك مناسب...",
-        cancel_search: "إلغاء البحث",
-        no_friends: "لا يوجد أصدقاء بعد. ابدأ بمقابلة الناس!",
-        friends_list: "👥 أصدقاؤك",
-        friend_requests: "🔔 طلبات الصداقة",
-        online: "متصل الآن",
-        offline: "غير متصل",
-        type_message: "اكتب رسالتك هنا...",
-        send: "إرسال",
-        chat_secure: "بداية المحادثة الآمنة 🔒",
-        friend_added: "تمت إضافة الصديق بنجاح! 🎉",
-        add_friend: "إرسال طلب صداقة ➕",
-        request_sent: "تم إرسال الطلب بنجاح",
-        error_required: "يرجى ملء جميع الحقول المطلوبة",
-        error_email_used: "هذا البريد مستخدم بالفعل",
-        error_weak_pass: "كلمة المرور ضعيفة جداً",
-        error_generic: "حدث خطأ ما، حاول ثانية",
-        success_update: "تم تحديث البيانات بنجاح!",
-        confirm_exit: "هل أنت متأكد من الخروج؟",
-        back: "رجوع",
-        agree: "أوافق وأرغب في المتابعة ✅",
-        have_account: "لديك حساب بالفعل؟ سجل دخولك",
-        no_account: "ليس لديك حساب؟ سجل الآن",
-        dark_mode: "الوضع الليلي",
-        light_mode: "الوضع النهاري"
+        online: "متصل",
+        no_users: "لا يوجد مستخدمين متاحين حالياً، حاول مرة أخرى.",
+        // أضف أي مفاتيح أخرى هنا
     },
     en: {
         app_name: "Stranger Meeting",
         welcome: "Welcome Back!",
         login: "Login",
-        register: "Create New Account",
+        register: "Register",
         dashboard: "Dashboard",
         profile: "Profile",
-        settings: "Settings",
-        terms: "Terms of Service",
-        chat: "Chat",
         fullname: "Full Name",
-        email: "Email Address",
-        password: "Password",
+        email: "Email",
         gender: "Gender",
         male: "Male",
         female: "Female",
         seeking: "Seeking",
         both: "Everyone",
-        country: "Country",
-        interests: "Interests (Hobbies)",
-        save_changes: "Save Changes ✅",
+        save_changes: "Save ✅",
         logout: "Logout 🚪",
-        start_search: "Start Searching 🚀",
-        searching: "Looking for a match...",
-        cancel_search: "Cancel Search",
-        no_friends: "No friends yet. Start meeting people!",
-        friends_list: "👥 Your Friends",
-        friend_requests: "🔔 Friend Requests",
-        online: "Online Now",
-        offline: "Offline",
-        type_message: "Type your message...",
-        send: "Send",
-        chat_secure: "Secure Conversation Started 🔒",
-        friend_added: "Friend added successfully! 🎉",
-        add_friend: "Add Friend ➕",
-        request_sent: "Request sent successfully",
-        error_required: "Please fill all required fields",
-        error_email_used: "This email is already registered",
-        error_weak_pass: "Password is too weak",
-        error_generic: "Something went wrong, try again",
-        success_update: "Data updated successfully!",
-        confirm_exit: "Are you sure you want to exit?",
-        back: "Back",
-        agree: "I agree and want to proceed ✅",
-        have_account: "Have an account? Login",
-        no_account: "No account? Register now",
-        dark_mode: "Dark Mode",
-        light_mode: "Light Mode"
+        start_search: "Find Match 🚀",
+        searching: "Searching for partner...",
+        online: "Online",
+        no_users: "No users available right now, try again.",
     }
 };
 
@@ -130,10 +75,9 @@ export function applyTranslations(lang) {
     elements.forEach(el => {
         const key = el.getAttribute('data-key');
         if (translations[lang] && translations[lang][key]) {
-            if (el.placeholder !== undefined) {
+            if (el.tagName === 'INPUT') {
                 el.placeholder = translations[lang][key];
-            }
-            if (el.tagName !== 'INPUT') {
+            } else {
                 el.innerText = translations[lang][key];
             }
         }
@@ -148,6 +92,7 @@ export const toggleLang = () => {
     let currentLang = localStorage.getItem('preferredLang') === 'en' ? 'ar' : 'en';
     localStorage.setItem('preferredLang', currentLang);
     applyTranslations(currentLang);
+    window.location.reload(); // لإعادة تحميل القوائم الديناميكية مثل الهوايات
 };
 
 export const toggleTheme = () => {
@@ -158,6 +103,7 @@ export const toggleTheme = () => {
 
 // --- وظائف المنطق (Logic Functions) ---
 
+// تسجيل الدخول بجوجل
 export const loginWithGoogle = async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
@@ -172,12 +118,14 @@ export const loginWithGoogle = async () => {
                 email: user.email,
                 gender: "male",
                 seeking: "both",
-                country: "Unknown",
+                country: "Algeria",
+                interests: [],
                 isOnline: true,
+                isBusy: false,
                 createdAt: serverTimestamp()
             });
         } else {
-            await updateDoc(userRef, { isOnline: true });
+            await updateDoc(userRef, { isOnline: true, isBusy: false });
         }
         window.location.href = "dashboard.html";
     } catch (error) {
@@ -185,54 +133,80 @@ export const loginWithGoogle = async () => {
     }
 };
 
-// محرك البحث العشوائي
-export const startDiscovery = async () => {
+// محرك البحث المطور
+export const startDiscovery = async (btn) => {
     const user = auth.currentUser;
     if (!user) return;
 
+    const lang = localStorage.getItem('preferredLang') || 'ar';
+    const originalText = btn.innerText;
+    
     try {
+        btn.disabled = true;
+        btn.innerText = translations[lang].searching;
+
         const myDoc = await getDoc(doc(db, "users", user.uid));
         const myData = myDoc.data();
 
+        // استعلام لجلب مستخدمين متاحين
         let q = query(
             collection(db, "users"),
             where("isOnline", "==", true),
+            where("isBusy", "==", false),
             where("uid", "!=", user.uid),
-            limit(20)
+            limit(30)
         );
 
         const querySnapshot = await getDocs(q);
         const candidates = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            if ((myData.seeking === "both" || data.gender === myData.seeking) &&
-                (data.seeking === "both" || data.seeking === myData.gender)) {
+
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            // شرط المطابقة المتبادلة (Mutual Match)
+            const amIInterested = (myData.seeking === "both" || data.gender === myData.seeking);
+            const isPartnerInterested = (data.seeking === "both" || data.seeking === myData.gender);
+
+            if (amIInterested && isPartnerInterested) {
                 candidates.push(data);
             }
         });
 
         if (candidates.length > 0) {
-            const randomFriend = candidates[Math.floor(Math.random() * candidates.length)];
-            const roomName = [user.uid, randomFriend.uid].sort().join("");
-            window.location.href = `meeting.html?room=${roomName}&target=${randomFriend.uid}`;
+            const partner = candidates[Math.floor(Math.random() * candidates.length)];
+            const roomID = [user.uid, partner.uid].sort().join("_");
+            
+            // تحديث حالتي لمشغول قبل الانتقال
+            await updateDoc(doc(db, "users", user.uid), { isBusy: true });
+            
+            window.location.href = `meeting.html?room=${roomID}&target=${partner.uid}`;
         } else {
-            const lang = localStorage.getItem('preferredLang') || 'ar';
-            alert(lang === 'ar' ? "لا يوجد مستخدمين متاحين" : "No users available");
+            alert(translations[lang].no_users);
+            btn.disabled = false;
+            btn.innerText = originalText;
         }
     } catch (error) {
         console.error("Discovery Error:", error);
+        btn.disabled = false;
+        btn.innerText = originalText;
     }
 };
 
-// تهيئة الإعدادات عند التحميل
-window.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+// تهيئة الإعدادات عند تحميل أي صفحة
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. الثيم
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+    
+    // 2. اللغة
     const savedLang = localStorage.getItem('preferredLang') || 'ar';
     applyTranslations(savedLang);
+
+    // 3. مراقبة حالة المستخدم لتحديث الـ Online/Offline
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            updateDoc(doc(db, "users", user.uid), { isOnline: true });
+        }
+    });
 });
 
-window.addEventListener('beforeunload', () => {
-    if (auth.currentUser) {
-        updateDoc(doc(db, "users", auth.currentUser.uid), { isOnline: false });
-    }
-});
