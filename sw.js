@@ -1,17 +1,42 @@
-// sw.js - هذا الملف يجعل التطبيق يعمل أوفلاين ويسمح بالتثبيت
-const cacheName = 'sm-app-v1';
-const assets = [
+const CACHE_NAME = 'sm-chat-v1';
+const ASSETS = [
   '/',
   '/index.html',
+  '/login.html',
+  '/register.html',
+  '/dashboard.html',
+  '/chat.html',
   '/style.css',
   '/ui-logic.js',
-  'https://cdn-icons-png.flaticon.com/512/3649/3649460.png'
+  '/manifest.json'
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(cacheName).then(cache => cache.addAll(assets)));
+// تثبيت الـ Service Worker وتخزين الملفات
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
 });
 
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+// تفعيل وتحديث الكاش
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      );
+    })
+  );
+});
+
+// استراتيجية الجلب (Network First) لضمان تحديث البيانات
+self.addEventListener('fetch', (e) => {
+  // تجاوز طلبات Firebase (لا نريد كاش لبيانات الدردشة الحية)
+  if (e.request.url.includes('firebaseio.com') || e.request.url.includes('googleapis.com')) {
+    return;
+  }
+
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
+  );
 });
