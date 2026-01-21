@@ -14,115 +14,115 @@
             background: var(--bg);
             margin: 0;
             padding: 20px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         .auth-card {
             background: var(--card);
             width: 100%;
             max-width: 400px;
-            padding: 30px;
+            padding: 35px 30px;
             border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
             text-align: center;
+            animation: slideUp 0.5s ease-out;
         }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .auth-header { margin-bottom: 30px; }
-        .auth-header h1 { font-size: 1.8rem; color: var(--p); margin-bottom: 10px; }
-        .auth-header p { opacity: 0.6; font-size: 0.9rem; }
+        .auth-header h1 { font-size: 2rem; color: var(--p); margin-bottom: 8px; font-weight: 800; }
+        .auth-header p { opacity: 0.6; font-size: 0.95rem; }
 
-        .input-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            color: var(--txt);
-        }
-
+        .input-group { margin-bottom: 18px; text-align: right; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--txt); opacity: 0.9; }
+        
         .input-group input {
             width: 100%;
-            padding: 14px 18px;
-            border-radius: 12px;
-            border: 1px solid rgba(0,0,0,0.1);
+            padding: 15px 18px;
+            border-radius: 15px;
+            border: 1.5px solid rgba(0,0,0,0.08);
             background: var(--bg);
             color: var(--txt);
             outline: none;
-            transition: 0.3s;
+            transition: all 0.3s;
             box-sizing: border-box;
+            font-size: 1rem;
         }
 
         .input-group input:focus {
             border-color: var(--p);
-            box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1);
+            box-shadow: 0 0 0 4px rgba(7, 94, 84, 0.1);
+            background: var(--card);
         }
 
         .error-msg {
+            background: rgba(231, 76, 60, 0.1);
             color: #e74c3c;
+            padding: 12px;
+            border-radius: 12px;
             font-size: 0.85rem;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: none;
+            border: 1px solid rgba(231, 76, 60, 0.2);
         }
 
         .btn-full {
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 15px;
             border: none;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.05rem;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             margin-bottom: 15px;
         }
 
-        .btn-primary { background: var(--p); color: white; }
-        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-primary { background: var(--p); color: white; box-shadow: 0 8px 20px rgba(7, 94, 84, 0.3); }
+        .btn-primary:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 12px 25px rgba(7, 94, 84, 0.4); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { background: #999; box-shadow: none; cursor: not-allowed; transform: none; }
 
         .btn-google {
-            background: white;
-            color: #444;
-            border: 1px solid #ddd;
+            background: var(--card);
+            color: var(--txt);
+            border: 1.5px solid rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
         }
-        .btn-google:hover { background: #f8f8f8; }
-        .btn-google img { width: 20px; }
+        .btn-google:hover { background: var(--bg); border-color: var(--p); }
+        .btn-google img { width: 22px; }
 
         .divider {
-            margin: 20px 0;
+            margin: 25px 0;
             display: flex;
             align-items: center;
-            gap: 10px;
-            opacity: 0.3;
+            gap: 12px;
+            opacity: 0.4;
             font-size: 0.8rem;
+            color: var(--txt);
         }
         .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--txt); }
 
-        .auth-footer { margin-top: 20px; font-size: 0.9rem; }
-        .auth-footer a { color: var(--p); text-decoration: none; font-weight: bold; }
+        .auth-footer { margin-top: 25px; font-size: 0.95rem; color: var(--txt); opacity: 0.8; }
+        .auth-footer a { color: var(--p); text-decoration: none; font-weight: 700; margin-inline-start: 5px; }
+        .auth-footer a:hover { text-decoration: underline; }
 
-        .lang-switcher {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
+        .lang-switcher { position: absolute; top: 25px; right: 25px; z-index: 100; }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="lang-switcher">
-        <button id="langBtn" class="friend-btn">EN</button>
+        <button id="langBtn" class="friend-btn" style="padding: 8px 15px; border-radius: 10px;">EN</button>
     </div>
 
     <div class="auth-card">
         <div class="auth-header">
-            <h1 class="tr" data-key="login">تسجيل الدخول</h1>
+            <h1 class="tr" data-key="login">دخول</h1>
             <p class="tr" data-key="welcome">مرحباً بك مجدداً في Stranger Meeting</p>
         </div>
 
@@ -131,18 +131,18 @@
         <form id="loginForm">
             <div class="input-group">
                 <label class="tr" data-key="email">البريد الإلكتروني</label>
-                <input type="email" id="email" class="tr" data-key="email" placeholder="example@mail.com" required>
+                <input type="email" id="email" placeholder="example@mail.com" required autocomplete="email">
             </div>
 
             <div class="input-group">
                 <label class="tr" data-key="password">كلمة المرور</label>
-                <input type="password" id="password" class="tr" data-key="password" placeholder="••••••••" required>
+                <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
             </div>
 
             <button type="submit" id="submitBtn" class="btn-full btn-primary tr" data-key="login">دخول</button>
         </form>
 
-        <div class="divider">أو عبر</div>
+        <div class="divider tr" data-key="or_via">أو عبر</div>
 
         <button id="googleBtn" class="btn-full btn-google">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google">
@@ -157,38 +157,55 @@
 
     <script type="module">
         import { auth, loginWithGoogle, toggleLang, applyTranslations } from './ui-logic.js';
-        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // 1. إعدادات اللغة والترجمة
-        document.getElementById('langBtn').onclick = toggleLang;
+        const langBtn = document.getElementById('langBtn');
+        langBtn.onclick = toggleLang;
+        
         const currentLang = localStorage.getItem('preferredLang') || 'ar';
         applyTranslations(currentLang);
+        langBtn.innerText = currentLang === 'ar' ? 'EN' : 'AR';
 
         const errorDiv = document.getElementById('errorMessage');
+        const loginForm = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
 
         // 2. تسجيل الدخول بالبريد وكلمة المرور
-        document.getElementById('loginForm').onsubmit = async (e) => {
+        loginForm.onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const btn = document.getElementById('submitBtn');
 
             try {
-                btn.disabled = true;
-                btn.innerText = currentLang === 'ar' ? "جاري الدخول..." : "Logging in...";
+                errorDiv.style.display = "none";
+                submitBtn.disabled = true;
+                submitBtn.innerText = currentLang === 'ar' ? "جاري التحقق..." : "Checking...";
+                
+                // تأمين بقاء جلسة تسجيل الدخول حتى بعد إغلاق المتصفح
+                await setPersistence(auth, browserLocalPersistence);
                 
                 await signInWithEmailAndPassword(auth, email, password);
-                window.location.href = "dashboard.html";
+                window.location.replace("dashboard.html");
             } catch (error) {
-                btn.disabled = false;
-                btn.innerText = currentLang === 'ar' ? "دخول" : "Login";
+                submitBtn.disabled = false;
+                submitBtn.innerText = currentLang === 'ar' ? "دخول" : "Login";
                 errorDiv.style.display = "block";
                 
-                // عرض رسائل خطأ مبسطة
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    errorDiv.innerText = currentLang === 'ar' ? "بيانات الدخول غير صحيحة" : "Invalid login credentials";
-                } else {
-                    errorDiv.innerText = currentLang === 'ar' ? "حدث خطأ ما، حاول ثانية" : "An error occurred, try again";
+                console.error("Login error code:", error.code);
+
+                // معالجة الأخطاء الشائعة
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                    case 'auth/invalid-credential':
+                        errorDiv.innerText = currentLang === 'ar' ? "خطأ في البريد أو كلمة المرور" : "Invalid email or password";
+                        break;
+                    case 'auth/too-many-requests':
+                        errorDiv.innerText = currentLang === 'ar' ? "محاولات كثيرة خاطئة، حاول لاحقاً" : "Too many attempts, try later";
+                        break;
+                    default:
+                        errorDiv.innerText = currentLang === 'ar' ? "فشل تسجيل الدخول، تأكد من اتصالك" : "Login failed, check your connection";
                 }
             }
         };
@@ -196,11 +213,15 @@
         // 3. تسجيل الدخول عبر جوجل
         document.getElementById('googleBtn').onclick = async () => {
             try {
+                errorDiv.style.display = "none";
                 await loginWithGoogle();
+                // التوجيه يتم تلقائياً داخل loginWithGoogle أو عبر onAuthStateChanged في index
             } catch (error) {
-                console.error("Google login failed", error);
+                errorDiv.style.display = "block";
+                errorDiv.innerText = "Google Sign-In Error";
             }
         };
     </script>
 </body>
 </html>
+
