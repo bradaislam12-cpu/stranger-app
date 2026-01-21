@@ -1,99 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title class="tr" data-key="profile">الملف الشخصي | SM</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background-color: var(--bg); color: var(--txt); padding-bottom: 40px; }
+        .profile-container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        
+        .profile-card {
+            background: var(--card); border-radius: 25px; padding: 30px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            position: relative; animation: fadeIn 0.5s ease;
+        }
+
+        .avatar {
+            width: 100px; height: 100px; background: linear-gradient(135deg, var(--p), #128c7e);
+            color: white; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 2.5rem; font-weight: bold;
+            margin: 0 auto 15px; box-shadow: 0 5px 15px rgba(7, 94, 84, 0.3);
+        }
+
+        .data-box { text-align: right; margin-bottom: 20px; }
+        .data-box span { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; opacity: 0.8; }
+
+        .data-box input, .data-box select {
+            width: 100%; padding: 12px 15px; border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1); background: var(--bg);
+            color: var(--txt); outline: none; box-sizing: border-box; font-size: 1rem;
+        }
+
+        /* تنسيق شبكة الهوايات (الاختيار المتعدد) */
+        .checkbox-group {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            background: var(--bg); padding: 15px; border-radius: 12px;
+            max-height: 200px; overflow-y: auto; border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .checkbox-group label {
+            display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+            cursor: pointer; padding: 5px; transition: 0.2s;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px; height: 18px; accent-color: var(--p);
+        }
+
+        .save-btn {
+            width: 100%; padding: 16px; border-radius: 50px;
+            background: var(--p); color: white; border: none;
+            font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
 <body class="light-mode">
 
     <div class="header">
         <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
         <h2 class="tr" data-key="profile">الملف الشخصي</h2>
-        <button id="logoutBtn" class="icon-btn tr" data-key="logout" title="تسجيل الخروج">🚪</button>
+        <button id="logoutBtn" class="icon-btn">🚪</button>
     </div>
 
-    <div class="profile-card">
-        <div class="settings-nav">
-            <button id="themeBtn" class="icon-btn" style="font-size: 1.5rem;">🌓</button>
-            <button id="langBtn" class="friend-btn">EN</button>
-        </div>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="avatar" id="uAvatar">?</div>
+            <h3 id="uName">...</h3>
+            <p id="uEmail" style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 25px;"></p>
 
-        <div class="avatar" id="uAvatar">?</div>
-        <h3 id="uName">...</h3>
-        <p id="uEmail" style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 20px;"></p>
+            <div class="data-box">
+                <span class="tr" data-key="fullname">الاسم الكامل</span>
+                <input type="text" id="fullnameInput" placeholder="اسمك الظاهر للأخرين">
+            </div>
 
-        <div class="data-box">
-            <span class="tr" data-key="fullname">الاسم الكامل</span>
-            <input type="text" id="fullnameInput" class="tr" data-key="fullname" placeholder="أدخل اسمك">
-        </div>
-
-        <div class="data-box">
-            <span class="tr" data-key="gender">الجنس</span>
-            <select id="userGender">
-                <option value="male" class="tr" data-key="male">ذكر</option>
-                <option value="female" class="tr" data-key="female">أنثى</option>
-            </select>
-        </div>
-
-        <div class="data-box">
-            <span class="tr" data-key="seeking">أهتم بمقابلة</span>
-            <select id="seekingGender">
-                <option value="male" class="tr" data-key="male">رجال</option>
-                <option value="female" class="tr" data-key="female">نساء</option>
-                <option value="both" class="tr" data-key="both">الجميع</option>
-            </select>
-        </div>
-
-        <div class="data-box">
-            <span class="tr" data-key="country">اختر الدولة</span>
-            <select id="userCountry">
-                <option value="Algeria">الجزائر</option>
-                <option value="Egypt">مصر</option>
-                <option value="Saudi Arabia">السعودية</option>
-                <option value="Morocco">المغرب</option>
+            <div class="data-box">
+                <span class="tr" data-key="gender">الجنس</span>
+                <select id="userGender">
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
                 </select>
-        </div>
+            </div>
 
-        <div class="data-box">
-            <span class="tr" data-key="interests">الاهتمامات المشتركة</span>
-            <div class="checkbox-group" id="interestsContainer">
-                <label><input type="checkbox" name="interest" value="Sports"> <span class="tr" data-key="Sports">الرياضة</span></label>
-                <label><input type="checkbox" name="interest" value="Gaming"> <span class="tr" data-key="Gaming">الألعاب</span></label>
-                <label><input type="checkbox" name="interest" value="Tech"> <span class="tr" data-key="Tech">التقنية</span></label>
-                <label><input type="checkbox" name="interest" value="AI"> <span class="tr" data-key="AI">الذكاء الاصطناعي</span></label>
-                </div>
-        </div>
+            <div class="data-box">
+                <span class="tr" data-key="seeking">أرغب في مقابلة</span>
+                <select id="seekingGender">
+                    <option value="male">رجال</option>
+                    <option value="female">نساء</option>
+                    <option value="both">الجميع</option>
+                </select>
+            </div>
 
-        <button class="save-btn tr" id="saveProfile" data-key="save_changes">حفظ البيانات ✅</button>
+            <div class="data-box">
+                <span class="tr" data-key="country">الدولة</span>
+                <select id="userCountry">
+                    <option value="">اختر دولتك...</option>
+                </select>
+            </div>
+
+            <div class="data-box">
+                <span class="tr" data-key="interests">الهوايات والاهتمامات (اختيار متعدد)</span>
+                <div class="checkbox-group" id="interestsContainer">
+                    </div>
+            </div>
+
+            <button class="save-btn tr" id="saveProfile" data-key="save_changes">حفظ التعديلات ✅</button>
+        </div>
     </div>
 
     <script type="module">
-        import { auth, db, toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
+        import { auth, db, applyTranslations } from './ui-logic.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // مزامنة اللغة عند التحميل
-        const currentLang = localStorage.getItem('preferredLang') || 'ar';
-        applyTranslations(currentLang);
+        // --- 1. إعداد البيانات الديناميكية ---
+        
+        const countriesList = [
+            "أفغانستان", "ألبانيا", "الجزائر", "أندورا", "أنغولا", "أنتيغوا وبربودا", "الأرجنتين", "أرمينيا", "أستراليا", "النمسا",
+"أذربيجان", "الباهاما", "البحرين", "بنغلاديش", "باربادوس", "بيلاروسيا", "بلجيكا", "بليز", "بنين", "بوتان",
+"بوليفيا", "البوسنة والهرسك", "بوتسوانا", "البرازيل", "بروناي", "بلغاريا", "بوركينا فاسو", "بوروندي", "كمبوديا", "الكاميرون",
+"كندا", "الرأس الأخضر", "جمهورية أفريقيا الوسطى", "تشاد", "تشيلي", "الصين", "كولومبيا", "جزر القمر", "الكونغو", "كوستاريكا",
+"كرواتيا", "كوبا", "قبرص", "التشيك", "الدنمارك", "جيبوتي", "دومينيكا", "جمهورية الدومينيكان", "الإكوادور", "مصر",
+"السلفادور", "غينيا الاستوائية", "إريتريا", "إستونيا", "إسواتيني", "إثيوبيا", "فيجي", "فنلندا", "فرنسا", "الغابون",
+"غامبيا", "جورجيا", "ألمانيا", "غانا", "اليونان", "غرينادا", "غواتيمالا", "غينيا", "غينيا بيساو", "غيانا",
+"هايتي", "هندوراس", "المجر", "آيسلندا", "الهند", "إندونيسيا", "إيران", "العراق", "أيرلندا", "إسرائيل",
+"إيطاليا", "ساحل العاج", "جامايكا", "اليابان", "الأردن", "كازاخستان", "كينيا", "كيريباتي", "كوريا الشمالية", "كوريا الجنوبية",
+"الكويت", "قيرغيزستان", "لاوس", "لاتفيا", "لبنان", "ليسوتو", "ليبيريا", "ليبيا", "ليختنشتاين", "ليتوانيا",
+"لوكسمبورغ", "مدغشقر", "مالاوي", "ماليزيا", "جزر المالديف", "مالي", "مالطا", "جزر مارشال", "موريتانيا", "موريشيوس",
+"المكسيك", "ميكرونيزيا", "مولدوفا", "موناكو", "منغوليا", "الجبل الأسود", "المغرب", "موزمبيق", "ميانمار", "ناميبيا",
+"ناورو", "نيبال", "هولندا", "نيوزيلندا", "نيكاراغوا", "النيجر", "نيجيريا", "مقدونيا الشمالية", "النرويج", "عمان",
+"باكستان", "بالاو", "فلسطين", "بنما", "بابوا غينيا الجديدة", "باراغواي", "بيرو", "الفلبين", "بولندا", "البرتغال",
+"قطر", "رومانيا", "روسيا", "رواندا", "سانت كيتس ونيفيس", "سانت لوسيا", "سانت فنسنت والغرينادين", "ساموا", "سان مارينو", "ساو تومي وبرينسيب",
+"السعودية", "السنغال", "صربيا", "سيشيل", "سيراليون", "سنغافورة", "سلوفاكيا", "سلوفينيا", "جزر سليمان", "الصومال",
+"جنوب أفريقيا", "جنوب السودان", "إسبانيا", "سريلانكا", "السودان", "سورينام", "السويد", "سويسرا", "سوريا", "تايوان",
+"طاجيكستان", "تنزانيا", "تايلاند", "تيمور الشرقية", "توغو", "تونغا", "ترينيداد وتوباغو", "تونس", "تركيا", "تركمانستان",
+"توفالو", "أوغندا", "أوكرانيا", "الإمارات", "المملكة المتحدة", "الولايات المتحدة", "أوروغواي", "أوزبكستان", "فانواتو", "فنزويلا",
+"فيتنام", "اليمن", "زامبيا", "زيمبابوي"
+            // أضف هنا باقي الـ 190 دولة بنفس التنسيق
+        ];
 
-        document.getElementById('themeBtn').onclick = toggleTheme;
-        document.getElementById('langBtn').onclick = toggleLang;
+        const hobbiesList = [
+            { id: "Sports", ar: "الرياضة", en: "Sports" },
+{ id: "Gaming", ar: "الألعاب", en: "Gaming" },
+{ id: "Music", ar: "الموسيقى", en: "Music" },
+{ id: "Travel", ar: "السفر", en: "Travel" },
+{ id: "Tech", ar: "التقنية", en: "Technology" },
+{ id: "Art", ar: "الفن", en: "Art" },
+{ id: "Cooking", ar: "الطبخ", en: "Cooking" },
+{ id: "Reading", ar: "القراءة", en: "Reading" },
+{ id: "Photography", ar: "التصوير", en: "Photography" },
+{ id: "Writing", ar: "الكتابة", en: "Writing" },
+{ id: "Dance", ar: "الرقص", en: "Dance" },
+{ id: "Fitness", ar: "اللياقة البدنية", en: "Fitness" },
+{ id: "Fishing", ar: "الصيد", en: "Fishing" },
+{ id: "Hiking", ar: "المشي في الطبيعة", en: "Hiking" },
+{ id: "Camping", ar: "التخييم", en: "Camping" },
+{ id: "Gardening", ar: "البستنة", en: "Gardening" },
+{ id: "Crafts", ar: "الأشغال اليدوية", en: "Crafts" },
+{ id: "Movies", ar: "الأفلام", en: "Movies" },
+{ id: "Volunteering", ar: "التطوع", en: "Volunteering" },
+{ id: "Collecting", ar: "جمع الأشياء", en: "Collecting" },
+{ id: "Meditation", ar: "التأمل", en: "Meditation" },
+{ id: "Languages", ar: "تعلم اللغات", en: "Languages" },
+{ id: "Fashion", ar: "الأزياء", en: "Fashion" },
+{ id: "Chess", ar: "الشطرنج", en: "Chess" },
+{ id: "Cycling", ar: "ركوب الدراجات", en: "Cycling" },
+{ id: "Swimming", ar: "السباحة", en: "Swimming" },
+{ id: "Running", ar: "الجري", en: "Running" }
+            // أضف هنا باقي الهوايات التي تريدها
+        ];
+
+        function initFields() {
+            const countrySelect = document.getElementById("userCountry");
+            const hobbyContainer = document.getElementById("interestsContainer");
+            const lang = localStorage.getItem('preferredLang') || 'ar';
+
+            // ملء الدول مرتبة أبجدياً
+            countriesList.sort().forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c; opt.textContent = c;
+                countrySelect.appendChild(opt);
+            });
+
+            // ملء الهوايات
+            hobbiesList.forEach(h => {
+                const label = document.createElement("label");
+                label.innerHTML = `
+                    <input type="checkbox" name="interest" value="${h.id}">
+                    <span>${lang === 'ar' ? h.ar : h.en}</span>
+                `;
+                hobbyContainer.appendChild(label);
+            });
+        }
+
+        // --- 2. منطق الصفحة الأساسي ---
+
+        initFields();
+        applyTranslations(localStorage.getItem('preferredLang') || 'ar');
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) return location.href = "login.html";
 
-            try {
-                const docSnap = await getDoc(doc(db, "users", user.uid));
-                if (docSnap.exists()) {
-                    const u = docSnap.data();
-                    document.getElementById("uName").innerText = u.fullname || "User";
-                    document.getElementById("fullnameInput").value = u.fullname || "";
-                    document.getElementById("uEmail").innerText = u.email;
-                    document.getElementById("uAvatar").innerText = (u.fullname || "?").charAt(0).toUpperCase();
-                    document.getElementById("userGender").value = u.gender || "male";
-                    document.getElementById("seekingGender").value = u.seeking || "both";
-                    document.getElementById("userCountry").value = u.country || "Algeria";
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if (docSnap.exists()) {
+                const u = docSnap.data();
+                document.getElementById("uName").innerText = u.fullname || "User";
+                document.getElementById("uEmail").innerText = u.email;
+                document.getElementById("uAvatar").innerText = (u.fullname || "U").charAt(0).toUpperCase();
+                document.getElementById("fullnameInput").value = u.fullname || "";
+                document.getElementById("userGender").value = u.gender || "male";
+                document.getElementById("seekingGender").value = u.seeking || "both";
+                document.getElementById("userCountry").value = u.country || "";
 
-                    if (u.interests) {
-                        const checkboxes = document.querySelectorAll('input[name="interest"]');
-                        checkboxes.forEach(cb => cb.checked = u.interests.includes(cb.value));
-                    }
+                if (u.interests) {
+                    const checkboxes = document.querySelectorAll('input[name="interest"]');
+                    checkboxes.forEach(cb => cb.checked = u.interests.includes(cb.value));
                 }
-            } catch (err) { console.error("Error loading profile:", err); }
+            }
         });
 
         document.getElementById("saveProfile").onclick = async () => {
@@ -101,8 +226,10 @@
             const btn = document.getElementById("saveProfile");
             const selectedInterests = Array.from(document.querySelectorAll('input[name="interest"]:checked')).map(cb => cb.value);
 
+            btn.disabled = true;
+            btn.innerText = "جاري الحفظ...";
+
             try {
-                btn.disabled = true;
                 await updateDoc(doc(db, "users", user.uid), {
                     fullname: document.getElementById("fullnameInput").value,
                     gender: document.getElementById("userGender").value,
@@ -110,25 +237,21 @@
                     country: document.getElementById("userCountry").value,
                     interests: selectedInterests
                 });
-
-                // استخدام القاموس للرسائل
-                const lang = localStorage.getItem('preferredLang') || 'ar';
-                btn.innerText = lang === 'ar' ? "تم الحفظ! ✨" : "Saved! ✨";
                 
-                setTimeout(() => { 
+                btn.style.background = "#25d366";
+                btn.innerText = "تم الحفظ بنجاح! ✨";
+                setTimeout(() => {
                     btn.disabled = false;
-                    applyTranslations(lang); // يعيد النص الأصلي من القاموس
-                    document.getElementById("uAvatar").innerText = document.getElementById("fullnameInput").value.charAt(0).toUpperCase();
-                    document.getElementById("uName").innerText = document.getElementById("fullnameInput").value;
+                    btn.style.background = "var(--p)";
+                    btn.innerText = "حفظ التعديلات ✅";
                 }, 2000);
-            } catch (error) {
+            } catch (e) {
+                alert("خطأ أثناء الحفظ");
                 btn.disabled = false;
-                console.error(error);
             }
         };
 
-        document.getElementById("logoutBtn").onclick = () => {
-            signOut(auth).then(() => location.href="login.html");
-        };
+        document.getElementById("logoutBtn").onclick = () => signOut(auth).then(() => location.href="login.html");
     </script>
 </body>
+</html>
