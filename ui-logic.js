@@ -1,12 +1,14 @@
 // 1. استيراد مكتبات Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, deleteUser 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, collection, 
-    query, where, getDocs, serverTimestamp, limit 
+    query, where, getDocs, serverTimestamp, limit, deleteDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 2. إعدادات المشروع (تأكد من مطابقتها لإعدادات Firebase Console الخاصة بك)
+// 2. إعدادات المشروع
 const firebaseConfig = {
     apiKey: "AIzaSyAMA4owgSvA_sBh2syHOnRTS5fhnW1JIeg",
     authDomain: "strangermeeting-91226.firebaseapp.com",
@@ -21,7 +23,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// 3. قاموس اللغات (تمت مراجعته وتدقيقه)
+// 3. قاموس اللغات (تمت إضافة مفاتيح الحذف)
 export const translations = {
     ar: {
         app_name: "Stranger Meeting",
@@ -36,14 +38,21 @@ export const translations = {
         male: "ذكر",
         female: "أنثى",
         seeking: "اهتمامك",
-        both: "الجميع",
+        seeking_male: "رجال",
+        seeking_female: "نساء",
+        seeking_both: "الجميع",
+        country: "الدولة",
+        interests: "الهوايات والاهتمامات",
         save_changes: "حفظ التغييرات ✅",
         logout: "خروج 🚪",
         start_search: "بحث عن صديق 🚀",
         searching: "جاري البحث عن شريك مناسب...",
         online: "متصل",
         no_users: "لا يوجد مستخدمين متاحين حالياً، حاول مرة أخرى.",
-        // أضف أي مفاتيح أخرى هنا
+        delete_account: "حذف الحساب نهائياً ⚠️",
+        delete_confirm: "هل أنت متأكد؟ سيتم حذف جميع بياناتك نهائياً!",
+        reauth_needed: "للأمان، يرجى تسجيل الخروج والدخول مرة أخرى قبل حذف الحساب.",
+        select_country: "اختر دولتك..."
     },
     en: {
         app_name: "Stranger Meeting",
@@ -58,13 +67,21 @@ export const translations = {
         male: "Male",
         female: "Female",
         seeking: "Seeking",
-        both: "Everyone",
+        seeking_male: "Men",
+        seeking_female: "Women",
+        seeking_both: "Everyone",
+        country: "Country",
+        interests: "Hobbies & Interests",
         save_changes: "Save ✅",
         logout: "Logout 🚪",
         start_search: "Find Match 🚀",
         searching: "Searching for partner...",
         online: "Online",
         no_users: "No users available right now, try again.",
+        delete_account: "Delete Account Permanently ⚠️",
+        delete_confirm: "Are you sure? All your data will be permanently deleted!",
+        reauth_needed: "For security, please logout and login again before deleting account.",
+        select_country: "Select Country..."
     }
 };
 
@@ -92,7 +109,7 @@ export const toggleLang = () => {
     let currentLang = localStorage.getItem('preferredLang') === 'en' ? 'ar' : 'en';
     localStorage.setItem('preferredLang', currentLang);
     applyTranslations(currentLang);
-    window.location.reload(); // لإعادة تحميل القوائم الديناميكية مثل الهوايات
+    window.location.reload();
 };
 
 export const toggleTheme = () => {
@@ -133,6 +150,29 @@ export const loginWithGoogle = async () => {
     }
 };
 
+// حذف الحساب نهائياً
+export const deleteAccount = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const lang = localStorage.getItem('preferredLang') || 'ar';
+    if (confirm(translations[lang].delete_confirm)) {
+        try {
+            // 1. حذف البيانات من Firestore أولاً
+            await deleteDoc(doc(db, "users", user.uid));
+            // 2. حذف المستخدم من Firebase Auth
+            await deleteUser(user);
+            
+            window.location.href = "register.html";
+        } catch (error) {
+            console.error("Delete Account Error:", error);
+            if (error.code === 'auth/requires-recent-login') {
+                alert(translations[lang].reauth_needed);
+            }
+        }
+    }
+};
+
 // محرك البحث المطور
 export const startDiscovery = async (btn) => {
     const user = auth.currentUser;
@@ -148,7 +188,6 @@ export const startDiscovery = async (btn) => {
         const myDoc = await getDoc(doc(db, "users", user.uid));
         const myData = myDoc.data();
 
-        // استعلام لجلب مستخدمين متاحين
         let q = query(
             collection(db, "users"),
             where("isOnline", "==", true),
@@ -162,7 +201,6 @@ export const startDiscovery = async (btn) => {
 
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
-            // شرط المطابقة المتبادلة (Mutual Match)
             const amIInterested = (myData.seeking === "both" || data.gender === myData.seeking);
             const isPartnerInterested = (data.seeking === "both" || data.seeking === myData.gender);
 
@@ -175,9 +213,7 @@ export const startDiscovery = async (btn) => {
             const partner = candidates[Math.floor(Math.random() * candidates.length)];
             const roomID = [user.uid, partner.uid].sort().join("_");
             
-            // تحديث حالتي لمشغول قبل الانتقال
             await updateDoc(doc(db, "users", user.uid), { isBusy: true });
-            
             window.location.href = `meeting.html?room=${roomID}&target=${partner.uid}`;
         } else {
             alert(translations[lang].no_users);
@@ -191,22 +227,31 @@ export const startDiscovery = async (btn) => {
     }
 };
 
-// تهيئة الإعدادات عند تحميل أي صفحة
+// تهيئة الإعدادات ومراقبة الحالة
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. الثيم
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
     }
     
-    // 2. اللغة
     const savedLang = localStorage.getItem('preferredLang') || 'ar';
     applyTranslations(savedLang);
 
-    // 3. مراقبة حالة المستخدم لتحديث الـ Online/Offline
     onAuthStateChanged(auth, (user) => {
         if (user) {
             updateDoc(doc(db, "users", user.uid), { isOnline: true });
         }
     });
+});
+
+// تنظيف الحالة عند إغلاق التاب أو المتصفح
+window.addEventListener('beforeunload', () => {
+    if (auth.currentUser) {
+        // نستخدم navigator.sendBeacon أو نحدث البيانات بسرعة
+        // ملاحظة: Firestore قد لا يضمن الاكتمال هنا دائماً، لكنه محاولة جيدة
+        updateDoc(doc(db, "users", auth.currentUser.uid), { 
+            isOnline: false,
+            isBusy: false 
+        });
+    }
 });
 
