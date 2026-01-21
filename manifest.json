@@ -1,49 +1,41 @@
-const CACHE_NAME = 'sm-chat-v1';
-// قائمة الملفات التي سيتم تخزينها ليعمل التطبيق بدون إنترنت
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './login.html',
-  './register.html',
-  './dashboard.html',
-  './chat.html',
-  './profile.html',
-  './style.css',
-  './ui-logic.js',
-  './manifest.json'
-];
-
-// 1. مرحلة التثبيت: تخزين الملفات الأساسية
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('SW: Caching App Shell');
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
-});
-
-// 2. مرحلة التفعيل: تنظيف الكاش القديم عند التحديث
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
-  );
-});
-
-// 3. استراتيجية جلب البيانات: الشبكة أولاً مع العودة للكاش
-self.addEventListener('fetch', (event) => {
-  // لا تقم بتخزين طلبات Firebase (Auth/Firestore) لأنها تحتاج للإنترنت الحي
-  if (event.request.url.includes('googleapis.com') || event.request.url.includes('firebasejs')) {
-    return; 
-  }
-
-  event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
-    })
-  );
-});
+{
+  "short_name": "SM Chat",
+  "name": "Stranger Meeting - Global Chat",
+  "description": "منصة عالمية لمقابلة أشخاص جدد عبر الدردشة الحية والفيديو",
+  "start_url": "/index.html",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#075e54",
+  "orientation": "portrait-primary",
+  "categories": [
+    "social",
+    "entertainment",
+    "communications"
+  ],
+  "lang": "ar-SA",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/mobile-chat.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "واجهة المحادثة في Stranger Meeting"
+    }
+  ]
+}
