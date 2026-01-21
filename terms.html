@@ -2,105 +2,85 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شروط الخدمة والخصوصية | SM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title class="tr" data-key="terms_title">شروط الخدمة والخصوصية | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        body { background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        
         .terms-container {
-            max-width: 650px;
-            margin: 40px auto;
-            padding: 30px;
-            background: var(--card);
-            border-radius: 20px;
-            line-height: 1.8;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 650px; width: 100%; padding: 35px;
+            background: var(--card); border-radius: 25px;
+            line-height: 1.8; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            animation: fadeIn 0.6s ease;
         }
-        h2 { 
-            color: var(--p); 
-            text-align: center;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        h3 { 
-            color: var(--p-dark); 
-            font-size: 1.1rem; 
-            margin-top: 25px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        ul { padding-right: 20px; list-style-type: none; }
-        li { margin-bottom: 12px; position: relative; padding-right: 25px; }
-        li::before { content: "🔹"; position: absolute; right: 0; top: 2px; font-size: 0.8rem; }
+
+        h2 { color: var(--p); text-align: center; margin-bottom: 25px; gap: 10px; font-size: 1.6rem; }
+        h3 { color: var(--p-dark); font-size: 1.1rem; margin-top: 25px; border-bottom: 2px solid var(--bg); padding-bottom: 8px; }
+        
+        ul { padding-right: 15px; list-style: none; }
+        li { margin-bottom: 12px; position: relative; padding-right: 25px; font-size: 0.95rem; opacity: 0.9; }
+        li::before { content: "✔"; position: absolute; right: 0; color: #25d366; font-weight: bold; }
         
         .disclaimer {
-            background: rgba(255, 193, 7, 0.15);
-            color: #856404;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            margin-top: 25px;
-            border-right: 5px solid #ffc107;
+            background: rgba(255, 193, 7, 0.1); color: #856404;
+            padding: 18px; border-radius: 15px; font-size: 0.9rem;
+            margin-top: 25px; border-right: 5px solid #ffc107;
         }
-        .back-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: var(--p);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 15px;
-            font-weight: bold;
-            margin-top: 30px;
-            transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(7, 94, 84, 0.3);
+
+        .accept-btn {
+            display: block; width: 100%; padding: 16px;
+            background: var(--p); color: white; text-align: center;
+            text-decoration: none; border-radius: 50px; font-weight: bold;
+            margin-top: 30px; transition: 0.3s; border: none; cursor: pointer;
         }
-        .back-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .accept-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(7, 94, 84, 0.3); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="light-mode">
 
-    <div class="container">
-        <div class="terms-container">
-            <h2>شروط الاستخدام والخصوصية 🛡️</h2>
-            <p>للحفاظ على مجتمع <strong>Stranger Meeting</strong> آمنًا للجميع، نرجو منك الالتزام بالاتفاقية التالية:</p>
-            
-            <h3>🔒 الخصوصية والأمان</h3>
-            <ul>
-                <li><strong>التشفير:</strong> يتم استخدام تقنيات متطورة لتأمين المكالمات، ونحن نتعهد بعدم تسجيل أو مراقبة أي مكالمة فيديو خاصة.</li>
-                <li><strong>بياناتك:</strong> تُستخدم بياناتك (الاسم، الاهتمامات) فقط لتحسين نتائج البحث (Matching) ولن يتم بيعها لأي جهة خارجية.</li>
-            </ul>
+    <div class="terms-container">
+        <h2 class="tr" data-key="terms_header">شروط الاستخدام والخصوصية 🛡️</h2>
+        <p class="tr" data-key="terms_intro">للحفاظ على مجتمع <strong>Stranger Meeting</strong> آمنًا، يرجى الالتزام بالبنود التالية:</p>
+        
+        <h3 class="tr" data-key="terms_privacy_title">🔒 الخصوصية والأمان</h3>
+        <ul>
+            <li class="tr" data-key="terms_privacy_1"><strong>التشفير:</strong> جميع مكالمات الفيديو مشفرة تماماً ولا يتم تسجيلها في خوادمنا.</li>
+            <li class="tr" data-key="terms_privacy_2"><strong>البيانات:</strong> معلوماتك الشخصية تستخدم فقط لغرض "المطابقة" لتحسين تجربتك.</li>
+        </ul>
 
-            <h3>🚫 قواعد السلوك والمنع</h3>
-            <ul>
-                <li>يُحظر تماماً إظهار أي محتوى خادش للحياء أو ممارسة أي شكل من أشكال التحرش اللفظي أو المرئي.</li>
-                <li>استخدام المنصة لأغراض سياسية أو ترويجية أو احتيالية يعرض حسابك للحظر النهائي دون سابق إنذار.</li>
-            </ul>
+        <h3 class="tr" data-key="terms_rules_title">🚫 قواعد السلوك</h3>
+        <ul>
+            <li class="tr" data-key="terms_rules_1">يُمنع منعاً باتاً أي سلوك خادش للحياء أو تنمر تجاه المشتركين الآخرين.</li>
+            <li class="tr" data-key="terms_rules_2">انتحال الشخصية أو الحسابات الوهمية يعرضك للحظر الدائم.</li>
+        </ul>
 
-            <h3>🔞 القيود العمرية والقانونية</h3>
-            <ul>
-                <li>استخدام ميزة الفيديو متاح فقط لمن هم فوق سن 18 عاماً.</li>
-                <li>أنت المسؤول الوحيد عن أي معلومات شخصية تشاركها مع الطرف الآخر أثناء المكالمة.</li>
-            </ul>
-
-            <div class="disclaimer">
-                <strong>تنبيه قانوني:</strong> ضغطك على زر الموافقة أدناه يعد عقداً ملزماً بينك وبين التطبيق، ويمنحنا الحق في اتخاذ الإجراءات اللازمة عند مخالفة البنود.
-            </div>
-
-            <a href="index.html" class="back-btn">أوافق وأرغب في المتابعة ✅</a>
+        <div class="disclaimer tr" data-key="terms_disclaimer">
+            <strong>تنبيه:</strong> متابعتك لاستخدام التطبيق تعني موافقتك الصريحة على هذه الشروط وتحملك المسؤولية القانونية الكاملة عن أفعالك.
         </div>
+
+        <button id="acceptBtn" class="accept-btn tr" data-key="terms_accept">أوافق وأرغب في المتابعة ✅</button>
     </div>
 
-    <script>
-        // مزامنة الوضع الليلي
-        if (localStorage.getItem('theme') === 'dark' || 
-           (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    <script type="module">
+        import { applyTranslations } from './ui-logic.js';
+
+        // تطبيق اللغة والوضع الليلي
+        const lang = localStorage.getItem('preferredLang') || 'ar';
+        applyTranslations(lang);
+
+        if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
         }
+
+        // عند الموافقة، نحفظ في الذاكرة أن المستخدم وافق لكي لا تظهر له ثانية
+        document.getElementById('acceptBtn').onclick = () => {
+            localStorage.setItem('termsAccepted', 'true');
+            window.location.href = 'index.html';
+        };
     </script>
 </body>
 </html>
+
