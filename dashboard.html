@@ -1,233 +1,175 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title class="tr" data-key="dashboard">الرئيسية | SM</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .main-container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        
-        .hero-section { 
-            background: linear-gradient(135deg, var(--p), #128c7e); 
-            color: white; 
-            padding: 40px 20px; 
-            border-radius: 25px; 
-            text-align: center; 
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px rgba(7, 94, 84, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* تأثير نبضي خفيف للخلفية */
-        .hero-section::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotateBg 10s linear infinite;
-        }
-        @keyframes rotateBg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .hero-section h1 { font-size: 1.8rem; margin-bottom: 10px; position: relative; z-index: 1; }
-        .hero-section p { font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px; position: relative; z-index: 1; }
-
-        .start-btn { 
-            background: white; color: var(--p); border: none; padding: 15px 35px; 
-            border-radius: 50px; font-weight: bold; font-size: 1.1rem; cursor: pointer; 
-            transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; z-index: 1;
-        }
-        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
-        .start-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-        .section-title { 
-            display: flex; align-items: center; gap: 10px; margin: 25px 0 15px; 
-            font-size: 1.1rem; color: var(--txt); font-weight: bold;
-        }
-
-        .empty-list { 
-            text-align: center; padding: 40px 20px; background: var(--card); 
-            border-radius: 15px; border: 2px dashed rgba(0,0,0,0.05); opacity: 0.6;
-        }
-
-        /* تحسين شكل عناصر القائمة */
-        .user-item {
-            background: var(--card); padding: 12px 15px; border-radius: 15px;
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 10px; transition: 0.2s; border: 1px solid rgba(0,0,0,0.03);
-        }
-        .user-item:hover { transform: scale(1.01); background: var(--bg); }
-
-        .status-badge {
-            width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-inline-end: 5px;
-        }
-        .online { background: #25d366; box-shadow: 0 0 5px #25d366; }
-        .offline { background: #999; }
-
-        #requestsList .user-item { border-right: 4px solid var(--p); animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title class="tr" data-key="dashboard">الرئيسية | Stranger Meeting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .notif-bar {
+      position: fixed; top: var(--header-h); right: 10px;
+      background: var(--accent); color: white;
+      padding: 10px 15px; border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      font-size: 0.9rem; display: none; z-index: 2000;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
+  </style>
 </head>
 <body class="light-mode">
 
-    <div class="header">
-        <button class="icon-btn" onclick="location.href='profile.html'" title="Profile">⚙️</button>
-        <h2 class="tr" data-key="app_name">Stranger Meeting</h2>
-        <div style="display: flex; gap: 8px;">
-            <button id="themeBtn" class="icon-btn">🌓</button>
-            <button id="langBtn" class="friend-btn">EN</button>
-        </div>
+  <!-- الهيدر -->
+  <div class="header">
+    <button class="icon-btn" onclick="location.href='profile.html'">👤</button>
+    <h2 class="tr" data-key="app_name">Stranger Meeting</h2>
+    <div style="display:flex; gap:8px;">
+      <button id="themeBtn" class="icon-btn">🌓</button>
+      <button id="langBtn" class="friend-btn">EN</button>
+      <button id="logoutBtn" class="icon-btn">🚪</button>
     </div>
+  </div>
 
-    <div class="main-container">
-        <div class="hero-section">
-            <h1 class="tr" data-key="welcome">مرحباً بك!</h1>
-            <p class="tr" data-key="startHint">ابدأ مكالمة فيديو عشوائية الآن</p>
-            <button id="startMatchBtn" class="start-btn tr" data-key="start_search">ابدأ البحث عن صديق 🚀</button>
-        </div>
+  <!-- شريط الإشعارات -->
+  <div id="notifBar" class="notif-bar"></div>
 
-        <div id="requestsWrapper" style="display: none;">
-            <h3 class="section-title"><span>🔔</span> <span class="tr" data-key="friend_requests">طلبات الصداقة</span></h3>
-            <div id="requestsList"></div>
-        </div>
+  <!-- زر بدء البحث -->
+  <div style="text-align:center; margin:30px;">
+    <button id="startBtn" class="start-btn tr" data-key="start_search">ابدأ البحث عن صديق 🚀</button>
+  </div>
 
-        <h3 class="section-title"><span>👥</span> <span class="tr" data-key="friends_list">أصدقاؤك</span></h3>
-        <div id="friendsList">
-            <div class="empty-list tr" data-key="no_friends">لا يوجد أصدقاء بعد. ابدأ بمقابلة الناس!</div>
-        </div>
-    </div>
+  <!-- قائمة الأصدقاء -->
+  <div class="profile-card">
+    <h3 class="tr" data-key="friends_list">👥 أصدقاؤك</h3>
+    <div id="friendsList"></div>
+    <p id="noFriends" class="tr" data-key="no_friends" style="opacity:0.6;"></p>
+  </div>
 
-    <script type="module">
-        import { auth, db, toggleLang, toggleTheme, applyTranslations, startDiscovery } from './ui-logic.js';
-        import { collection, query, where, onSnapshot, doc, getDoc, setDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <!-- طلبات الصداقة -->
+  <div class="profile-card">
+    <h3 class="tr" data-key="friend_requests">🔔 طلبات الصداقة</h3>
+    <div id="requestsList"></div>
+  </div>
 
-        const currentLang = localStorage.getItem('preferredLang') || 'ar';
-        applyTranslations(currentLang);
+  <!-- المستخدمون المتصلون -->
+  <div class="profile-card">
+    <h3 class="tr" data-key="online">🟢 المستخدمون المتصلون الآن</h3>
+    <div id="onlineUsers"></div>
+  </div>
 
-        document.getElementById('themeBtn').onclick = toggleTheme;
-        document.getElementById('langBtn').onclick = toggleLang;
+  <script type="module">
+    import { auth, db, toggleLang, toggleTheme, applyTranslations, startDiscovery } from './ui-logic.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // منع النقر المتكرر على زر البحث
-        const startBtn = document.getElementById('startMatchBtn');
-        startBtn.onclick = async () => {
-            startBtn.disabled = true;
-            startBtn.innerText = currentLang === 'ar' ? "جاري الاتصال..." : "Connecting...";
-            try {
-                await startDiscovery();
-            } catch (e) {
-                startBtn.disabled = false;
-                startBtn.innerText = currentLang === 'ar' ? "ابدأ البحث عن صديق 🚀" : "Start Searching 🚀";
-            }
-        };
+    // تهيئة اللغة والثيم
+    const currentLang = localStorage.getItem('preferredLang') || 'ar';
+    applyTranslations(currentLang);
+    document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = toggleLang;
 
-        // --- نظام الاستماع لطلبات الصداقة ---
-        function initRequestsListener(uid) {
-            const q = query(collection(db, "friend_requests"), where("to", "==", uid));
-            onSnapshot(q, async (snapshot) => {
-                const wrapper = document.getElementById('requestsWrapper');
-                const list = document.getElementById('requestsList');
-                
-                if (snapshot.empty) {
-                    wrapper.style.display = "none";
-                    return;
-                }
+    // زر الخروج
+    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href="login.html");
 
-                wrapper.style.display = "block";
-                list.innerHTML = ""; // مسح القائمة لإعادة الرسم (لبساطة الكود هنا)
+    // زر بدء البحث
+    document.getElementById('startBtn').onclick = async (e) => {
+      await startDiscovery(e.target);
+    };
 
-                for (const requestDoc of snapshot.docs) {
-                    const req = requestDoc.data();
-                    const senderSnap = await getDoc(doc(db, "users", req.from));
-                    const sender = senderSnap.data() || { fullname: "User" };
+    // مراقبة حالة المستخدم
+    onAuthStateChanged(auth, (user) => {
+      if (!user) return location.href = "login.html";
+      updateDoc(doc(db, "users", user.uid), { isOnline: true });
+      loadFriends(user.uid);
+      loadRequests(user.uid);
+      loadOnlineUsers(user.uid);
+    });
 
-                    const item = document.createElement('div');
-                    item.className = "user-item";
-                    item.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div class="user-avatar">${sender.fullname.charAt(0).toUpperCase()}</div>
-                            <span style="font-weight:500;">${sender.fullname}</span>
-                        </div>
-                        <div style="display:flex; gap:8px;">
-                            <button class="friend-btn" onclick="window.manageRequest('${requestDoc.id}', '${req.from}', true)">✅</button>
-                            <button class="friend-btn" style="background:#e74c3c" onclick="window.manageRequest('${requestDoc.id}', '${req.from}', false)">❌</button>
-                        </div>
-                    `;
-                    list.appendChild(item);
-                }
-            });
+    // تحميل قائمة الأصدقاء
+    function loadFriends(uid) {
+      const friendsRef = query(collection(db, "friends"), where("users", "array-contains", uid));
+      onSnapshot(friendsRef, (snapshot) => {
+        const list = document.getElementById("friendsList");
+        list.innerHTML = "";
+        if (snapshot.empty) {
+          document.getElementById("noFriends").style.display = "block";
+        } else {
+          document.getElementById("noFriends").style.display = "none";
+          snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const friendId = data.users.find(u => u !== uid);
+            const div = document.createElement("div");
+            div.className = "user-item";
+            div.innerHTML = `
+              <span>${data.names?.[friendId] || "Friend"}</span>
+              <button class="friend-btn" onclick="location.href='chat.html?room=${docSnap.id}'">💬</button>
+            `;
+            list.appendChild(div);
+          });
         }
+      });
+    }
 
-        // --- نظام الاستماع لقائمة الأصدقاء ---
-        function initFriendsListener(uid) {
-            const q = query(collection(db, "friends"), where("users", "array-contains", uid));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById('friendsList');
-                if (snapshot.empty) {
-                    list.innerHTML = `<div class="empty-list tr" data-key="no_friends">لا يوجد أصدقاء بعد.</div>`;
-                    return;
-                }
-
-                list.innerHTML = "";
-                snapshot.forEach(async (friendDoc) => {
-                    const friendID = friendDoc.data().users.find(id => id !== uid);
-                    
-                    // استماع مباشر لحالة الصديق (متصل/غير متصل)
-                    onSnapshot(doc(db, "users", friendID), (snap) => {
-                        const friend = snap.data();
-                        if (!friend) return;
-
-                        // تحديث أو إنشاء عنصر الصديق في القائمة
-                        let item = document.getElementById(`friend-${friendID}`);
-                        if (!item) {
-                            item = document.createElement('div');
-                            item.id = `friend-${friendID}`;
-                            item.className = "user-item";
-                            item.onclick = () => location.href = `chat.html?id=${friendID}`;
-                            list.appendChild(item);
-                        }
-
-                        const statusClass = friend.isOnline ? 'online' : 'offline';
-                        const statusText = friend.isOnline ? (currentLang === 'ar' ? 'متصل' : 'Online') : (currentLang === 'ar' ? 'غير متصل' : 'Offline');
-
-                        item.innerHTML = `
-                            <div style="display:flex; align-items:center; gap:12px;">
-                                <div class="user-avatar" style="background:${friend.isOnline ? 'var(--p)' : '#999'}">${friend.fullname.charAt(0).toUpperCase()}</div>
-                                <div>
-                                    <div style="font-weight:bold; color:var(--txt);">${friend.fullname}</div>
-                                    <div style="font-size:0.75rem; opacity:0.8; display:flex; align-items:center;">
-                                        <span class="status-badge ${statusClass}"></span> ${statusText}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="friend-btn" style="border-radius:50%; width:35px; height:35px; display:flex; align-items:center; justify-content:center;">💬</div>
-                        `;
-                    });
-                });
-            });
-        }
-
-        // إدارة الطلبات
-        window.manageRequest = async (docId, fromUid, isAccept) => {
-            const myUid = auth.currentUser.uid;
-            try {
-                if (isAccept) {
-                    const combinedID = [fromUid, myUid].sort().join("_");
-                    await setDoc(doc(db, "friends", combinedID), {
-                        users: [fromUid, myUid],
-                        createdAt: Date.now()
-                    });
-                }
-                await deleteDoc(doc(db, "friend_requests", docId));
-            } catch (err) { console.error(err); }
-        };
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                initRequestsListener(user.uid);
-                initFriendsListener(user.uid);
-            } else {
-                location.href = "login.html";
-            }
+    // تحميل طلبات الصداقة
+    function loadRequests(uid) {
+      const reqRef = query(collection(db, "friend_requests"), where("to", "==", uid));
+      onSnapshot(reqRef, (snapshot) => {
+        const list = document.getElementById("requestsList");
+        list.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "user-item";
+          div.innerHTML = `
+            <span>${data.from}</span>
+            <button class="friend-btn" onclick="acceptRequest('${docSnap.id}', '${data.from}', '${uid}')">✅</button>
+          `;
+          list.appendChild(div);
+          showNotif(currentLang === 'ar' ? "📩 لديك طلب صداقة جديد" : "📩 New friend request");
         });
-    </script>
+      });
+    }
+
+    // قبول طلب صداقة
+    async function acceptRequest(reqId, fromId, toId) {
+      try {
+        const roomId = [fromId, toId].sort().join("_");
+        await updateDoc(doc(db, "friend_requests", reqId), { status: "accepted" });
+        await updateDoc(doc(db, "friends", roomId), { users: [fromId, toId] }, { merge: true });
+        showNotif(currentLang === 'ar' ? "✅ تمت إضافة صديق جديد" : "✅ New friend added");
+      } catch (e) {
+        console.error("Accept Error:", e);
+      }
+    }
+
+    // تحميل المستخدمين المتصلين
+    function loadOnlineUsers(uid) {
+      const onlineRef = query(collection(db, "users"), where("isOnline", "==", true));
+      onSnapshot(onlineRef, (snapshot) => {
+        const list = document.getElementById("onlineUsers");
+        list.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (data.uid !== uid) {
+            const div = document.createElement("div");
+            div.className = "user-item";
+            div.innerHTML = `
+              <span>${data.fullname || "User"}</span>
+              <button class="friend-btn" onclick="location.href='chat.html?room=${[uid,data.uid].sort().join("_")}'">💬</button>
+            `;
+            list.appendChild(div);
+          }
+        });
+      });
+    }
+
+    // عرض إشعار
+    function showNotif(text) {
+      const bar = document.getElementById("notifBar");
+      bar.innerText = text;
+      bar.style.display = "block";
+      setTimeout(() => bar.style.display = "none", 3000);
+    }
+  </script>
 </body>
 </html>
