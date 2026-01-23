@@ -1,155 +1,100 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title class="tr" data-key="app_name">Stranger Meeting</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#075e54">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title class="tr" data-key="app_name">Stranger Meeting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .landing {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; text-align: center; padding: 20px;
+    }
+    .landing h1 { font-size: 2rem; color: var(--p); margin-bottom: 15px; }
+    .landing p { font-size: 1rem; opacity: 0.7; margin-bottom: 30px; }
+    .landing-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+    .landing-buttons a {
+      text-decoration: none; padding: 14px 25px; border-radius: 12px;
+      font-weight: bold; font-size: 1rem; transition: 0.3s;
+    }
+    .login-btn { background: var(--accent); color: white; }
+    .register-btn { background: var(--p); color: white; }
+    .login-btn:hover, .register-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
 
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* تصميم شاشة الترحيب والتحميل */
-        body, html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background 0.3s ease;
-            overflow: hidden;
-        }
+    .features {
+      margin-top: 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px; width: 100%; max-width: 900px;
+    }
+    .feature-card {
+      background: var(--card); padding: 20px; border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center;
+      transition: 0.3s;
+    }
+    .feature-card:hover { transform: translateY(-5px); }
+    .feature-card h3 { margin-bottom: 10px; color: var(--p-dark); }
+    .feature-card p { font-size: 0.9rem; opacity: 0.7; }
 
-        .splash-container {
-            text-align: center;
-            animation: fadeIn 0.8s ease-in;
-            z-index: 10;
-        }
-
-        .logo-animation {
-            font-size: 5.5rem;
-            margin-bottom: 20px;
-            display: inline-block;
-            animation: pulseCustom 2.5s infinite ease-in-out;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
-        }
-
-        .loader {
-            width: 45px;
-            height: 45px;
-            border: 4px solid rgba(7, 94, 84, 0.1);
-            border-left-color: var(--p);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 25px auto;
-        }
-
-        .welcome-text {
-            color: var(--txt);
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-        }
-
-        .tagline {
-            color: var(--txt);
-            opacity: 0.6;
-            font-size: 1rem;
-        }
-
-        /* تحسين أزرار البداية */
-        .auth-buttons {
-            margin-top: 35px;
-            display: none; 
-            flex-direction: column;
-            gap: 12px;
-            width: 280px;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulseCustom {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.15); opacity: 0.8; }
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* تخصيص الوضع الليلي لصفحة البداية */
-        .dark-mode .loader { border-color: rgba(255,255,255,0.05); border-left-color: var(--p); }
-    </style>
+    .footer { margin-top: 40px; font-size: 0.85rem; opacity: 0.6; }
+  </style>
 </head>
 <body class="light-mode">
 
-    <div class="splash-container">
-        <div class="logo-animation">🤝</div>
-        <div class="welcome-text tr" data-key="app_name">Stranger Meeting</div>
-        <div class="tagline tr" data-key="startHint">قابل أشخاصاً جدد حول العالم</div>
-        
-        <div id="mainLoader" class="loader"></div>
+  <!-- الهيدر -->
+  <div class="header">
+    <h2 class="tr" data-key="app_name">Stranger Meeting</h2>
+    <div style="display:flex; gap:8px;">
+      <button id="themeBtn" class="icon-btn">🌓</button>
+      <button id="langBtn" class="friend-btn">EN</button>
+    </div>
+  </div>
 
-        <div id="authArea" class="auth-buttons">
-            <button class="save-btn tr" data-key="login" onclick="location.href='login.html'">تسجيل الدخول</button>
-            <button class="friend-btn tr" data-key="register" onclick="location.href='register.html'" style="padding: 15px; border: 1px solid var(--p);">إنشاء حساب جديد</button>
-        </div>
+  <!-- محتوى الصفحة -->
+  <div class="landing">
+    <h1 class="tr" data-key="join_community">انضم إلى مجتمع Stranger Meeting</h1>
+    <p class="tr" data-key="welcome_back">ابدأ رحلتك في مقابلة أصدقاء جدد من حول العالم</p>
+
+    <div class="landing-buttons">
+      <a href="login.html" class="login-btn tr" data-key="login">تسجيل الدخول</a>
+      <a href="register.html" class="register-btn tr" data-key="register">إنشاء حساب جديد</a>
     </div>
 
-    <script type="module">
-        import { auth, applyTranslations } from './ui-logic.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    <!-- قسم المميزات -->
+    <div class="features">
+      <div class="feature-card">
+        <h3>🔒 محادثات آمنة</h3>
+        <p>جميع الرسائل والمكالمات مشفرة لضمان خصوصيتك.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🌍 مجتمع عالمي</h3>
+        <p>قابل أصدقاء من مختلف الدول والثقافات بسهولة.</p>
+      </div>
+      <div class="feature-card">
+        <h3>⚡ مطابقة ذكية</h3>
+        <p>محرك بحث متطور يختار لك الشريك المناسب بناءً على اهتماماتك.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📎 مشاركة ملفات</h3>
+        <p>أرسل الصور والملفات مباشرة داخل المحادثة.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🌓 الوضع الليلي</h3>
+        <p>اختر بين الوضع النهاري أو الليلي لتجربة مريحة.</p>
+      </div>
+    </div>
 
-        // 1. معالجة الثيم فوراً قبل أي شيء لمنع الوميض الأبيض
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.body.className = savedTheme + '-mode';
+    <div class="footer">
+      <a href="terms.html" style="color:var(--p); text-decoration:none;" class="tr" data-key="terms_header">شروط الاستخدام والخصوصية</a>
+    </div>
+  </div>
 
-        // 2. تطبيق اللغة
-        const savedLang = localStorage.getItem('preferredLang') || 'ar';
-        applyTranslations(savedLang);
+  <script type="module">
+    import { toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
 
-        // 3. فحص حالة المستخدم مع تأخير جمالي بسيط
-        const startTime = Date.now();
-        
-        onAuthStateChanged(auth, (user) => {
-            const loader = document.getElementById('mainLoader');
-            const authArea = document.getElementById('authArea');
-            
-            // حساب الوقت المستغرق لضمان بقاء شاشة الترحيب لفترة كافية (مثلاً ثانية واحدة)
-            const elapsedTime = Date.now() - startTime;
-            const delay = Math.max(0, 1200 - elapsedTime);
+    const currentLang = localStorage.getItem('preferredLang') || 'ar';
+    applyTranslations(currentLang);
 
-            setTimeout(() => {
-                if (user) {
-                    // إذا كان مسجلاً، اذهب للرئيسية
-                    window.location.replace("dashboard.html");
-                } else {
-                    // إذا لم يكن مسجلاً، اظهر خيارات الدخول
-                    loader.style.display = "none";
-                    authArea.style.display = "flex";
-                }
-            }, delay);
-        });
-
-        // 4. تسجيل الـ Service Worker للـ PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('PWA ServiceWorker ready.'))
-                    .catch(err => console.error('PWA ServiceWorker failed.', err));
-            });
-        }
-
-        // تحسين أمان الصفحة لمنع العودة لشاشة التحميل بالخلف
-        window.onpageshow = function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        };
-    </script>
+    document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = toggleLang;
+  </script>
 </body>
 </html>
-
