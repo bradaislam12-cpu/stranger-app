@@ -1,294 +1,166 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title class="tr" data-key="chat">المحادثة | SM</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            background-color: var(--bg);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        /* تحسين الهيدر */
-        .chat-header {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: var(--card);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .user-info { display: flex; align-items: center; gap: 12px; }
-
-        .chat-avatar {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--p), #128c7e);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-        }
-
-        /* تحسين منطقة الرسائل */
-        #chatMessages {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            scroll-behavior: smooth;
-            background-image: radial-gradient(var(--p) 0.5px, transparent 0.5px); 
-            background-size: 20px 20px;
-            background-color: var(--bg);
-            opacity: 0.95;
-        }
-
-        /* تحسين فقاعات الرسائل */
-        .message {
-            max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            position: relative;
-            word-wrap: break-word;
-            animation: fadeIn 0.3s ease;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .message.sent {
-            align-self: flex-end;
-            background: var(--p);
-            color: white;
-            border-bottom-left-radius: 18px;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.received {
-            align-self: flex-start;
-            background: var(--card);
-            color: var(--txt);
-            border-bottom-right-radius: 18px;
-            border-bottom-left-radius: 4px;
-        }
-
-        .msg-time {
-            font-size: 0.65rem;
-            opacity: 0.7;
-            margin-top: 4px;
-            display: block;
-        }
-        .sent .msg-time { text-align: left; color: rgba(255,255,255,0.9); }
-        .received .msg-time { text-align: right; color: var(--txt); }
-
-        /* منطقة الإدخال */
-        .chat-input-area {
-            padding: 12px 15px;
-            background: var(--card);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            padding-bottom: calc(12px + env(safe-area-inset-bottom));
-        }
-
-        .input-wrapper {
-            flex: 1;
-            background: var(--bg);
-            border-radius: 25px;
-            padding: 4px 15px;
-            display: flex;
-            align-items: center;
-            border: 1px solid rgba(0,0,0,0.08);
-        }
-
-        #messageInput {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 10px 0;
-            outline: none;
-            color: var(--txt);
-            font-size: 1rem;
-        }
-
-        .send-btn-circle {
-            width: 45px;
-            height: 45px;
-            background: var(--p);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(7, 94, 84, 0.3);
-        }
-
-        .send-btn-circle:disabled { background: #ccc; cursor: not-allowed; }
-
-        .dark-mode .message.received { background: #262d31; color: #e9edef; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title class="tr" data-key="secure_chat">الدردشة | Stranger Meeting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .msg-meta {
+      font-size: 0.7rem; opacity: 0.6; margin-top: 3px;
+    }
+    .typing-indicator {
+      font-size: 0.85rem; opacity: 0.7; margin: 5px 10px;
+      font-style: italic; color: var(--accent);
+    }
+    .input-bar button.attach-btn {
+      background: none; border: none; font-size: 1.4rem;
+      cursor: pointer; color: var(--p-dark);
+    }
+  </style>
 </head>
 <body class="light-mode">
 
-    <div class="chat-header">
-        <div class="user-info">
-            <button class="icon-btn" onclick="location.href='dashboard.html'" title="Back">🔙</button>
-            <div class="chat-avatar" id="partnerAvatar">?</div>
-            <div>
-                <div id="partnerName" style="font-weight: bold; font-size: 1rem;">...</div>
-                <small id="partnerStatus" style="opacity: 0.6; font-size: 0.75rem;" class="tr" data-key="online">جاري التحميل...</small>
-            </div>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button id="themeBtn" class="icon-btn">🌓</button>
-            <button id="langBtn" class="friend-btn">EN</button>
-        </div>
+  <!-- الهيدر -->
+  <div class="header">
+    <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
+    <h2 id="chatTitle" class="tr" data-key="secure_chat">بداية المحادثة الآمنة 🔒</h2>
+    <div style="display:flex; gap:8px;">
+      <button id="themeBtn" class="icon-btn">🌓</button>
+      <button id="langBtn" class="friend-btn">EN</button>
     </div>
+  </div>
 
-    <div id="chatMessages"></div>
+  <!-- منطقة الرسائل -->
+  <div class="msg-container" id="messages"></div>
+  <div id="typingIndicator" class="typing-indicator" style="display:none;">...</div>
 
-    <div class="chat-input-area">
-        <div class="input-wrapper">
-            <input type="text" id="messageInput" class="tr" data-key="type_message" placeholder="اكتب رسالتك هنا..." autocomplete="off">
-        </div>
-        <button id="sendBtn" class="send-btn-circle">🕊️</button>
-    </div>
+  <!-- شريط الإدخال -->
+  <div class="input-bar">
+    <button class="attach-btn" id="attachBtn">📎</button>
+    <input type="file" id="fileInput" style="display:none" accept="image/*,application/pdf">
+    <input type="text" id="msgInput" class="tr" data-key="type_message" placeholder="اكتب رسالتك هنا...">
+    <button id="sendBtn" class="start-btn tr" data-key="send">إرسال</button>
+  </div>
 
-    <script type="module">
-        import { auth, db, toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
-        import { 
-            collection, addDoc, query, where, orderBy, onSnapshot, 
-            serverTimestamp, doc, getDoc, limit 
-        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <script type="module">
+    import { auth, db, toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
+    import { doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, updateDoc } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        const params = new URLSearchParams(window.location.search);
-        const partnerID = params.get('id');
-        const container = document.getElementById('chatMessages');
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
+    const storage = getStorage();
 
-        document.getElementById('themeBtn').onclick = toggleTheme;
-        document.getElementById('langBtn').onclick = toggleLang;
-        const currentLang = localStorage.getItem('preferredLang') || 'ar';
-        applyTranslations(currentLang);
+    // تهيئة اللغة والثيم
+    const currentLang = localStorage.getItem('preferredLang') || 'ar';
+    applyTranslations(currentLang);
+    document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = toggleLang;
 
-        async function loadPartnerData() {
-            if (!partnerID) return;
-            try {
-                const partnerDoc = await getDoc(doc(db, "users", partnerID));
-                if (partnerDoc.exists()) {
-                    const data = partnerDoc.data();
-                    document.getElementById('partnerName').innerText = data.fullname || "User";
-                    document.getElementById('partnerAvatar').innerText = (data.fullname || "?").charAt(0).toUpperCase();
-                    document.getElementById('partnerStatus').innerText = data.isOnline ? 
-                        (currentLang === 'ar' ? 'متصل الآن' : 'Online') : 
-                        (currentLang === 'ar' ? 'غير متصل' : 'Offline');
-                }
-            } catch (error) { console.error("Error loading partner:", error); }
+    // جلب معرف الغرفة من الرابط
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomID = urlParams.get('room');
+    if (!roomID) location.href = "dashboard.html";
+
+    const messagesDiv = document.getElementById("messages");
+    const msgInput = document.getElementById("msgInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const typingIndicator = document.getElementById("typingIndicator");
+    const attachBtn = document.getElementById("attachBtn");
+    const fileInput = document.getElementById("fileInput");
+
+    // الاستماع للرسائل في الوقت الحقيقي
+    const msgsRef = collection(db, "rooms", roomID, "messages");
+    const q = query(msgsRef, orderBy("timestamp"));
+    onSnapshot(q, (snapshot) => {
+      messagesDiv.innerHTML = "";
+      snapshot.forEach((docSnap) => {
+        const msg = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "msg " + (msg.from === auth.currentUser.uid ? "me" : "them");
+
+        if (msg.type === "file") {
+          div.innerHTML = `<a href="${msg.url}" target="_blank">📎 ${msg.fileName}</a>`;
+        } else if (msg.type === "image") {
+          div.innerHTML = `<img src="${msg.url}" style="max-width:200px; border-radius:10px;">`;
+        } else {
+          div.innerText = msg.text;
         }
 
-        function getChatID(uid1, uid2) {
-            return [uid1, uid2].sort().join("_");
-        }
+        const meta = document.createElement("div");
+        meta.className = "msg-meta";
+        meta.innerText = msg.senderName + " • " + new Date(msg.timestamp?.seconds*1000).toLocaleTimeString();
+        div.appendChild(meta);
 
-        async function sendMessage() {
-            const text = messageInput.value.trim();
-            const user = auth.currentUser;
-            if (!text || !user || !partnerID || sendBtn.disabled) return;
+        messagesDiv.appendChild(div);
+      });
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
 
-            const chatID = getChatID(user.uid, partnerID);
-            messageInput.value = ""; 
-            sendBtn.disabled = true; // منع الإرسال المتكرر
-
-            try {
-                await addDoc(collection(db, "messages"), {
-                    chatID: chatID,
-                    senderID: user.uid,
-                    text: text,
-                    timestamp: serverTimestamp()
-                });
-            } catch (e) { 
-                console.error("Send Error:", e);
-                messageInput.value = text;
-            } finally {
-                sendBtn.disabled = false;
-                messageInput.focus();
-            }
-        }
-
-        function listenForMessages() {
-            const user = auth.currentUser;
-            if (!user || !partnerID) return;
-
-            const chatID = getChatID(user.uid, partnerID);
-            const q = query(
-                collection(db, "messages"),
-                where("chatID", "==", chatID),
-                orderBy("timestamp", "asc"),
-                limit(100) // تحسين: جلب آخر 100 رسالة فقط
-            );
-
-            onSnapshot(q, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        const data = change.doc.data();
-                        const isMe = data.senderID === user.uid;
-                        appendMessageUI(data, isMe);
-                    }
-                });
-                container.scrollTop = container.scrollHeight;
-            });
-        }
-
-        function appendMessageUI(data, isMe) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${isMe ? 'sent' : 'received'}`;
-            
-            // التعامل مع التوقيت في حال لم يتم تعيينه بعد من السيرفر
-            const dateObj = data.timestamp ? new Date(data.timestamp.seconds * 1000) : new Date();
-            const time = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            msgDiv.innerHTML = `
-                ${data.text}
-                <span class="msg-time">${time}</span>
-            `;
-            container.appendChild(msgDiv);
-        }
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                loadPartnerData();
-                listenForMessages();
-            } else {
-                window.location.href = "login.html";
-            }
+    // إرسال رسالة نصية
+    sendBtn.onclick = async () => {
+      const text = msgInput.value.trim();
+      if (!text) return;
+      msgInput.value = "";
+      try {
+        await addDoc(msgsRef, {
+          from: auth.currentUser.uid,
+          senderName: auth.currentUser.displayName || "User",
+          text: text,
+          type: "text",
+          timestamp: serverTimestamp()
         });
+      } catch (e) {
+        console.error("Send Error:", e);
+      }
+    };
 
-        sendBtn.onclick = sendMessage;
-        messageInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
-    </script>
+    // إرسال بالضغط على Enter
+    msgInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendBtn.click();
+      else {
+        // تحديث حالة الكتابة
+        updateDoc(doc(db, "rooms", roomID, "typing", auth.currentUser.uid), { isTyping: true });
+      }
+    });
+
+    msgInput.addEventListener("blur", () => {
+      updateDoc(doc(db, "rooms", roomID, "typing", auth.currentUser.uid), { isTyping: false });
+    });
+
+    // الاستماع لحالة الكتابة
+    onSnapshot(collection(db, "rooms", roomID, "typing"), (snapshot) => {
+      let someoneTyping = false;
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data.uid !== auth.currentUser.uid && data.isTyping) someoneTyping = true;
+      });
+      typingIndicator.style.display = someoneTyping ? "block" : "none";
+      typingIndicator.innerText = currentLang === 'ar' ? "يكتب الآن..." : "Typing...";
+    });
+
+    // إرسال ملفات وصور
+    attachBtn.onclick = () => fileInput.click();
+    fileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const fileRef = ref(storage, `rooms/${roomID}/${Date.now()}_${file.name}`);
+      try {
+        await uploadBytes(fileRef, file);
+        const url = await getDownloadURL(fileRef);
+        await addDoc(msgsRef, {
+          from: auth.currentUser.uid,
+          senderName: auth.currentUser.displayName || "User",
+          type: file.type.startsWith("image/") ? "image" : "file",
+          fileName: file.name,
+          url: url,
+          timestamp: serverTimestamp()
+        });
+      } catch (e) {
+        console.error("File Upload Error:", e);
+      }
+    };
+  </script>
 </body>
 </html>
-
