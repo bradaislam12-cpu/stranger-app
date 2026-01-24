@@ -1,181 +1,185 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title class="tr" data-key="register">إنشاء حساب جديد | SM</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: var(--bg);
-            margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-        }
-        .auth-card {
-            background: var(--card);
-            width: 100%;
-            max-width: 450px;
-            padding: 35px;
-            border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-            text-align: center;
-            animation: slideUp 0.5s ease-out;
-        }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .auth-header h1 { color: var(--p); font-size: 1.8rem; margin-bottom: 10px; }
-        
-        .input-group { margin-bottom: 18px; text-align: right; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--txt); font-size: 0.9rem; }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: 1.5px solid rgba(0,0,0,0.08);
-            background: var(--bg);
-            color: var(--txt);
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
-        }
-        .input-group input:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.1); }
-
-        .error-msg { 
-            background: rgba(255, 59, 48, 0.1); 
-            color: #ff3b30; 
-            padding: 12px; 
-            border-radius: 10px; 
-            font-size: 0.85rem; 
-            margin-bottom: 15px; 
-            display: none; 
-            border: 1px solid rgba(255, 59, 48, 0.2);
-        }
-
-        .reg-btn {
-            width: 100%; padding: 16px; border-radius: 15px;
-            background: var(--p); color: white; border: none;
-            font-weight: bold; font-size: 1rem; cursor: pointer;
-            transition: 0.3s; margin-top: 10px;
-        }
-        .reg-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .reg-btn:disabled { background: #999; cursor: not-allowed; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title class="tr" data-key="register_title">إنشاء حساب | Stranger Meeting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .register-form {
+      max-width: 800px; margin: 20px auto; padding: 20px;
+      background: var(--card); border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+    .register-form label { display:block; margin:10px 0 5px; font-weight:bold; }
+    .register-form input, .register-form select {
+      width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;
+      margin-bottom:15px;
+    }
+    .checkbox-group {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:10px;
+    }
+    .danger-btn {
+      background: var(--danger); color:white; padding:12px; border:none;
+      border-radius:8px; cursor:pointer; width:100%; margin-top:15px;
+    }
+    .avatar {
+      text-align:center; margin-bottom:20px;
+    }
+    .avatar img {
+      width:120px; height:120px; border-radius:50%; object-fit:cover;
+      border:3px solid var(--p);
+    }
+  </style>
 </head>
 <body class="light-mode">
 
-    <div class="auth-card">
-        <div class="auth-header">
-            <h1 class="tr" data-key="register">إنشاء حساب</h1>
-            <p style="opacity: 0.6; margin-bottom: 25px;">ابدأ رحلتك في Stranger Meeting الآن</p>
-        </div>
-
-        <div id="errorBox" class="error-msg"></div>
-
-        <form id="regForm">
-            <div class="input-group">
-                <label class="tr" data-key="fullname">الاسم الكامل</label>
-                <input type="text" id="regName" placeholder="مثال: إسلام علي" required>
-            </div>
-
-            <div class="input-group">
-                <label class="tr" data-key="email">البريد الإلكتروني</label>
-                <input type="email" id="regEmail" placeholder="example@mail.com" required>
-            </div>
-
-            <div class="input-group">
-                <label class="tr" data-key="password">كلمة المرور</label>
-                <input type="password" id="regPass" placeholder="6 أحرف أو أكثر" required minlength="6">
-            </div>
-
-            <div class="input-group">
-                <label class="tr" data-key="gender">الجنس</label>
-                <select id="regGender">
-                    <option value="male">ذكر</option>
-                    <option value="female">أنثى</option>
-                </select>
-            </div>
-
-            <button type="submit" id="regBtn" class="reg-btn tr" data-key="register">إنشاء الحساب 🚀</button>
-        </form>
-
-        <div style="margin-top: 25px; font-size: 0.9rem;">
-            <span class="tr" data-key="have_account">لديك حساب بالفعل؟</span>
-            <a href="login.html" style="color: var(--p); font-weight: bold; text-decoration: none; margin-inline-start: 5px;">سجل دخولك</a>
-        </div>
+  <!-- الهيدر -->
+  <div class="header">
+    <button class="icon-btn" onclick="location.href='index.html'">🔙</button>
+    <h2 class="tr" data-key="register_title">إنشاء حساب جديد</h2>
+    <div style="display:flex;gap:8px;">
+      <button id="themeBtn" class="icon-btn">🌓</button>
+      <button id="langBtn" class="friend-btn">EN</button>
     </div>
+  </div>
 
-    <script type="module">
-        import { auth, db, applyTranslations } from './ui-logic.js';
-        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <!-- نموذج التسجيل -->
+  <div class="register-form">
+    <form id="registerForm">
+      <!-- صورة شخصية -->
+      <div class="avatar">
+        <img id="avatarPreview" src="default-avatar.png" alt="Avatar">
+        <input type="file" id="avatarUpload" accept="image/*">
+      </div>
 
-        const currentLang = localStorage.getItem('preferredLang') || 'ar';
-        applyTranslations(currentLang);
+      <label>الاسم الكامل</label>
+      <input type="text" id="fullname" required>
 
-        document.getElementById('regForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const pass = document.getElementById('regPass').value;
-            const gender = document.getElementById('regGender').value;
-            const btn = document.getElementById('regBtn');
-            const errorBox = document.getElementById('errorBox');
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="email" required>
 
-            try {
-                errorBox.style.display = "none";
-                btn.disabled = true;
-                btn.innerText = currentLang === 'ar' ? "جاري إنشاء الحساب..." : "Creating account...";
+      <label>كلمة المرور</label>
+      <input type="password" id="password" required minlength="6">
 
-                // 1. إنشاء الحساب في Firebase Authentication
-                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                const user = userCredential.user;
+      <label>الجنس</label>
+      <select id="gender">
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
+      </select>
 
-                // 2. إنشاء مستند المستخدم في Firestore (قاعدة البيانات)
-                // من المهم جداً وضع كل الحقول هنا لتجنب مشاكل الـ "undefined" لاحقاً
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    fullname: name,
-                    email: email,
-                    gender: gender,
-                    seeking: "both",       // تفضيلات البحث الافتراضية
-                    country: "Algeria",    // الدولة الافتراضية
-                    interests: [],         // قائمة هوايات فارغة
-                    isOnline: true,
-                    isBusy: false,         // مهم جداً لمحرك المطابقة
-                    lastSeen: serverTimestamp(),
-                    createdAt: serverTimestamp()
-                });
+      <label>أهتم بمقابلة</label>
+      <select id="seeking">
+        <option value="male">رجال</option>
+        <option value="female">نساء</option>
+        <option value="both">الجميع</option>
+      </select>
 
-                // 3. التوجه للداشبورد فوراً
-                window.location.replace("dashboard.html");
+      <label>اختر الدولة</label>
+      <select id="country"></select> <!-- سيتم ملؤها ديناميكياً -->
 
-            } catch (error) {
-                btn.disabled = false;
-                btn.innerText = currentLang === 'ar' ? "إنشاء الحساب 🚀" : "Register 🚀";
-                errorBox.style.display = "block";
-                
-                console.error("Auth Error:", error.code);
+      <label>الاهتمامات المشتركة</label>
+      <div class="checkbox-group" id="interestsList"></div>
 
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorBox.innerText = currentLang === 'ar' ? "هذا البريد مسجل مسبقاً" : "Email already registered";
-                        break;
-                    case 'auth/invalid-email':
-                        errorBox.innerText = currentLang === 'ar' ? "بريد إلكتروني غير صالح" : "Invalid email address";
-                        break;
-                    case 'auth/weak-password':
-                        errorBox.innerText = currentLang === 'ar' ? "كلمة المرور ضعيفة جداً" : "Password is too weak";
-                        break;
-                    default:
-                        errorBox.innerText = currentLang === 'ar' ? "فشل التسجيل، حاول ثانية" : "Registration failed, try again";
-                }
-            }
-        };
-    </script>
+      <!-- كابتشا بسيطة -->
+      <div style="margin:10px 0;">
+        <span id="captchaQuestion"></span>
+        <input type="text" id="captchaAnswer" placeholder="الإجابة" required>
+      </div>
+
+      <button type="submit" class="start-btn">إنشاء الحساب ✅</button>
+    </form>
+
+    <div id="statusMsg" style="margin-top:10px;color:var(--p);font-weight:bold;"></div>
+  </div>
+
+  <script type="module">
+    import { auth, db, toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const currentLang = localStorage.getItem('preferredLang') || 'ar';
+    applyTranslations(currentLang);
+    document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = toggleLang;
+
+    const registerForm = document.getElementById("registerForm");
+    const statusMsg = document.getElementById("statusMsg");
+
+    // ✅ قائمة الدول (مختصرة هنا، يمكن تحميلها من ملف خارجي JSON)
+    const countries = ["Algeria","Morocco","Tunisia","Egypt","Saudi Arabia","France","Germany","Italy","Spain","UK","USA","Canada","Brazil","Argentina","Mexico","Japan","China","India","Russia","South Africa","Australia","New Zealand"];
+    const countrySelect = document.getElementById("country");
+    countries.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      countrySelect.appendChild(opt);
+    });
+
+    // ✅ الاهتمامات
+    const interests = ["Sports","Gaming","Tech","AI","Music","Art","Travel","Reading","Cooking","Coding","Movies","Photography","Fitness","Nature","Languages","Fashion","Cars","Science","History","Politics","Animals","Food","Business","Education","Volunteering","Meditation","Gardening","Pets","Comics","Board Games","Dance","Writing","Astronomy","DIY"];
+    const interestsList = document.getElementById("interestsList");
+    interests.forEach(i => {
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="checkbox" value="${i}"> ${i}`;
+      interestsList.appendChild(label);
+    });
+
+    // ✅ معاينة الصورة الشخصية
+    const avatarUpload = document.getElementById("avatarUpload");
+    const avatarPreview = document.getElementById("avatarPreview");
+    avatarUpload.onchange = () => {
+      const file = avatarUpload.files[0];
+      if (file) {
+        avatarPreview.src = URL.createObjectURL(file);
+      }
+    };
+
+    // ✅ كابتشا بسيطة
+    let captchaResult;
+    function generateCaptcha() {
+      const a = Math.floor(Math.random() * 10) + 1;
+      const b = Math.floor(Math.random() * 10) + 1;
+      captchaResult = a + b;
+      document.getElementById('captchaQuestion').innerText = currentLang === 'ar'
+        ? `ما نتيجة ${a} + ${b} ؟`
+        : `What is ${a} + ${b}?`;
+    }
+    generateCaptcha();
+
+    registerForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const fullname = document.getElementById("fullname").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const gender = document.getElementById("gender").value;
+      const seeking = document.getElementById("seeking").value;
+      const country = document.getElementById("country").value;
+      const interests = Array.from(document.querySelectorAll("#interestsList input:checked")).map(cb => cb.value);
+      const captchaAnswer = document.getElementById("captchaAnswer").value.trim();
+
+      // تحقق من الكابتشا
+      if (parseInt(captchaAnswer) !== captchaResult) {
+        statusMsg.innerText = currentLang === 'ar' ? "إجابة الكابتشا غير صحيحة" : "Incorrect CAPTCHA answer";
+        generateCaptcha();
+        return;
+      }
+
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", userCred.user.uid), {
+          uid: userCred.user.uid,
+          fullname, email, gender, seeking, country, interests,
+          isOnline: true, isBusy: false,
+          avatarUrl: avatarPreview.src
+        });
+        statusMsg.innerText = currentLang === 'ar' ? "تم إنشاء الحساب بنجاح! 🎉" : "Account created successfully! 🎉";
+        setTimeout(() => window.location.replace("dashboard.html"), 1500);
+      } catch (error) {
+        statusMsg.innerText = currentLang === 'ar' ? "فشل إنشاء الحساب، حاول ثانية" : "Registration failed, try again";
+      }
+    };
+  </script>
 </body>
 </html>
