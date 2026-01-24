@@ -1,86 +1,104 @@
-export const translations = {
-    ar: {
-        // عام (General)
-        app_name: "Stranger Meeting",
-        logout: "تسجيل الخروج 🚪",
-        back: "رجوع 🔙",
-        save_changes: "حفظ البيانات ✅",
-        save_success: "تم الحفظ بنجاح! ✨",
-        loading: "جاري التحميل...",
-        
-        // صفحة الدخول والتسجيل (Auth)
-        login_title: "تسجيل الدخول",
-        register_title: "إنشاء حساب جديد",
-        welcome_back: "مرحباً بك مجدداً!",
-        join_community: "انضم إلى مجتمع Stranger Meeting",
-        email_label: "البريد الإلكتروني",
-        pass_label: "كلمة المرور",
-        name_label: "الاسم الكامل",
-        gender_label: "الجنس",
-        male: "ذكر",
-        female: "أنثى",
-        have_account: "لديك حساب بالفعل؟ سجل دخولك",
-        no_account: "ليس لديك حساب؟ سجل الآن",
-        google_login: "الدخول بواسطة جوجل G",
-        error_email_used: "هذا البريد الإلكتروني مسجل بالفعل.",
-        error_weak_pass: "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
-        
-        // الملف الشخصي (Profile)
-        profile_header: "الملف الشخصي",
-        fullname_placeholder: "أدخل اسمك الكامل",
-        seeking_label: "أهتم بمقابلة",
-        seeking_male: "رجال",
-        seeking_female: "نساء",
-        seeking_both: "الجميع",
-        country_label: "اختر الدولة",
-        interests_label: "الاهتمامات المشتركة",
-        
-        // الهوايات (Hobbies)
-        Sports: "الرياضة",
-        Gaming: "الألعاب",
-        Tech: "التقنية",
-        AI: "الذكاء الاصطناعي",
-        Music: "الموسيقى",
-        Art: "الفن",
-        Travel: "السفر",
-        Reading: "القراءة",
-        Cooking: "الطبخ",
-        Coding: "البرمجة",
+// translations.js
 
-        // الداشبورد والبحث (Dashboard & Discovery)
-        start_search: "ابدأ البحث عن صديق 🚀",
-        searching_match: "جاري البحث عن شريك مناسب...",
-        cancel_search: "إلغاء البحث",
-        friends_list: "👥 أصدقاؤك",
-        friend_requests: "🔔 طلبات الصداقة",
-        no_friends: "لا يوجد أصدقاء بعد. ابدأ بمقابلة الناس!",
-        online: "متصل الآن",
-        offline: "غير متصل",
-        add_friend: "إضافة صديق ➕",
-        
-        // الدردشة (Chat)
-        type_message: "اكتب رسالتك هنا...",
-        send: "إرسال",
-        secure_chat: "بداية المحادثة الآمنة 🔒",
-        
-        // الشروط والخصوصية (Terms)
-        terms_header: "شروط الاستخدام والخصوصية 🛡️",
-        terms_intro: "للحفاظ على مجتمع آمن، يرجى الالتزام بالآتي:",
-        privacy_title: "🔒 الخصوصية والأمان",
-        encryption_text: "التشفير: المكالمات مؤمنة ولا يتم تسجيلها.",
-        rules_title: "🚫 قواعد السلوك والمنع",
-        rules_text: "يُحظر تماماً أي محتوى خادش للحياء أو التحرش.",
-        age_limit: "يجب أن تكون فوق سن 18 عاماً.",
-        legal_disclaimer: "تنبيه: ضغطك على الموافقة يعد عقداً ملزماً.",
-        agree_btn: "أوافق وأرغب في المتابعة ✅"
-    },
-    en: {
-        // القاموس الإنجليزي المقابل (سيتم تعبئته بنفس المفاتيح)
-        app_name: "Stranger Meeting",
-        logout: "Logout 🚪",
-        back: "Back 🔙",
-        save_changes: "Save Changes ✅",
-        // ... وهكذا لكل المفاتيح أعلاه
-    }
+// ✅ قاموس الترجمات
+export const translations = {
+  ar: {
+    app_name: "Stranger Meeting",
+    login_title: "تسجيل الدخول",
+    register_title: "إنشاء حساب جديد",
+    profile_header: "الملف الشخصي",
+    secure_chat: "مكالمة فيديو آمنة 🔒",
+    welcome_back: "مرحباً بك مجدداً!",
+    email_label: "البريد الإلكتروني",
+    pass_label: "كلمة المرور",
+    login: "تسجيل الدخول",
+    google_login: "الدخول بواسطة جوجل",
+    no_account: "ليس لديك حساب؟ سجل الآن",
+    save_changes: "حفظ البيانات ✅",
+    delete_account: "حذف الحساب نهائياً ⚠️",
+    fullname_placeholder: "الاسم الكامل",
+    gender_label: "الجنس",
+    male: "ذكر",
+    female: "أنثى",
+    seeking_label: "أهتم بمقابلة",
+    seeking_male: "رجال",
+    seeking_female: "نساء",
+    seeking_both: "الجميع",
+    country_label: "اختر الدولة",
+    interests_label: "الاهتمامات المشتركة"
+  },
+  en: {
+    app_name: "Stranger Meeting",
+    login_title: "Login",
+    register_title: "Create Account",
+    profile_header: "Profile",
+    secure_chat: "Secure Video Call 🔒",
+    welcome_back: "Welcome back!",
+    email_label: "Email",
+    pass_label: "Password",
+    login: "Login",
+    google_login: "Login with Google",
+    no_account: "Don't have an account? Register now",
+    save_changes: "Save changes ✅",
+    delete_account: "Delete account ⚠️",
+    fullname_placeholder: "Full Name",
+    gender_label: "Gender",
+    male: "Male",
+    female: "Female",
+    seeking_label: "Looking to meet",
+    seeking_male: "Men",
+    seeking_female: "Women",
+    seeking_both: "Everyone",
+    country_label: "Select Country",
+    interests_label: "Shared Interests"
+  }
 };
 
+// ✅ دالة لتطبيق الترجمة
+export function applyTranslations(lang = "ar") {
+  const elements = document.querySelectorAll(".tr");
+  elements.forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (translations[lang] && translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+
+  // تحديث زر اللغة
+  const langBtn = document.getElementById("langBtn");
+  if (langBtn) {
+    langBtn.textContent = lang === "ar" ? "EN" : "AR";
+  }
+
+  // حفظ اللغة المفضلة
+  localStorage.setItem("preferredLang", lang);
+}
+
+// ✅ دالة لتبديل اللغة
+export function toggleLang() {
+  const currentLang = localStorage.getItem("preferredLang") || "ar";
+  const newLang = currentLang === "ar" ? "en" : "ar";
+  applyTranslations(newLang);
+}
+
+// ✅ دالة لتبديل الثيم (نهاري/ليلي)
+export function toggleTheme() {
+  const body = document.body;
+  if (body.classList.contains("light-mode")) {
+    body.classList.remove("light-mode");
+    body.classList.add("dark-mode");
+    localStorage.setItem("theme", "dark");
+  } else {
+    body.classList.remove("dark-mode");
+    body.classList.add("light-mode");
+    localStorage.setItem("theme", "light");
+  }
+}
+
+// ✅ تحميل الثيم واللغة عند فتح الصفحة
+export function initUI() {
+  const savedLang = localStorage.getItem("preferredLang") || "ar";
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTranslations(savedLang);
+  document.body.classList.add(savedTheme === "dark" ? "dark-mode" : "light-mode");
+}
