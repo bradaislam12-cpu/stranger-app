@@ -1,225 +1,176 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title class="tr" data-key="profile">الملف الشخصي | SM</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body { background-color: var(--bg); color: var(--txt); padding-bottom: 60px; }
-        .profile-container { max-width: 500px; margin: 0 auto; padding: 20px; }
-        
-        .profile-card {
-            background: var(--card); border-radius: 25px; padding: 30px;
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            position: relative; animation: fadeIn 0.5s ease;
-        }
-
-        .avatar-wrapper { position: relative; width: 100px; margin: 0 auto 15px; }
-        .avatar {
-            width: 100px; height: 100px; background: linear-gradient(135deg, var(--p), #128c7e);
-            color: white; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 2.5rem; font-weight: bold;
-            box-shadow: 0 5px 15px rgba(7, 94, 84, 0.3);
-        }
-        .edit-badge {
-            position: absolute; bottom: 0; right: 0; background: var(--accent);
-            width: 30px; height: 30px; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-size: 0.8rem;
-            border: 3px solid var(--card); color: white;
-        }
-
-        .data-box { text-align: right; margin-bottom: 20px; }
-        .data-box span { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; opacity: 0.8; }
-
-        .data-box input, .data-box select {
-            width: 100%; padding: 12px 15px; border-radius: 12px;
-            border: 1px solid rgba(0,0,0,0.1); background: var(--bg);
-            color: var(--txt); outline: none; box-sizing: border-box; font-size: 1rem;
-            transition: 0.3s;
-        }
-
-        .checkbox-group {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-            background: var(--bg); padding: 15px; border-radius: 12px;
-            max-height: 220px; overflow-y: auto; border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .checkbox-group label {
-            display: flex; align-items: center; gap: 10px; font-size: 0.85rem;
-            cursor: pointer; padding: 8px; background: var(--card);
-            border-radius: 8px; transition: 0.2s;
-        }
-        .checkbox-group label:hover { background: rgba(37, 211, 102, 0.1); }
-
-        .save-btn {
-            width: 100%; padding: 16px; border-radius: 50px;
-            background: var(--p); color: white; border: none;
-            font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;
-        }
-        
-        /* زر حذف الحساب */
-        .delete-section {
-            margin-top: 30px; padding-top: 20px;
-            border-top: 1px dashed rgba(255, 0, 0, 0.2);
-        }
-        .delete-btn {
-            background: none; color: #ff3b30; border: 1px solid #ff3b30;
-            padding: 12px; border-radius: 12px; width: 100%;
-            cursor: pointer; font-weight: bold; transition: 0.3s;
-        }
-        .delete-btn:hover { background: #ff3b30; color: white; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title class="tr" data-key="profile_header">الملف الشخصي | Stranger Meeting</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .profile-form {
+      max-width: 800px; margin: 20px auto; padding: 20px;
+      background: var(--card); border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+    .profile-form label { display:block; margin:10px 0 5px; font-weight:bold; }
+    .profile-form input, .profile-form select {
+      width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;
+      margin-bottom:15px;
+    }
+    .checkbox-group {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:10px;
+    }
+    .danger-btn {
+      background: var(--danger); color:white; padding:12px; border:none;
+      border-radius:8px; cursor:pointer; width:100%; margin-top:15px;
+    }
+    .avatar {
+      text-align:center; margin-bottom:20px;
+    }
+    .avatar img {
+      width:120px; height:120px; border-radius:50%; object-fit:cover;
+      border:3px solid var(--p);
+    }
+  </style>
 </head>
 <body class="light-mode">
 
-    <div class="header">
-        <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
-        <h2 class="tr" data-key="profile">الملف الشخصي</h2>
-        <button id="logoutBtn" class="icon-btn">🚪</button>
+  <!-- الهيدر -->
+  <div class="header">
+    <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
+    <h2 class="tr" data-key="profile_header">الملف الشخصي</h2>
+    <div style="display:flex;gap:8px;">
+      <button id="themeBtn" class="icon-btn">🌓</button>
+      <button id="langBtn" class="friend-btn">EN</button>
     </div>
+  </div>
 
-    <div class="profile-container">
-        <div class="profile-card">
-            <div class="avatar-wrapper">
-                <div class="avatar" id="uAvatar">?</div>
-                <div class="edit-badge">✏️</div>
-            </div>
-            <h3 id="uName">...</h3>
-            <p id="uEmail" style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 25px;"></p>
+  <!-- نموذج الملف الشخصي -->
+  <div class="profile-form">
+    <form id="profileForm">
+      <!-- صورة شخصية -->
+      <div class="avatar">
+        <img id="avatarPreview" src="default-avatar.png" alt="Avatar">
+        <input type="file" id="avatarUpload" accept="image/*">
+      </div>
 
-            <div class="data-box">
-                <span class="tr" data-key="fullname">الاسم الكامل</span>
-                <input type="text" id="fullnameInput" placeholder="اسمك الظاهر للأخرين">
-            </div>
+      <label>الاسم الكامل</label>
+      <input type="text" id="fullname" required>
 
-            <div class="data-box">
-                <span class="tr" data-key="gender">الجنس</span>
-                <select id="userGender">
-                    <option value="male" class="tr" data-key="male">ذكر</option>
-                    <option value="female" class="tr" data-key="female">أنثى</option>
-                </select>
-            </div>
+      <label>الجنس</label>
+      <select id="gender">
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
+      </select>
 
-            <div class="data-box">
-                <span class="tr" data-key="seeking">أرغب في مقابلة</span>
-                <select id="seekingGender">
-                    <option value="male" class="tr" data-key="seeking_male">رجال</option>
-                    <option value="female" class="tr" data-key="seeking_female">نساء</option>
-                    <option value="both" class="tr" data-key="seeking_both">الجميع</option>
-                </select>
-            </div>
+      <label>أهتم بمقابلة</label>
+      <select id="seeking">
+        <option value="male">رجال</option>
+        <option value="female">نساء</option>
+        <option value="both">الجميع</option>
+      </select>
 
-            <div class="data-box">
-                <span class="tr" data-key="country">الدولة</span>
-                <select id="userCountry">
-                    <option value="" class="tr" data-key="select_country">اختر دولتك...</option>
-                </select>
-            </div>
+      <label>اختر الدولة</label>
+      <select id="country"></select> <!-- سيتم ملؤها ديناميكياً -->
 
-            <div class="data-box">
-                <span class="tr" data-key="interests">الهوايات والاهتمامات (اختيار متعدد)</span>
-                <div class="checkbox-group" id="interestsContainer"></div>
-            </div>
+      <label>الاهتمامات المشتركة</label>
+      <div class="checkbox-group" id="interestsList"></div>
 
-            <button class="save-btn tr" id="saveProfile" data-key="save_changes">حفظ التعديلات ✅</button>
+      <button type="submit" class="start-btn">حفظ البيانات ✅</button>
+    </form>
 
-            <div class="delete-section">
-                <button id="deleteAccBtn" class="delete-btn tr" data-key="delete_account">حذف الحساب نهائياً ⚠️</button>
-            </div>
-        </div>
-    </div>
+    <button id="deleteBtn" class="danger-btn">حذف الحساب نهائياً ⚠️</button>
+    <div id="statusMsg" style="margin-top:10px;color:var(--p);font-weight:bold;"></div>
+  </div>
 
-    <script type="module">
-        import { auth, db, applyTranslations, deleteAccount } from './ui-logic.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <script type="module">
+    import { auth, db, toggleLang, toggleTheme, applyTranslations, deleteAccount } from './ui-logic.js';
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // قائمة الدول والهوايات (بقيت كما هي في الكود الأصلي لضمان البيانات)
-        const countriesList = ["أفغانستان", "ألبانيا", "الجزائر", "أندورا", "أنغولا", "أنتيغوا وبربودا", "الأرجنتين", "أرمينيا", "أستراليا", "النمسا", "أذربيجان", "الباهاما", "البحرين", "بنغلاديش", "باربادوس", "بيلاروسيا", "بلجيكا", "بليز", "بنين", "بوتان", "بوليفيا", "البوسنة والهرسك", "بوتسوانا", "البرازيل", "بروناي", "بلغاريا", "بوركينا فاسو", "بوروندي", "كمبوديا", "الكاميرون", "كندا", "الرأس الأخضر", "جمهورية أفريقيا الوسطى", "تشاد", "تشيلي", "الصين", "كولومبيا", "جزر القمر", "الكونغو", "كوستاريكا", "كرواتيا", "كوبا", "قبرص", "التشيك", "الدنمارك", "جيبوتي", "دومينيكا", "جمهورية الدومينيكان", "الإكوادور", "مصر", "السلفادور", "غينيا الاستوائية", "إريتريا", "إستونيا", "إسواتيني", "إثيوبيا", "فيجي", "فنلندا", "فرنسا", "الغابون", "غامبيا", "جورجيا", "ألمانيا", "غانا", "اليونان", "غرينادا", "غواتيمالا", "غينيا", "غينيا بيساو", "غيانا", "هايتي", "هندوراس", "المجر", "آيسلندا", "الهند", "إندونيسيا", "إيران", "العراق", "أيرلندا", "إيطاليا", "ساحل العاج", "جامايكا", "اليابان", "الأردن", "كازاخستان", "كينيا", "كيريباتي", "كوريا الشمالية", "كوريا الجنوبية", "الكويت", "قيرغيزستان", "لاوس", "لاتفيا", "لبنان", "ليسوتو", "ليبيريا", "ليبيا", "ليختنشتاين", "ليتوانيا", "لوكسمبورغ", "مدغشقر", "مالاوي", "ماليزيا", "جزر المالديف", "مالي", "مالطا", "جزر مارشال", "موريتانيا", "موريشيوس", "المكسيك", "ميكرونيزيا", "مولدوفا", "موناكو", "منغوليا", "الجبل الأسود", "المغرب", "موزمبيق", "ميانمار", "ناميبيا", "ناورو", "نيبال", "هولندا", "نيوزيلندا", "نيكاراغوا", "النيجر", "نيجيريا", "مقدونيا الشمالية", "النرويج", "عمان", "باكستان", "بالاو", "فلسطين", "بنما", "بابوا غينيا الجديدة", "باراغواي", "بيرو", "الفلبين", "بولندا", "البرتغال", "قطر", "رومانيا", "روسيا", "رواندا", "سانت كيتس ونيفيس", "سانت لوسيا", "سانت فنسنت والغرينادين", "ساموا", "سان مارينو", "ساو تومي وبرينسيب", "السعودية", "السنغال", "صربيا", "سيشيل", "سيراليون", "سنغافورة", "سلوفاكيا", "سلوفينيا", "جزر سليمان", "الصومال", "جنوب أفريقيا", "جنوب السودان", "إسبانيا", "سريلانكا", "السودان", "سورينام", "السويد", "سويسرا", "سوريا", "تايوان", "طاجيكستان", "تنزانيا", "تايلاند", "تيمور الشرقية", "توغو", "تونغا", "ترينيداد وتوباغو", "تونس", "تركيا", "تركمانستان", "توفالو", "أوغندا", "أوكرانيا", "الإمارات", "المملكة المتحدة", "الولايات المتحدة", "أوروغواي", "أوزبكستان", "فانواتو", "فنزويلا", "فيتنام", "اليمن", "زامبيا", "زيمبابوي"];
-        
-        const hobbiesList = [
-            { id: "Sports", ar: "الرياضة", en: "Sports" }, { id: "Gaming", ar: "الألعاب", en: "Gaming" }, { id: "Music", ar: "الموسيقى", en: "Music" }, { id: "Travel", ar: "السفر", en: "Travel" }, { id: "Tech", ar: "التقنية", en: "Technology" }, { id: "Art", ar: "الفن", en: "Art" }, { id: "Cooking", ar: "الطبخ", en: "Cooking" }, { id: "Reading", ar: "القراءة", en: "Reading" }, { id: "Photography", ar: "التصوير", en: "Photography" }, { id: "Writing", ar: "الكتابة", en: "Writing" }, { id: "Dance", ar: "الرقص", en: "Dance" }, { id: "Fitness", ar: "اللياقة البدنية", en: "Fitness" }, { id: "Fishing", ar: "الصيد", en: "Fishing" }, { id: "Hiking", ar: "المشي", en: "Hiking" }, { id: "Camping", ar: "التخييم", en: "Camping" }, { id: "Gardening", ar: "البستنة", en: "Gardening" }, { id: "Crafts", ar: "أعمال يدوي", en: "Crafts" }, { id: "Movies", ar: "الأفلام", en: "Movies" }, { id: "Volunteering", ar: "التطوع", en: "Volunteering" }, { id: "Meditation", ar: "التأمل", en: "Meditation" }, { id: "Languages", ar: "اللغات", en: "Languages" }, { id: "Fashion", ar: "الأزياء", en: "Fashion" }, { id: "Chess", ar: "الشطرنج", en: "Chess" }, { id: "Swimming", ar: "السباحة", en: "Swimming" }
-        ];
+    const currentLang = localStorage.getItem('preferredLang') || 'ar';
+    applyTranslations(currentLang);
+    document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = toggleLang;
 
-        function initFields() {
-            const countrySelect = document.getElementById("userCountry");
-            const hobbyContainer = document.getElementById("interestsContainer");
-            const lang = localStorage.getItem('preferredLang') || 'ar';
+    const profileForm = document.getElementById("profileForm");
+    const statusMsg = document.getElementById("statusMsg");
 
-            countriesList.sort().forEach(c => {
-                const opt = document.createElement("option");
-                opt.value = c; opt.textContent = c;
-                countrySelect.appendChild(opt);
-            });
+    // ✅ قائمة الدول (مختصرة هنا، يمكن تحميلها من ملف خارجي JSON)
+    const countries = ["Algeria","Morocco","Tunisia","Egypt","Saudi Arabia","France","Germany","Italy","Spain","UK","USA","Canada","Brazil","Argentina","Mexico","Japan","China","India","Russia","South Africa","Australia","New Zealand"];
+    const countrySelect = document.getElementById("country");
+    countries.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      countrySelect.appendChild(opt);
+    });
 
-            hobbiesList.forEach(h => {
-                const label = document.createElement("label");
-                label.innerHTML = `<input type="checkbox" name="interest" value="${h.id}"><span>${lang === 'ar' ? h.ar : h.en}</span>`;
-                hobbyContainer.appendChild(label);
-            });
-        }
+    // ✅ الاهتمامات
+    const interests = ["Sports","Gaming","Tech","AI","Music","Art","Travel","Reading","Cooking","Coding","Movies","Photography","Fitness","Nature","Languages","Fashion","Cars","Science","History","Politics","Animals","Food","Business","Education","Volunteering","Meditation","Gardening","Pets","Comics","Board Games","Dance","Writing","Astronomy","DIY"];
+    const interestsList = document.getElementById("interestsList");
+    interests.forEach(i => {
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="checkbox" value="${i}"> ${i}`;
+      interestsList.appendChild(label);
+    });
 
-        initFields();
-        applyTranslations(localStorage.getItem('preferredLang') || 'ar');
+    // ✅ معاينة الصورة الشخصية
+    const avatarUpload = document.getElementById("avatarUpload");
+    const avatarPreview = document.getElementById("avatarPreview");
+    avatarUpload.onchange = () => {
+      const file = avatarUpload.files[0];
+      if (file) {
+        avatarPreview.src = URL.createObjectURL(file);
+      }
+    };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) return location.href = "login.html";
+    async function loadProfile() {
+      const user = auth.currentUser;
+      if (!user) return location.href = "login.html";
 
-            const docSnap = await getDoc(doc(db, "users", user.uid));
-            if (docSnap.exists()) {
-                const u = docSnap.data();
-                document.getElementById("uName").innerText = u.fullname || "User";
-                document.getElementById("uEmail").innerText = u.email;
-                document.getElementById("uAvatar").innerText = (u.fullname || "U").charAt(0).toUpperCase();
-                document.getElementById("fullnameInput").value = u.fullname || "";
-                document.getElementById("userGender").value = u.gender || "male";
-                document.getElementById("seekingGender").value = u.seeking || "both";
-                document.getElementById("userCountry").value = u.country || "";
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        document.getElementById("fullname").value = data.fullname || "";
+        document.getElementById("gender").value = data.gender || "male";
+        document.getElementById("seeking").value = data.seeking || "both";
+        document.getElementById("country").value = data.country || "Algeria";
 
-                if (u.interests) {
-                    const checkboxes = document.querySelectorAll('input[name="interest"]');
-                    checkboxes.forEach(cb => cb.checked = u.interests.includes(cb.value));
-                }
-            }
+        // الاهتمامات
+        const userInterests = data.interests || [];
+        document.querySelectorAll("#interestsList input").forEach(cb => {
+          cb.checked = userInterests.includes(cb.value);
         });
 
-        document.getElementById("saveProfile").onclick = async () => {
-            const user = auth.currentUser;
-            const btn = document.getElementById("saveProfile");
-            const selectedInterests = Array.from(document.querySelectorAll('input[name="interest"]:checked')).map(cb => cb.value);
+        // الصورة الشخصية
+        if (data.avatarUrl) avatarPreview.src = data.avatarUrl;
+      }
+    }
+    loadProfile();
 
-            btn.disabled = true;
-            btn.innerText = "جاري الحفظ...";
+    profileForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) return;
 
-            try {
-                await updateDoc(doc(db, "users", user.uid), {
-                    fullname: document.getElementById("fullnameInput").value,
-                    gender: document.getElementById("userGender").value,
-                    seeking: document.getElementById("seekingGender").value,
-                    country: document.getElementById("userCountry").value,
-                    interests: selectedInterests
-                });
-                
-                btn.style.background = "#25d366";
-                btn.innerText = "تم الحفظ بنجاح! ✨";
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.style.background = "var(--p)";
-                    btn.innerText = "حفظ التعديلات ✅";
-                }, 2000);
-            } catch (e) {
-                alert("خطأ أثناء الحفظ");
-                btn.disabled = false;
-            }
-        };
+      const fullname = document.getElementById("fullname").value.trim();
+      const gender = document.getElementById("gender").value;
+      const seeking = document.getElementById("seeking").value;
+      const country = document.getElementById("country").value;
+      const interests = Array.from(document.querySelectorAll("#interestsList input:checked")).map(cb => cb.value);
 
-        // ربط أزرار الخروج والحذف
-        document.getElementById("logoutBtn").onclick = () => signOut(auth).then(() => location.href="login.html");
-        document.getElementById("deleteAccBtn").onclick = () => deleteAccount();
-    </script>
+      try {
+        await updateDoc(doc(db, "users", user.uid), {
+          fullname, gender, seeking, country, interests
+        });
+        statusMsg.innerText = currentLang === 'ar' ? "تم الحفظ بنجاح! ✨" : "Saved successfully! ✨";
+      } catch (error) {
+        statusMsg.innerText = currentLang === 'ar' ? "فشل الحفظ، حاول ثانية" : "Save failed, try again";
+      }
+    };
+
+    // حذف الحساب
+    document.getElementById("deleteBtn").onclick = deleteAccount;
+  </script>
 </body>
 </html>
-
