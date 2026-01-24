@@ -1,167 +1,165 @@
-/* 1. إعدادات المتغيرات والألوان الأساسية */
+/* style.css */
+
+/* 🎨 إعداد الألوان */
 :root {
-    --p: #075e54;         /* الأخضر الأساسي */
-    --p-dark: #128c7e;    /* أخضر غامق */
-    --bg: #f0f2f5;        /* خلفية نهارية */
-    --card: #ffffff;      /* لون البطاقات */
-    --txt: #1c1e21;       /* لون النص */
-    --me: #dcf8c6;        /* فقاعة رسائلي */
-    --them: #ffffff;      /* فقاعة الطرف الآخر */
-    --accent: #34b7f1;    /* لون التفاعل */
-    --danger: #ff3b30;    /* التنبيهات */
-    --header-h: 60px;     /* ارتفاع الهيدر */
+  --bg: #f0f2f5;
+  --card: #ffffff;
+  --p: #075e54;
+  --p-dark: #064c44;
+  --accent: #25d366;
+  --danger: #d9534f;
+  --header-h: 60px;
 }
 
-/* 2. إعدادات الوضع الليلي الشامل */
-.dark-mode {
-    --bg: #0b141a;
-    --card: #111b21;
-    --txt: #e9edef;
-    --p: #202c33;
-    --p-dark: #2a3942;
-    --me: #005c4b;
-    --them: #202c33;
+body.light-mode {
+  background: var(--bg);
+  color: #333;
 }
 
-/* 3. التنسيق العام */
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-body {
-    background: var(--bg);
-    color: var(--txt);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    margin: 0;
-    padding: 0;
-    transition: background 0.3s ease;
-    line-height: 1.5;
-    user-select: none; /* يمنع التحديد المزعج في تطبيقات الجوال */
+body.dark-mode {
+  background: #121212;
+  color: #eee;
 }
 
-/* 4. الهيدر (Sticky Header) */
+body.dark-mode .header {
+  background: #1e1e1e;
+}
+body.dark-mode .card {
+  background: #222;
+}
+
+/* 🟩 الهيدر */
 .header {
-    background: var(--p);
-    color: white;
-    height: var(--header-h);
-    padding: 0 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  background: var(--p);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.header h2 { font-size: 1.2rem; margin: 0; font-weight: 600; }
-
-.icon-btn {
-    background: none; border: none; font-size: 1.5rem;
-    cursor: pointer; color: white; display: flex;
-    align-items: center; justify-content: center;
-    transition: opacity 0.2s; width: 40px; height: 40px;
-}
-.icon-btn:active { opacity: 0.6; transform: scale(0.9); }
-
-/* 5. صناديق الهوية والملف الشخصي */
-.auth-box, .profile-card {
-    background: var(--card);
-    border-radius: 20px;
-    padding: 25px;
-    margin: 20px auto;
-    width: 92%;
-    max-width: 450px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+.header h2 {
+  font-size: 1.2rem;
+  margin: 0;
 }
 
-input, select, textarea {
-    width: 100%; padding: 14px; margin-bottom: 15px;
-    border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
-    background: var(--bg); color: var(--txt);
-    font-size: 1rem; outline: none; transition: 0.3s;
+/* 🔘 الأزرار */
+button, .start-btn, .friend-btn, .icon-btn {
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  transition: 0.3s;
 }
 
-input:focus, select:focus {
-    border-color: #25d366;
-    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.15);
-}
-
-/* 6. واجهة الدردشة (Chat UI) */
-.msg-container {
-    height: calc(100vh - var(--header-h) - 70px);
-    overflow-y: auto; padding: 15px;
-    display: flex; flex-direction: column; gap: 10px;
-    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-    background-blend-mode: overlay;
-}
-
-.msg {
-    padding: 9px 15px; border-radius: 15px;
-    max-width: 80%; font-size: 0.95rem;
-    position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-    animation: fadeIn 0.2s ease;
-}
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-.me { align-self: flex-end; background: var(--me); border-top-right-radius: 2px; }
-.them { align-self: flex-start; background: var(--them); border-top-left-radius: 2px; }
-
-.input-bar {
-    position: fixed; bottom: 0; width: 100%;
-    background: var(--card); padding: 10px 15px;
-    display: flex; gap: 10px; align-items: center;
-    box-shadow: 0 -2px 15px rgba(0,0,0,0.08);
-}
-
-/* 7. الأزرار */
 .start-btn {
-    background: #25d366; color: white; border: none;
-    padding: 18px 40px; border-radius: 50px;
-    font-weight: 800; font-size: 1.2rem; cursor: pointer;
-    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
-    transition: 0.3s;
+  background: var(--accent);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  width: 100%;
 }
-.start-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
 
 .friend-btn {
-    background: var(--accent); color: white; border: none;
-    padding: 8px 16px; border-radius: 20px;
-    font-size: 0.85rem; font-weight: bold; cursor: pointer;
+  background: var(--p);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
 }
 
-/* 8. قائمة الأصدقاء */
-.user-item {
-    background: var(--card); padding: 15px;
-    border-radius: 15px; display: flex;
-    justify-content: space-between; align-items: center;
-    margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.02);
+.icon-btn {
+  background: transparent;
+  color: inherit;
+  font-size: 1.2rem;
 }
 
-.user-avatar {
-    width: 50px; height: 50px; border-radius: 50%;
-    object-fit: cover; background: #ddd;
-    border: 2px solid var(--p);
+/* 🗂️ صناديق النماذج */
+.auth-box, .profile-form, .register-form {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px;
+  background: var(--card);
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
 }
 
-/* 9. شريط التمرير */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
-
-/* 10. الحالات الخاصة (Badge & Tags) */
-.badge {
-    background: var(--danger); color: white;
-    padding: 3px 8px; border-radius: 50%;
-    font-size: 0.75rem; font-weight: bold;
+.auth-box h2, .profile-form h2, .register-form h2 {
+  margin-bottom: 15px;
+  color: var(--p-dark);
 }
 
-.interest-tag {
-    display: inline-block; background: var(--p-dark);
-    color: white; padding: 4px 12px; border-radius: 20px;
-    margin: 4px; font-size: 0.8rem;
+.auth-box input, .profile-form input, .register-form input,
+.auth-box select, .profile-form select, .register-form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-/* 11. استجابة الجوال */
+/* 🎥 الفيديو */
+.video-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - var(--header-h));
+  background: var(--bg);
+  padding: 10px;
+}
+
+video {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+  background: black;
+  margin: 10px 0;
+}
+
+/* ⚙️ أزرار التحكم في الفيديو */
+.controls {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.controls button {
+  padding: 12px 18px;
+  border-radius: 50px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.end-btn {
+  background: var(--danger);
+  color: white;
+}
+
+.ctrl-btn {
+  background: var(--p);
+  color: white;
+}
+
+.ctrl-btn:hover, .end-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* 📱 Responsive Design */
 @media (max-width: 600px) {
-    .auth-box { width: 95%; padding: 20px; }
-    .msg { max-width: 90%; }
-    .start-btn { width: 100%; }
+  .header h2 {
+    font-size: 1rem;
+  }
+  .auth-box, .profile-form, .register-form {
+    margin: 15px;
+    padding: 15px;
+  }
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
