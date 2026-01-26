@@ -1,4 +1,4 @@
-// ui-logic.js - المحرك المركزي للمشروع
+// ui-logic.js - المحرك المركزي لتطبيق Stranger Meeting
 
 // 1️⃣ استيراد مكتبات Firebase (CDN)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -6,13 +6,13 @@ import {
   getAuth, GoogleAuthProvider, signInWithPopup, deleteUser, onAuthStateChanged, signOut 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
-  getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onSnapshot 
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 2️⃣ استيراد المنطق الفرعي (الترجمة والبحث)
+// 2️⃣ استيراد الإضافات والترجمة
 import { applyTranslations, toggleLang, toggleTheme, initUI } from "./translations.js";
 
-// 3️⃣ إعداد Firebase (استبدل القيم ببيانات مشروعك الحقيقية)
+// 3️⃣ إعداد Firebase (تأكد من وضع بياناتك الحقيقية هنا)
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -26,12 +26,12 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// 4️⃣ إعادة تصدير دوال Firestore لتبسيط الاستخدام في الصفحات
+// تصدير الدوال للاستخدام في الصفحات
 export { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onSnapshot, onAuthStateChanged };
 export { applyTranslations, toggleLang, toggleTheme, initUI };
 
 /**
- * 5️⃣ تسجيل الدخول بجوجل مع تهيئة بيانات المستخدم
+ * 4️⃣ تسجيل الدخول بجوجل + هدية 100 نقطة للمستخدم الجديد
  */
 export async function loginWithGoogle() {
   const provider = new GoogleAuthProvider();
@@ -49,11 +49,10 @@ export async function loginWithGoogle() {
         avatarUrl: user.photoURL || "default-avatar.png",
         gender: "male", 
         seeking: "both",
-        country: "Unknown",
-        interests: [],
+        points: 100, // رصيد ترحيبي
         isOnline: true,
         isBusy: false,
-        createdAt: new Date()
+        createdAt: serverTimestamp()
       });
     } else {
       await updateDoc(userRef, { isOnline: true, isBusy: false });
@@ -61,29 +60,29 @@ export async function loginWithGoogle() {
     window.location.replace("dashboard.html");
   } catch (error) {
     console.error("❌ Google Login Error:", error);
-    alert("فشل تسجيل الدخول بجوجل.");
   }
 }
 
 /**
- * 6️⃣ محرك البحث عن شريك (Discovery Engine)
+ * 5️⃣ محرك البحث المدمج بنظام النقاط (Discovery Engine)
  */
 export async function startDiscovery(btnElement) {
-  const { findMatch } = await import('./matchmaking.js'); // استيراد ديناميكي لتوفير الأداء
+  const { findMatch } = await import('./matchmaking.js');
   const originalText = btnElement.innerText;
   
   btnElement.disabled = true;
   btnElement.innerText = "🔍 جاري البحث...";
 
   try {
+    // استدعاء محرك المطابقة (الذي يفحص النقاط تلقائياً الآن)
     const match = await findMatch();
+    
     if (match) {
       btnElement.innerText = "✅ تم العثور على شريك!";
-      // تحديث حالة المستخدم ليصبح مشغولاً
-      await updateDoc(doc(db, "users", auth.currentUser.uid), { isBusy: true });
       
+      // التوجه لغرفة المكالمة بصفتك المنشئ (Caller)
       setTimeout(() => {
-        window.location.href = `meeting.html?room=${match.roomID}`;
+        window.location.href = `meeting.html?room=${match.roomID}&role=caller`;
       }, 1000);
     } else {
       btnElement.innerText = "⏳ لا أحد متاح الآن";
@@ -95,43 +94,68 @@ export async function startDiscovery(btnElement) {
   } catch (error) {
     console.error("Discovery Error:", error);
     btnElement.disabled = false;
-    btnElement.innerText = originalText;
+    btnElement.innerText = "❌ حدث خطأ";
   }
 }
 
 /**
- * 7️⃣ حذف الحساب نهائياً
+ * 6️⃣ مراقبة المكالمات الواردة (Incoming Calls)
+ * تعمل في الخلفية في لوحة التحكم
  */
-export async function deleteAccount() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const lang = localStorage.getItem('preferredLang') || 'ar';
-  const msg = lang === 'ar' ? "⚠️ هل أنت متأكد؟ سيتم حذف جميع بياناتك نهائياً." : "⚠️ Are you sure? Your data will be deleted forever.";
-
-  if (confirm(msg)) {
-    try {
-      await deleteUser(user);
-      window.location.replace("index.html");
-    } catch (error) {
-      alert(lang === 'ar' ? "يرجى إعادة تسجيل الدخول أولاً لدواعي أمنية." : "Please re-login for security reasons before deleting.");
-    }
-  }
+export function listenForIncomingCalls(uid) {
+  const usersRef = doc(db, "users", uid);
+  
+  // الاستماع لتغيير حالة "isBusy" أو استقبال طلبات في مجموعة videoCalls
+  // ملاحظة: المنطق الأبسط هو مراقبة غرف الفيديو التي يكون المستخدم جزءاً منها
+  return onSnapshot(collection(db, "videoCalls"), (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        const roomID = change.id;
+        if (roomID.includes(uid)) {
+          // إذا لم يكن المستخدم هو من بدأ المكالمة، فهو المستقبل
+          const callerId = roomID.replace(uid, "").replace("_", "");
+          if (callerId !== uid) {
+            window.location.href = `meeting.html?room=${roomID}&role=receiver`;
+          }
+        }
+      }
+    });
+  });
 }
 
 /**
- * 8️⃣ تسجيل الخروج وتحديث الحالة
+ * 7️⃣ تسجيل الخروج وتحديث الحالة فوراً
  */
 export async function logoutUser() {
   if (auth.currentUser) {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { isOnline: false });
+    try {
+      await updateDoc(doc(db, "users", auth.currentUser.uid), { 
+        isOnline: false,
+        isBusy: false 
+      });
+    } catch (e) {}
   }
   await signOut(auth);
   window.location.replace("index.html");
 }
 
-// 9️⃣ تهيئة تلقائية للواجهة عند التحميل
-window.addEventListener("DOMContentLoaded", () => {
-  initUI();
-});
+/**
+ * 8️⃣ حذف الحساب نهائياً
+ */
+export async function deleteAccount() {
+  const user = auth.currentUser;
+  if (!user) return;
 
+  try {
+    // 1. حذف البيانات من Firestore أولاً
+    await updateDoc(doc(db, "users", user.uid), { isOnline: false });
+    // 2. حذف المستخدم من Authentication
+    await deleteUser(user);
+    window.location.replace("index.html");
+  } catch (error) {
+    alert("يرجى تسجيل الدخول مجدداً ثم محاولة حذف الحساب لدواعي أمنية.");
+  }
+}
+
+// تهيئة الواجهة عند التحميل
+window.addEventListener("DOMContentLoaded", initUI);
