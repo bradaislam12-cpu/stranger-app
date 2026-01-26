@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title class="tr" data-key="terms_title">شروط الخدمة والخصوصية | SM</title>
+    <title class="tr" data-key="terms_title">اتفاقية الاستخدام | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
         body { 
@@ -16,39 +16,36 @@
         }
         
         .terms-container {
-            max-width: 650px; 
+            max-width: 600px; 
             width: 100%; 
-            padding: 35px;
+            padding: 30px;
             background: var(--card); 
-            border-radius: 25px;
-            line-height: 1.8; 
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
-            animation: fadeIn 0.6s ease;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        h2 { color: var(--p); text-align: center; margin-bottom: 25px; font-size: 1.6rem; }
-        h3 { color: var(--p-dark); font-size: 1.1rem; margin-top: 25px; border-bottom: 2px solid var(--bg); padding-bottom: 8px; }
+        h2 { color: var(--p); text-align: center; margin-bottom: 20px; font-weight: 800; }
+        h3 { color: var(--p-light); font-size: 1.1rem; margin-top: 20px; display: flex; align-items: center; gap: 8px; }
         
-        ul { padding-right: 15px; list-style: none; }
-        li { margin-bottom: 12px; position: relative; padding-right: 25px; font-size: 0.95rem; opacity: 0.9; }
-        
-        /* أيقونة التحقق في القائمة */
-        li::before { 
-            content: "✔"; 
-            position: absolute; 
-            right: 0; 
-            color: var(--accent); 
-            font-weight: bold; 
+        .terms-list { margin-top: 15px; }
+        .term-item { 
+            background: var(--bg); 
+            padding: 12px 15px; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            font-size: 0.9rem; 
+            border-right: 4px solid var(--p-light);
         }
         
         .disclaimer {
-            background: rgba(255, 193, 7, 0.1); 
-            color: #856404;
-            padding: 18px; 
-            border-radius: 15px; 
-            font-size: 0.9rem;
+            background: rgba(255, 152, 0, 0.1); 
+            color: #e67e22;
+            padding: 15px; 
+            border-radius: 12px; 
+            font-size: 0.85rem;
             margin-top: 25px; 
-            border-right: 5px solid #ffc107;
+            text-align: center;
         }
 
         .accept-btn {
@@ -57,66 +54,72 @@
             padding: 16px;
             background: var(--p); 
             color: white; 
-            text-align: center;
-            text-decoration: none; 
+            border: none;
             border-radius: 50px; 
             font-weight: bold;
-            margin-top: 30px; 
-            transition: 0.3s; 
-            border: none; 
+            font-size: 1rem;
+            margin-top: 25px; 
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(7, 94, 84, 0.3);
         }
         
-        .accept-btn:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 8px 20px rgba(7, 94, 84, 0.3); 
-        }
+        .accept-btn:active { transform: scale(0.98); }
 
-        body.dark-mode .disclaimer { color: #ffc107; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="terms-container">
         <h2 class="tr" data-key="terms_header">شروط الاستخدام والخصوصية 🛡️</h2>
-        <p class="tr" data-key="terms_intro">للحفاظ على مجتمع <strong>Stranger Meeting</strong> آمنًا، يرجى الالتزام بالبنود التالية:</p>
         
-        <h3 class="tr" data-key="terms_privacy_title">🔒 الخصوصية والأمان</h3>
-        <ul>
-            <li class="tr" data-key="terms_privacy_1"><strong>التشفير:</strong> جميع مكالمات الفيديو والدردشة مشفرة ولا يتم تسجيلها.</li>
-            <li class="tr" data-key="terms_privacy_2"><strong>البيانات:</strong> معلوماتك تستخدم فقط لغرض "المطابقة" لتحسين تجربتك.</li>
-        </ul>
+        <div class="terms-list">
+            <div class="term-item">
+                <strong>🔒 الخصوصية:</strong> جميع مكالمات الفيديو والدردشات مشفرة بالكامل (End-to-End). نحن لا نقوم بتخزين أي محتوى مرئي أو صوتي.
+            </div>
+            
+            <div class="term-item">
+                <strong>🚫 السلوك:</strong> يُمنع منعاً باتاً العري، التحرش، أو التنمر. نظام الذكاء الاصطناعي يقوم برصد المخالفات فوراً.
+            </div>
 
-        <h3 class="tr" data-key="terms_rules_title">🚫 قواعد السلوك</h3>
-        <ul>
-            <li class="tr" data-key="terms_rules_1">يُمنع منعاً باتاً أي سلوك خادش للحياء أو تنمر.</li>
-            <li class="tr" data-key="terms_rules_2">انتحال الشخصية يعرضك للحظر الدائم من المنصة.</li>
-        </ul>
+            <div class="term-item">
+                <strong>💰 النقاط:</strong> يتم الحصول على النقاط عبر مشاهدة الإعلانات. أي محاولة للتلاعب برصيد النقاط ستؤدي لحظر الحساب نهائياً.
+            </div>
 
-        <div class="disclaimer tr" data-key="terms_disclaimer">
-            <strong>تنبيه:</strong> متابعتك لاستخدام التطبيق تعني موافقتك الصريحة على هذه الشروط وتحملك المسؤولية القانونية الكاملة عن أفعالك.
+            <div class="term-item">
+                <strong>🔞 العمر:</strong> يجب أن يكون عمرك 18 عاماً على الأقل لاستخدام هذه المنصة.
+            </div>
         </div>
 
-        <button id="acceptBtn" class="accept-btn tr" data-key="terms_accept">أوافق وأرغب في المتابعة ✅</button>
+        <div class="disclaimer tr" data-key="terms_disclaimer">
+            بضغطك على الزر أدناه، أنت تقر بأنك قرأت وفهمت الشروط وتتحمل المسؤولية الكاملة عن استخدامك للتطبيق.
+        </div>
+
+        <button id="acceptBtn" class="accept-btn tr" data-key="terms_accept">أوافق، دعنا نبدأ! 🚀</button>
     </div>
 
     <script type="module">
-        import { initUI, applyTranslations } from './ui-logic.js';
+        import { initUI } from './ui-logic.js';
 
-        // تهيئة الواجهة (اللغة والثيم)
+        // تهيئة السمة واللغة
         initUI();
 
-        // عند الضغط على زر الموافقة
-        document.getElementById('acceptBtn').onclick = () => {
-            // حفظ حالة الموافقة محلياً
+        const acceptBtn = document.getElementById('acceptBtn');
+
+        acceptBtn.onclick = () => {
+            // حفظ الموافقة في التخزين المحلي
             localStorage.setItem('termsAccepted', 'true');
-            // التوجيه إلى لوحة التحكم
-            window.location.replace('dashboard.html');
+            
+            // إضافة تأثير بسيط قبل الانتقال
+            acceptBtn.innerText = "⏳ جاري التحميل...";
+            acceptBtn.style.opacity = "0.7";
+            
+            setTimeout(() => {
+                window.location.replace('dashboard.html');
+            }, 500);
         };
 
-        // التحقق مما إذا كان قد وافق مسبقاً (اختياري: لتجنب ظهور الصفحة مرة أخرى)
+        // منع الوصول المتكرر إذا وافق مسبقاً
         if (localStorage.getItem('termsAccepted') === 'true') {
             window.location.replace('dashboard.html');
         }
