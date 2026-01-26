@@ -1,174 +1,99 @@
-/* 🎨 المتغيرات الأساسية ونظام الألوان */
-:root {
-  /* الوضع النهاري (Default) */
-  --bg: #f0f2f5;
-  --card: #ffffff;
-  --text: #1c1e21;
-  --text-muted: #65676b;
-  --p: #075e54;
-  --p-light: #128c7e;
-  --p-dark: #05413a;
-  --accent: #25d366;
-  --danger: #d9534f;
-  --header-h: 60px;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --radius: 12px;
-}
+// service-worker.js
 
-/* 🌙 الوضع الليلي (Dark Mode) */
-body.dark-mode {
-  --bg: #121212;
-  --card: #1e1e1e;
-  --text: #e4e6eb;
-  --text-muted: #b0b3b8;
-  --p: #05413a;
-  --p-light: #075e54;
-  --shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
+const CACHE_NAME = "stranger-meeting-v1.1"; // تحديث الإصدار عند تغيير الكود
+const urlsToCache = [
+  "./",
+  "./index.html",
+  "./login.html",
+  "./register.html",
+  "./profile.html",
+  "./dashboard.html",
+  "./chat.html",
+  "./meeting.html",
+  "./terms.html",
+  "./style.css",
+  "./manifest.json",
+  "./ui-logic.js",
+  "./translations.js",
+  "./matchmaking.js",
+  "./default-avatar.png"
+];
 
-/* 🧱 الإعدادات العامة */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+// ✅ تثبيت Service Worker
+self.addEventListener("install", (event) => {
+  // تجبر الـ SW الجديد على العمل فوراً دون انتظار إغلاق التبويبات المفتوحة
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log("📦 [Service Worker] ملفات النظام تم تخزينها بنجاح");
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  transition: background 0.3s, color 0.3s;
-  overflow-x: hidden;
-}
+// ✅ تفعيل الخدمة وتنظيف الكاش القديم
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            console.log("🗑️ [Service Worker] حذف الكاش القديم:", cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+  );
+  // السيطرة على العميل فور التفعيل
+  return self.clients.claim();
+});
 
-/* 🟩 الهيدر (Navigation) */
-.header {
-  height: var(--header-h);
-  background: var(--p);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+// ✅ إدارة جلب الملفات (استراتيجية: Cache First, falling back to Network)
+self.addEventListener("fetch", (event) => {
+  // استثناء طلبات Firebase و API من الكاش المسبق لضمان البيانات الحية
+  if (event.request.url.includes("firestore.googleapis.com") || event.request.url.includes("firebaseauth.googleapis.com")) {
+    return; 
+  }
 
-/* 🔘 الأزرار (Buttons) */
-button, .start-btn, .friend-btn {
-  cursor: pointer;
-  border: none;
-  outline: none;
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      // إذا وجدنا الملف في الكاش، نرجعه فوراً لسرعة الأداء
+      if (response) {
+        return response;
+      }
 
-.start-btn {
-  background: var(--accent);
-  color: white;
-  padding: 14px 25px;
-  width: 100%;
-  font-size: 1.1rem;
-}
+      // إذا لم يوجد، نجلبه من الشبكة
+      return fetch(event.request).then((networkResponse) => {
+        // التحقق من صحة الاستجابة قبل تخزينها
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
 
-.start-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
-}
+        // تخزين نسخة من الملفات الجديدة (مثل صور المستخدمين) في الكاش ديناميكياً
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
 
-.friend-btn {
-  background: var(--p-light);
-  color: white;
-  padding: 8px 16px;
-}
+        return networkResponse;
+      }).catch(() => {
+        // في حال انقطاع الإنترنت التام وعدم وجود الملف في الكاش
+        if (event.request.mode === 'navigate') {
+          return caches.match("./index.html");
+        }
+      });
+    })
+  );
+});
 
-.icon-btn {
-  background: transparent;
-  color: inherit;
-  font-size: 1.4rem;
-  padding: 5px;
-}
+// ✅ استقبال الرسائل لتحديث الكاش يدوياً
+self.addEventListener("message", (event) => {
+  if (event.data === "updateCache") {
+    caches.open(CACHE_NAME).then((cache) => {
+      cache.addAll(urlsToCache);
+      console.log("🔄 [Service Worker] تم تحديث موارد التطبيق");
+    });
+  }
+});
 
-/* 🗂️ الصناديق والنماذج (Forms & Cards) */
-.auth-box, .profile-form, .register-form {
-  max-width: 450px;
-  width: 90%;
-  margin: 40px auto;
-  padding: 30px;
-  background: var(--card);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 12px 15px;
-  margin: 8px 0 20px 0;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 1rem;
-}
-
-input:focus {
-  border-color: var(--p);
-}
-
-/* 💬 نظام الدردشة (Chat UI) */
-.msg-container {
-  height: calc(100vh - 120px);
-  padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.msg {
-  max-width: 75%;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  border-radius: 18px;
-  font-size: 0.95rem;
-  position: relative;
-}
-
-.msg.me {
-  align-self: flex-end;
-  background: #dcf8c6; /* لون واتساب الشهير */
-  color: #000;
-  border-bottom-right-radius: 4px;
-}
-
-body.dark-mode .msg.me {
-  background: #05413a;
-  color: #fff;
-}
-
-.msg.them {
-  align-self: flex-start;
-  background: var(--card);
-  border: 1px solid #eee;
-  border-bottom-left-radius: 4px;
-}
-
-/* 🎥 الفيديو (Video Call) */
-video {
-  border-radius: var(--radius);
-  background: #000;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-}
-
-/* 📱 الشاشات الصغيرة */
-@media (max-width: 600px) {
-  .header h2 { font-size: 1rem; }
-  .auth-box { padding: 20px; }
-  .msg { max-width: 85%; }
-}
