@@ -1,6 +1,6 @@
-// service-worker.js
+// service-worker.js - PWA Core Manager
 
-const CACHE_NAME = "stranger-meeting-v1.1"; // تحديث الإصدار عند تغيير الكود
+const CACHE_NAME = "stranger-meeting-v1.2"; // تم تحديث الإصدار لضمان مسح الكاش القديم عند المستخدمين
 const urlsToCache = [
   "./",
   "./index.html",
@@ -16,70 +16,81 @@ const urlsToCache = [
   "./ui-logic.js",
   "./translations.js",
   "./matchmaking.js",
-  "./default-avatar.png"
+  "./economy.js",
+  "./default-avatar.png",
+  "https://cdn-icons-png.flaticon.com/512/3649/3649460.png"
 ];
 
-// ✅ تثبيت Service Worker
+// 1. التثبيت (Install): تخزين الملفات الأساسية
 self.addEventListener("install", (event) => {
-  // تجبر الـ SW الجديد على العمل فوراً دون انتظار إغلاق التبويبات المفتوحة
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("📦 [Service Worker] ملفات النظام تم تخزينها بنجاح");
+      console.log("📦 SW: Caching system assets");
       return cache.addAll(urlsToCache);
     })
   );
 });
 
-// ✅ تفعيل الخدمة وتنظيف الكاش القديم
+// 2. التفعيل (Activate): تنظيف الإصدارات القديمة
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log("🗑️ [Service Worker] حذف الكاش القديم:", cache);
+            console.log("🗑️ SW: Removing old cache", cache);
             return caches.delete(cache);
           }
         })
       );
     })
   );
-  // السيطرة على العميل فور التفعيل
   return self.clients.claim();
 });
 
-// ✅ إدارة جلب الملفات (استراتيجية: Cache First, falling back to Network)
+// 3. جلب الموارد (Fetch): استراتيجية ذكية
 self.addEventListener("fetch", (event) => {
-  // استثناء طلبات Firebase و API من الكاش المسبق لضمان البيانات الحية
-  if (event.request.url.includes("firestore.googleapis.com") || event.request.url.includes("firebaseauth.googleapis.com")) {
-    return; 
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // استثناء طلبات Firebase و APIs لضمان دقة البيانات المالية والمحادثات
+  if (
+    url.origin.includes("googleapis.com") || 
+    url.origin.includes("firebaseapp.com") ||
+    request.method !== "GET"
+  ) {
+    return; // دع الشبكة تتعامل مع هذه الطلبات مباشرة
   }
 
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // إذا وجدنا الملف في الكاش، نرجعه فوراً لسرعة الأداء
-      if (response) {
-        return response;
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // تحديث الكاش في الخلفية لضمان أن المستخدم سيحصل على أحدث نسخة في المرة القادمة
+        fetch(request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
+          }
+        }).catch(() => {});
+        
+        return cachedResponse;
       }
 
-      // إذا لم يوجد، نجلبه من الشبكة
-      return fetch(event.request).then((networkResponse) => {
-        // التحقق من صحة الاستجابة قبل تخزينها
+      // إذا لم يكن في الكاش، اطلبه من الشبكة
+      return fetch(request).then((networkResponse) => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
 
-        // تخزين نسخة من الملفات الجديدة (مثل صور المستخدمين) في الكاش ديناميكياً
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+          cache.put(request, responseToCache);
         });
 
         return networkResponse;
       }).catch(() => {
-        // في حال انقطاع الإنترنت التام وعدم وجود الملف في الكاش
-        if (event.request.mode === 'navigate') {
+        // إذا فشل كل شيء (أوفلاين)، ارجع لصفحة البداية إذا كان الطلب ملاحة (Navigation)
+        if (request.mode === 'navigate') {
           return caches.match("./index.html");
         }
       });
@@ -87,13 +98,9 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// ✅ استقبال الرسائل لتحديث الكاش يدوياً
+// 4. تحديث يدوي عند الحاجة
 self.addEventListener("message", (event) => {
-  if (event.data === "updateCache") {
-    caches.open(CACHE_NAME).then((cache) => {
-      cache.addAll(urlsToCache);
-      console.log("🔄 [Service Worker] تم تحديث موارد التطبيق");
-    });
+  if (event.data === "SKIP_WAITING") {
+    self.skipWaiting();
   }
 });
-
