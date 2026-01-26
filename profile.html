@@ -3,29 +3,30 @@ here<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title class="tr" data-key="profile_header">الملف الشخصي | SM</title>
+  <title>الملف الشخصي | SM</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .profile-card { text-align: center; position: relative; }
+    .profile-card { text-align: center; position: relative; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: var(--shadow); }
     .avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
     .avatar-wrapper img { 
       width: 100%; height: 100%; border-radius: 50%; 
-      object-fit: cover; border: 4px solid var(--p); 
+      object-fit: cover; border: 4px solid var(--p); background: #eee;
     }
     .edit-icon {
-      position: absolute; bottom: 0; right: 0; background: var(--p);
-      color: white; border-radius: 50%; padding: 8px; cursor: pointer;
+      position: absolute; bottom: 5px; right: 5px; background: var(--p);
+      color: white; border-radius: 50%; width: 32px; height: 32px; 
+      display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white;
     }
     .interests-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px; text-align: right; margin: 15px 0;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px; text-align: right; margin: 15px 0; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 12px;
     }
-    .interest-item {
-      display: flex; align-items: center; gap: 5px; font-size: 0.85rem;
-    }
-    .danger-zone {
-      margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ddd;
-    }
+    .interest-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text); }
+    .interest-item input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+    .danger-zone { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ddd; }
+    .profile-form { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+    label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.85rem; color: var(--p); }
+    select, input[type="text"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-top: 5px; }
   </style>
 </head>
 <body class="light-mode">
@@ -49,48 +50,51 @@ here<!DOCTYPE html>
       
       <form id="profileUpdateForm">
         <label class="tr" data-key="fullname_placeholder">الاسم الكامل</label>
-        <input type="text" id="pFullname" required>
+        <input type="text" id="pFullname" required placeholder="اسمج بالكامل">
 
         <label class="tr" data-key="gender_label">الجنس</label>
         <select id="pGender">
-          <option value="male" class="tr" data-key="male">ذكر</option>
-          <option value="female" class="tr" data-key="female">أنثى</option>
+          <option value="male">ذكر</option>
+          <option value="female">أنثى</option>
         </select>
 
         <label class="tr" data-key="seeking_label">أهتم بمقابلة</label>
         <select id="pSeeking">
-          <option value="male" class="tr" data-key="seeking_male">رجال</option>
-          <option value="female" class="tr" data-key="seeking_female">نساء</option>
-          <option value="both" class="tr" data-key="seeking_both">الجميع</option>
+          <option value="male">رجال</option>
+          <option value="female">نساء</option>
+          <option value="both">الجميع</option>
         </select>
 
-        <label class="tr" data-key="interests_label">الاهتمامات</label>
-        <div class="interests-grid" id="pInterests">
-          </div>
+        <label class="tr" data-key="interests_label">الاهتمامات (اختر ما تحب)</label>
+        <div class="interests-grid" id="pInterests"></div>
 
-        <button type="submit" id="saveBtn" class="start-btn tr" data-key="save_changes">حفظ البيانات ✅</button>
+        <button type="submit" id="saveBtn" class="start-btn tr" data-key="save_changes" style="width: 100%; border: none; margin-top: 20px;">
+          حفظ التغييرات ✅
+        </button>
       </form>
 
       <div class="danger-zone">
-        <button id="deleteAccBtn" class="icon-btn" style="color:var(--danger); font-size: 0.9rem;">
+        <button id="deleteAccBtn" class="icon-btn" style="color:var(--danger); font-size: 0.9rem; cursor: pointer;">
           ⚠️ <span class="tr" data-key="delete_account">حذف الحساب نهائياً</span>
         </button>
       </div>
     </div>
-    <div id="pStatus" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
+    <div id="pStatus" style="margin-top:15px; text-align:center; font-weight:bold; min-height: 1.5rem;"></div>
   </div>
 
   <script type="module">
-    import { auth, db, doc, getDoc, updateDoc, deleteAccount, toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
+    import { auth, db, toggleLang, toggleTheme, initUI } from './ui-logic.js';
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { deleteAccount } from './ui-logic.js';
 
-    const interestsList = ["Sports", "Gaming", "Tech", "Music", "Art", "Travel", "Cooking", "Coding"];
+    const interestsList = ["Sports", "Gaming", "Tech", "Music", "Art", "Travel", "Cooking", "Coding", "Movies", "Reading"];
     
-    // تهيئة واجهة المستخدم
+    // 1. تهيئة الواجهة
     initUI();
     document.getElementById('themeBtn').onclick = toggleTheme;
     document.getElementById('langBtn').onclick = toggleLang;
 
-    // ملء قائمة الاهتمامات
+    // 2. بناء قائمة الاهتمامات
     const grid = document.getElementById('pInterests');
     interestsList.forEach(item => {
       const div = document.createElement('div');
@@ -99,14 +103,16 @@ here<!DOCTYPE html>
       grid.appendChild(div);
     });
 
-    // تحميل بيانات المستخدم
+    // 3. تحميل البيانات عند استقرار حالة المستخدم
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
         window.location.replace("login.html");
         return;
       }
 
-      const snap = await getDoc(doc(db, "users", user.uid));
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+      
       if (snap.exists()) {
         const data = snap.data();
         document.getElementById('pFullname').value = data.fullname || "";
@@ -114,15 +120,17 @@ here<!DOCTYPE html>
         document.getElementById('pSeeking').value = data.seeking || "both";
         document.getElementById('profilePreview').src = data.avatarUrl || "default-avatar.png";
         
-        // تحديد الاهتمامات المحفوظة
+        // تحديد الاهتمامات السابقة
         const checks = document.querySelectorAll('#pInterests input');
         checks.forEach(ch => {
-          if (data.interests && data.interests.includes(ch.value)) ch.checked = true;
+          if (data.interests && Array.isArray(data.interests) && data.interests.includes(ch.value)) {
+            ch.checked = true;
+          }
         });
       }
     });
 
-    // تحديث البيانات
+    // 4. حفظ البيانات المحدثة
     document.getElementById('profileUpdateForm').onsubmit = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('saveBtn');
@@ -131,29 +139,44 @@ here<!DOCTYPE html>
 
       try {
         btn.disabled = true;
+        status.innerText = "⏳ جاري الحفظ...";
+        
         await updateDoc(doc(db, "users", auth.currentUser.uid), {
           fullname: document.getElementById('pFullname').value.trim(),
           gender: document.getElementById('pGender').value,
           seeking: document.getElementById('pSeeking').value,
           interests: selectedInterests
         });
-        status.style.color = "green";
-        status.innerText = "تم التحديث بنجاح! ✨";
-        setTimeout(() => { status.innerText = ""; btn.disabled = false; }, 2000);
+
+        status.style.color = "#28a745";
+        status.innerText = "تم تحديث ملفك بنجاح! ✨";
+        setTimeout(() => { status.innerText = ""; btn.disabled = false; }, 3000);
       } catch (err) {
+        console.error(err);
         status.style.color = "var(--danger)";
-        status.innerText = "فشل التحديث، حاول ثانية";
+        status.innerText = "حدث خطأ أثناء الحفظ، حاول ثانية";
         btn.disabled = false;
       }
     };
 
-    // حذف الحساب
-    document.getElementById('deleteAccBtn').onclick = deleteAccount;
+    // 5. حذف الحساب
+    document.getElementById('deleteAccBtn').onclick = async () => {
+      if (confirm("هل أنت متأكد من حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء!")) {
+        await deleteAccount();
+      }
+    };
 
-    // معاينة الصورة المختارة
+    // 6. معاينة الصورة المختارة محلياً
     document.getElementById('avatarInput').onchange = (e) => {
       const file = e.target.files[0];
-      if (file) document.getElementById('profilePreview').src = URL.createObjectURL(file);
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById('profilePreview').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        // ملاحظة: الرفع الفعلي لـ Firebase Storage يتطلب إعدادات إضافية، حالياً التغيير محلي.
+      }
     };
   </script>
 </body>
