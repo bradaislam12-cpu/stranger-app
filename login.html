@@ -1,134 +1,133 @@
-<!DOCTYPE html>
+here<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title class="tr" data-key="login_title">تسجيل الدخول | Stranger Meeting</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-container {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - var(--header-h)); padding: 20px;
+    }
+    .captcha-box {
+      background: var(--bg); padding: 15px; border-radius: 10px;
+      margin-bottom: 15px; text-align: center; border: 1px dashed var(--p);
+    }
+    .google-btn {
+      background: #ffffff; color: #757575; border: 1px solid #ddd;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 10px; font-weight: bold;
+    }
+    .google-btn img { width: 20px; }
+  </style>
 </head>
 <body class="light-mode">
 
-  <!-- الهيدر -->
   <div class="header">
-    <h2 class="tr" data-key="app_name">Stranger Meeting</h2>
+    <button class="icon-btn" onclick="location.href='index.html'">🔙</button>
+    <h2 class="tr" data-key="login_title">تسجيل الدخول</h2>
     <div style="display:flex; gap:8px;">
       <button id="themeBtn" class="icon-btn">🌓</button>
       <button id="langBtn" class="friend-btn">EN</button>
     </div>
   </div>
 
-  <!-- صندوق تسجيل الدخول -->
-  <div class="auth-box">
-    <h2 class="tr" data-key="login_title">تسجيل الدخول</h2>
-    <p class="tr" data-key="welcome_back">مرحباً بك مجدداً!</p>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2 class="tr" data-key="welcome_back">مرحباً بك مجدداً!</h2>
+      
+      <form id="loginForm">
+        <label class="tr" data-key="email_label">البريد الإلكتروني</label>
+        <input type="email" id="email" required placeholder="example@mail.com">
 
-    <form id="loginForm">
-      <label class="tr" data-key="email_label">البريد الإلكتروني</label>
-      <input type="email" id="loginEmail" placeholder="example@mail.com" required>
+        <label class="tr" data-key="pass_label">كلمة المرور</label>
+        <input type="password" id="password" required placeholder="••••••••">
 
-      <label class="tr" data-key="pass_label">كلمة المرور</label>
-      <input type="password" id="loginPass" placeholder="••••••" required minlength="6">
+        <div class="captcha-box">
+          <span id="captchaQuestion">...</span>
+          <input type="number" id="captchaAnswer" required placeholder="الناتج" style="width: 80px; margin: 5px 0 0; text-align: center;">
+        </div>
 
-      <!-- خيار تذكرني -->
-      <div style="margin:10px 0;">
-        <input type="checkbox" id="rememberMe">
-        <label for="rememberMe">تذكرني</label>
-      </div>
+        <button type="submit" id="loginBtn" class="start-btn tr" data-key="login">تسجيل الدخول</button>
+      </form>
 
-      <!-- كابتشا بسيطة -->
-      <div style="margin:10px 0;">
-        <span id="captchaQuestion"></span>
-        <input type="text" id="captchaAnswer" placeholder="الإجابة" required>
-      </div>
+      <div style="text-align: center; margin: 15px 0; opacity: 0.6;">أو</div>
 
-      <button type="submit" id="loginBtn" class="start-btn tr" data-key="login">تسجيل الدخول</button>
-    </form>
+      <button id="googleLoginBtn" class="start-btn google-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        <span class="tr" data-key="google_login">الدخول بواسطة جوجل</span>
+      </button>
 
-    <button id="googleBtn" class="friend-btn tr" data-key="google_login" style="margin-top:15px;">الدخول بواسطة جوجل G</button>
-
-    <div id="errorBox" style="color:var(--danger); margin-top:10px; display:none;"></div>
-
-    <div style="margin-top: 25px; font-size: 0.9rem;">
-      <span class="tr" data-key="no_account">ليس لديك حساب؟ سجل الآن</span>
-      <a href="register.html" style="color: var(--p); font-weight: bold; text-decoration: none; margin-inline-start: 5px;">إنشاء حساب</a>
+      <p style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
+        <a href="register.html" class="tr" data-key="no_account" style="color: var(--p); text-decoration: none;">ليس لديك حساب؟ سجل الآن</a>
+      </p>
+      
+      <div id="statusMsg" style="margin-top: 15px; text-align: center; font-weight: bold; font-size: 0.85rem;"></div>
     </div>
   </div>
 
   <script type="module">
-    import { auth, loginWithGoogle, toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
-    import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { auth, loginWithGoogle, toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const currentLang = localStorage.getItem('preferredLang') || 'ar';
-    applyTranslations(currentLang);
-
-    document.getElementById('themeBtn').onclick = toggleTheme;
-    document.getElementById('langBtn').onclick = toggleLang;
-
-    const loginForm = document.getElementById('loginForm');
-    const loginBtn = document.getElementById('loginBtn');
-    const errorBox = document.getElementById('errorBox');
-
-    // إنشاء كابتشا بسيطة (سؤال رياضي)
+    // 1. تهيئة الكابتشا
     let captchaResult;
     function generateCaptcha() {
+      const lang = localStorage.getItem('preferredLang') || 'ar';
       const a = Math.floor(Math.random() * 10) + 1;
       const b = Math.floor(Math.random() * 10) + 1;
       captchaResult = a + b;
-      document.getElementById('captchaQuestion').innerText = currentLang === 'ar' 
-        ? `ما نتيجة ${a} + ${b} ؟` 
-        : `What is ${a} + ${b}?`;
+      document.getElementById('captchaQuestion').innerText = lang === 'ar' 
+        ? `أمان: كم ناتج ${a} + ${b} ؟` 
+        : `Security: What is ${a} + ${b}?`;
     }
-    generateCaptcha();
+
+    // 2. إعدادات الواجهة
+    window.addEventListener('DOMContentLoaded', () => {
+      initUI();
+      generateCaptcha();
+    });
+
+    document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = () => {
+      toggleLang();
+      generateCaptcha(); // تحديث لغة الكابتشا فوراً
+    };
+
+    // 3. معالجة الدخول التقليدي
+    const loginForm = document.getElementById('loginForm');
+    const statusMsg = document.getElementById('statusMsg');
 
     loginForm.onsubmit = async (e) => {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value;
-      const remember = document.getElementById('rememberMe').checked;
-      const captchaAnswer = document.getElementById('captchaAnswer').value.trim();
+      const lang = localStorage.getItem('preferredLang') || 'ar';
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const captchaInput = document.getElementById('captchaAnswer').value;
 
-      // تحقق من الكابتشا
-      if (parseInt(captchaAnswer) !== captchaResult) {
-        errorBox.style.display = "block";
-        errorBox.innerText = currentLang === 'ar' ? "إجابة الكابتشا غير صحيحة" : "Incorrect CAPTCHA answer";
-        generateCaptcha(); // إعادة إنشاء كابتشا جديدة
+      if (parseInt(captchaInput) !== captchaResult) {
+        statusMsg.style.color = "var(--danger)";
+        statusMsg.innerText = lang === 'ar' ? "❌ حل الكابتشا غير صحيح" : "❌ Invalid CAPTCHA";
+        generateCaptcha();
         return;
       }
 
       try {
-        errorBox.style.display = "none";
-        loginBtn.disabled = true;
-        loginBtn.innerText = currentLang === 'ar' ? "جاري تسجيل الدخول..." : "Logging in...";
-
-        // إعداد الاستمرارية (Remember Me)
-        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-
-        await signInWithEmailAndPassword(auth, email, pass);
+        statusMsg.style.color = "var(--p)";
+        statusMsg.innerText = lang === 'ar' ? "جاري الدخول..." : "Logging in...";
+        await signInWithEmailAndPassword(auth, email, password);
         window.location.replace("dashboard.html");
       } catch (error) {
-        loginBtn.disabled = false;
-        loginBtn.innerText = currentLang === 'ar' ? "تسجيل الدخول" : "Login";
-        errorBox.style.display = "block";
-
-        switch (error.code) {
-          case 'auth/user-not-found':
-            errorBox.innerText = currentLang === 'ar' ? "لا يوجد حساب بهذا البريد" : "No account with this email";
-            break;
-          case 'auth/wrong-password':
-            errorBox.innerText = currentLang === 'ar' ? "كلمة المرور غير صحيحة" : "Incorrect password";
-            break;
-          case 'auth/invalid-email':
-            errorBox.innerText = currentLang === 'ar' ? "بريد إلكتروني غير صالح" : "Invalid email address";
-            break;
-          default:
-            errorBox.innerText = currentLang === 'ar' ? "فشل تسجيل الدخول، حاول ثانية" : "Login failed, try again";
-        }
+        statusMsg.style.color = "var(--danger)";
+        statusMsg.innerText = lang === 'ar' ? "❌ خطأ في البيانات" : "❌ Login failed";
+        generateCaptcha();
       }
     };
 
-    // تسجيل الدخول بجوجل
-    document.getElementById('googleBtn').onclick = loginWithGoogle;
+    // 4. الدخول بجوجل
+    document.getElementById('googleLoginBtn').onclick = loginWithGoogle;
+
   </script>
 </body>
 </html>
