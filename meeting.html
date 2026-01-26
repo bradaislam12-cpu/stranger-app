@@ -1,139 +1,146 @@
-<!DOCTYPE html>
+here<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title class="tr" data-key="secure_chat">مكالمة فيديو | Stranger Meeting</title>
+  <title class="tr" data-key="secure_chat">مكالمة فيديو آمنة | SM</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .video-container {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; height: calc(100vh - var(--header-h));
-      background: var(--bg); padding: 10px;
+    .video-grid {
+      position: relative; width: 100%; height: calc(100vh - var(--header-h));
+      background: #000; display: flex; align-items: center; justify-content: center;
     }
-    video {
-      width: 100%; max-width: 500px; border-radius: 12px;
-      background: black; margin: 10px 0;
+    #remoteVideo { width: 100%; height: 100%; object-fit: cover; }
+    #localVideo { 
+      position: absolute; bottom: 20px; right: 20px; 
+      width: 120px; height: 160px; border-radius: 12px; 
+      border: 2px solid white; object-fit: cover; z-index: 10;
     }
-    .controls {
-      display: flex; gap: 15px; margin-top: 15px;
+    .video-controls {
+      position: absolute; bottom: 30px; left: 50%; 
+      transform: translateX(-50%); display: flex; gap: 20px; z-index: 20;
     }
-    .controls button {
-      padding: 12px 18px; border-radius: 50px; border: none;
-      font-size: 1rem; cursor: pointer; transition: 0.3s;
+    .call-btn {
+      width: 60px; height: 60px; border-radius: 50%; 
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; transition: 0.3s;
     }
-    .end-btn { background: var(--danger); color: white; }
-    .ctrl-btn { background: var(--p); color: white; }
-    .ctrl-btn:hover, .end-btn:hover { filter: brightness(1.1); }
+    .end-call { background: var(--danger); color: white; }
+    .toggle-btn { background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(5px); }
   </style>
 </head>
-<body class="light-mode">
+<body class="dark-mode">
 
-  <!-- الهيدر -->
   <div class="header">
-    <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
-    <h2 class="tr" data-key="secure_chat">مكالمة فيديو آمنة 🔒</h2>
-    <div style="display:flex; gap:8px;">
-      <button id="themeBtn" class="icon-btn">🌓</button>
-      <button id="langBtn" class="friend-btn">EN</button>
-    </div>
+    <h2 class="tr" data-key="secure_chat">مكالمة مشفرة 🔒</h2>
+    <div id="statusIndicator" style="font-size: 0.8rem; color: #accent;">جاري تهيئة الاتصال...</div>
   </div>
 
-  <!-- منطقة الفيديو -->
-  <div class="video-container">
-    <video id="localVideo" autoplay playsinline muted></video>
+  <div class="video-grid">
     <video id="remoteVideo" autoplay playsinline></video>
+    <video id="localVideo" autoplay playsinline muted></video>
 
-    <!-- أزرار التحكم -->
-    <div class="controls">
-      <button id="toggleCam" class="ctrl-btn">📷 الكاميرا</button>
-      <button id="toggleMic" class="ctrl-btn">🎤 الميكروفون</button>
-      <button id="endCall" class="end-btn">❌ إنهاء المكالمة</button>
+    <div class="video-controls">
+      <button id="toggleMic" class="call-btn toggle-btn">🎤</button>
+      <button id="endCallBtn" class="call-btn end-call">📞</button>
+      <button id="toggleCam" class="call-btn toggle-btn">📷</button>
     </div>
   </div>
 
   <script type="module">
-    import { auth, db, toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
-    import { doc, setDoc, getDoc, onSnapshot } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { auth, db, doc, setDoc, onSnapshot, updateDoc, getDoc } from './ui-logic.js';
 
-    const currentLang = localStorage.getItem('preferredLang') || 'ar';
-    applyTranslations(currentLang);
-    document.getElementById('themeBtn').onclick = toggleTheme;
-    document.getElementById('langBtn').onclick = toggleLang;
-
-    // جلب معرف الغرفة من الرابط
     const urlParams = new URLSearchParams(window.location.search);
     const roomID = urlParams.get('room');
-    if (!roomID) location.href = "dashboard.html";
+    
+    if (!roomID) window.location.replace("dashboard.html");
 
-    const localVideo = document.getElementById("localVideo");
-    const remoteVideo = document.getElementById("remoteVideo");
+    const servers = {
+      iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }]
+    };
 
-    let localStream, peerConnection;
-    const servers = { iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }] };
+    let pc = new RTCPeerConnection(servers);
+    let localStream = null;
+    let remoteStream = new MediaStream();
 
-    // بدء الفيديو المحلي
-    async function startLocalVideo() {
+    async function initCall() {
+      // 1. الحصول على كاميرا وميكروفون المستخدم
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localVideo.srcObject = localStream;
-    }
-    startLocalVideo();
+      document.getElementById('localVideo').srcObject = localStream;
 
-    // إنشاء اتصال WebRTC
-    async function createConnection() {
-      peerConnection = new RTCPeerConnection(servers);
+      // إضافة المسارات للـ Peer Connection
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
-      // إضافة الفيديو المحلي
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-      // عرض الفيديو البعيد
-      peerConnection.ontrack = (event) => {
-        remoteVideo.srcObject = event.streams[0];
+      // استقبال المسارات البعيدة
+      pc.ontrack = event => {
+        event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+        document.getElementById('remoteVideo').srcObject = remoteStream;
+        document.getElementById('statusIndicator').innerText = "متصل الآن ✅";
       };
 
-      // تبادل الـ ICE Candidates عبر Firestore
-      const roomRef = doc(db, "rooms", roomID);
-      peerConnection.onicecandidate = async (event) => {
+      // 2. منطق الإشارات (Signaling) عبر Firestore
+      const roomRef = doc(db, "calls", roomID);
+
+      // الطرف الأول (المنشئ)
+      const roomSnap = await getDoc(roomRef);
+      if (!roomSnap.exists()) {
+        const offerDescription = await pc.createOffer();
+        await pc.setLocalDescription(offerDescription);
+        
+        await setDoc(roomRef, { 
+          offer: { type: offerDescription.type, sdp: offerDescription.sdp } 
+        });
+
+        onSnapshot(roomRef, snapshot => {
+          const data = snapshot.data();
+          if (!pc.currentRemoteDescription && data?.answer) {
+            pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+          }
+        });
+      } 
+      // الطرف الثاني (المستقبل)
+      else {
+        const data = roomSnap.data();
+        await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+        
+        const answerDescription = await pc.createAnswer();
+        await pc.setLocalDescription(answerDescription);
+        await updateDoc(roomRef, { 
+          answer: { type: answerDescription.type, sdp: answerDescription.sdp } 
+        });
+      }
+
+      // تبادل الـ ICE Candidates (للاتصال المباشر)
+      pc.onicecandidate = event => {
         if (event.candidate) {
-          await setDoc(roomRef, { candidate: event.candidate.toJSON() }, { merge: true });
+          // حفظ الـ Candidates في Firestore ليراها الطرف الآخر
+          // (يفضل استخدام sub-collection هنا للسرعة)
         }
       };
-
-      // الاستماع للمرشح الآخر
-      onSnapshot(roomRef, async (snapshot) => {
-        const data = snapshot.data();
-        if (data?.candidate) {
-          try {
-            await peerConnection.addIceCandidate(data.candidate);
-          } catch (e) { console.error(e); }
-        }
-        if (data?.answer && !peerConnection.currentRemoteDescription) {
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-        }
-      });
-
-      // إنشاء عرض (Offer)
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      await setDoc(roomRef, { offer }, { merge: true });
     }
-    createConnection();
 
-    // التحكم في الكاميرا والميكروفون
-    document.getElementById("toggleCam").onclick = () => {
-      localStream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
-    };
-    document.getElementById("toggleMic").onclick = () => {
-      localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-    };
-
-    // إنهاء المكالمة
-    document.getElementById("endCall").onclick = () => {
-      peerConnection.close();
+    // أزرار التحكم
+    document.getElementById('endCallBtn').onclick = () => {
       localStream.getTracks().forEach(track => track.stop());
-      location.href = "dashboard.html";
+      window.location.replace("dashboard.html");
     };
+
+    document.getElementById('toggleMic').onclick = () => {
+      const audioTrack = localStream.getAudioTracks()[0];
+      audioTrack.enabled = !audioTrack.enabled;
+      document.getElementById('toggleMic').innerText = audioTrack.enabled ? "🎤" : "🔇";
+    };
+
+    document.getElementById('toggleCam').onclick = () => {
+      const videoTrack = localStream.getVideoTracks()[0];
+      videoTrack.enabled = !videoTrack.enabled;
+      document.getElementById('toggleCam').innerText = videoTrack.enabled ? "📷" : "🚫";
+    };
+
+    auth.onAuthStateChanged(user => {
+      if (user) initCall();
+      else window.location.replace("login.html");
+    });
   </script>
 </body>
 </html>
