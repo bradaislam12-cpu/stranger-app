@@ -1,66 +1,72 @@
-// matchmaking.js
-import { auth, db } from './ui-logic.js';
-import { 
-  doc, getDoc, updateDoc, collection, query, where, getDocs, limit 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+here// matchmaking.js
+import { db, auth, collection, query, where, getDoc, getDocs, doc, updateDoc } from './ui-logic.js';
 
-// دالة حساب نسبة التشابه بين الاهتمامات
-function calculateInterestMatch(myInterests, partnerInterests) {
-  if (!myInterests || !partnerInterests) return 0;
-  const common = myInterests.filter(i => partnerInterests.includes(i));
-  return (common.length / Math.max(myInterests.length, partnerInterests.length)) * 100;
-}
-
-// دالة البحث عن شريك مناسب
+/**
+ * دالة البحث عن شريك متاح
+ * تعتمد على: الجنس، الدولة، والاهتمامات المشتركة
+ */
 export async function findMatch() {
-  const user = auth.currentUser;
-  if (!user) return null;
+  const currentUser = auth.currentUser;
+  if (!currentUser) return null;
 
-  const myDoc = await getDoc(doc(db, "users", user.uid));
-  const myData = myDoc.data();
+  // 1. جلب بيانات المستخدم الحالي لمعرفة تفضيلاته
+  const userSnap = await getDoc(doc(db, "users", currentUser.uid));
+  if (!userSnap.exists()) return null;
+  const userData = userSnap.data();
 
-  // الاستعلام الأساسي: مستخدمين متصلين وغير مشغولين
+  // 2. إنشاء استعلام للبحث عن المستخدمين المتاحين
+  // الشروط: متصل (Online)، غير مشغول (Not Busy)، وليس المستخدم نفسه
+  const usersRef = collection(db, "users");
   let q = query(
-    collection(db, "users"),
+    usersRef,
     where("isOnline", "==", true),
-    where("isBusy", "==", false),
-    where("uid", "!=", user.uid),
-    limit(50)
+    where("isBusy", "==", false)
   );
 
   const querySnapshot = await getDocs(q);
-  const candidates = [];
+  let potentialMatches = [];
 
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    if (data.uid !== currentUser.uid) {
+      
+      // تصفية بناءً على "أهتم بمقابلة" (Seeking) والجنس (Gender)
+      const matchGender = (userData.seeking === "both" || userData.seeking === data.gender);
+      const partnerWantsMe = (data.seeking === "both" || data.seeking === userData.gender);
 
-    // تحقق من التوافق في الجنس
-    const amIInterested = (myData.seeking === "both" || data.gender === myData.seeking);
-    const isPartnerInterested = (data.seeking === "both" || data.seeking === myData.gender);
-
-    if (amIInterested && isPartnerInterested) {
-      // حساب نسبة التشابه في الاهتمامات
-      const interestScore = calculateInterestMatch(myData.interests, data.interests);
-
-      // إضافة المرشح مع درجة التوافق
-      candidates.push({
-        ...data,
-        matchScore: interestScore
-      });
+      if (matchGender && partnerWantsMe) {
+        // حساب نقاط الاهتمام المشترك
+        const score = calculateInterestMatch(userData.interests, data.interests);
+        potentialMatches.push({ ...data, matchScore: score });
+      }
     }
   });
 
-  if (candidates.length === 0) return null;
+  // 3. ترتيب النتائج حسب الأعلى نقاطاً في الاهتمامات
+  potentialMatches.sort((a, b) => b.matchScore - a.matchScore);
 
-  // ترتيب المرشحين حسب درجة التوافق
-  candidates.sort((a, b) => b.matchScore - a.matchScore);
+  if (potentialMatches.length > 0) {
+    const bestMatch = potentialMatches[0];
+    
+    // 4. إنشاء معرف غرفة فريد (Room ID) يجمع الطرفين
+    // نستخدم ترتيب الأبجدية لضمان أن الطرفين يحصلان على نفس الـ ID دائماً
+    const roomID = [currentUser.uid, bestMatch.uid].sort().join("_");
 
-  // اختيار أفضل مرشح
-  const partner = candidates[0];
-  const roomID = [user.uid, partner.uid].sort().join("_");
+    // 5. تحديث حالة الطرفين إلى "مشغول" لمنع دخول طرف ثالث
+    await updateDoc(doc(db, "users", currentUser.uid), { isBusy: true });
+    await updateDoc(doc(db, "users", bestMatch.uid), { isBusy: true });
 
-  // تحديث حالة المستخدم
-  await updateDoc(doc(db, "users", user.uid), { isBusy: true });
+    return { roomID, partner: bestMatch };
+  }
 
-  return { partner, roomID };
+  return null; // لم يتم العثور على أحد متاح
+}
+
+/**
+ * دالة حساب نسبة التوافق في الاهتمامات
+ */
+function calculateInterestMatch(myInterests, theirInterests) {
+  if (!myInterests || !theirInterests) return 0;
+  const common = myInterests.filter(i => theirInterests.includes(i));
+  return common.length;
 }
