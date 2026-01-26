@@ -1,176 +1,160 @@
-<!DOCTYPE html>
+here<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title class="tr" data-key="profile_header">الملف الشخصي | Stranger Meeting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title class="tr" data-key="profile_header">الملف الشخصي | SM</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .profile-form {
-      max-width: 800px; margin: 20px auto; padding: 20px;
-      background: var(--card); border-radius: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    .profile-card { text-align: center; position: relative; }
+    .avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
+    .avatar-wrapper img { 
+      width: 100%; height: 100%; border-radius: 50%; 
+      object-fit: cover; border: 4px solid var(--p); 
     }
-    .profile-form label { display:block; margin:10px 0 5px; font-weight:bold; }
-    .profile-form input, .profile-form select {
-      width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;
-      margin-bottom:15px;
+    .edit-icon {
+      position: absolute; bottom: 0; right: 0; background: var(--p);
+      color: white; border-radius: 50%; padding: 8px; cursor: pointer;
     }
-    .checkbox-group {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:10px;
+    .interests-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px; text-align: right; margin: 15px 0;
     }
-    .danger-btn {
-      background: var(--danger); color:white; padding:12px; border:none;
-      border-radius:8px; cursor:pointer; width:100%; margin-top:15px;
+    .interest-item {
+      display: flex; align-items: center; gap: 5px; font-size: 0.85rem;
     }
-    .avatar {
-      text-align:center; margin-bottom:20px;
-    }
-    .avatar img {
-      width:120px; height:120px; border-radius:50%; object-fit:cover;
-      border:3px solid var(--p);
+    .danger-zone {
+      margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ddd;
     }
   </style>
 </head>
 <body class="light-mode">
 
-  <!-- الهيدر -->
   <div class="header">
     <button class="icon-btn" onclick="location.href='dashboard.html'">🔙</button>
     <h2 class="tr" data-key="profile_header">الملف الشخصي</h2>
-    <div style="display:flex;gap:8px;">
+    <div style="display:flex; gap:8px;">
       <button id="themeBtn" class="icon-btn">🌓</button>
       <button id="langBtn" class="friend-btn">EN</button>
     </div>
   </div>
 
-  <!-- نموذج الملف الشخصي -->
   <div class="profile-form">
-    <form id="profileForm">
-      <!-- صورة شخصية -->
-      <div class="avatar">
-        <img id="avatarPreview" src="default-avatar.png" alt="Avatar">
-        <input type="file" id="avatarUpload" accept="image/*">
+    <div class="profile-card">
+      <div class="avatar-wrapper">
+        <img id="profilePreview" src="default-avatar.png">
+        <label for="avatarInput" class="edit-icon">📷</label>
+        <input type="file" id="avatarInput" hidden accept="image/*">
       </div>
+      
+      <form id="profileUpdateForm">
+        <label class="tr" data-key="fullname_placeholder">الاسم الكامل</label>
+        <input type="text" id="pFullname" required>
 
-      <label>الاسم الكامل</label>
-      <input type="text" id="fullname" required>
+        <label class="tr" data-key="gender_label">الجنس</label>
+        <select id="pGender">
+          <option value="male" class="tr" data-key="male">ذكر</option>
+          <option value="female" class="tr" data-key="female">أنثى</option>
+        </select>
 
-      <label>الجنس</label>
-      <select id="gender">
-        <option value="male">ذكر</option>
-        <option value="female">أنثى</option>
-      </select>
+        <label class="tr" data-key="seeking_label">أهتم بمقابلة</label>
+        <select id="pSeeking">
+          <option value="male" class="tr" data-key="seeking_male">رجال</option>
+          <option value="female" class="tr" data-key="seeking_female">نساء</option>
+          <option value="both" class="tr" data-key="seeking_both">الجميع</option>
+        </select>
 
-      <label>أهتم بمقابلة</label>
-      <select id="seeking">
-        <option value="male">رجال</option>
-        <option value="female">نساء</option>
-        <option value="both">الجميع</option>
-      </select>
+        <label class="tr" data-key="interests_label">الاهتمامات</label>
+        <div class="interests-grid" id="pInterests">
+          </div>
 
-      <label>اختر الدولة</label>
-      <select id="country"></select> <!-- سيتم ملؤها ديناميكياً -->
+        <button type="submit" id="saveBtn" class="start-btn tr" data-key="save_changes">حفظ البيانات ✅</button>
+      </form>
 
-      <label>الاهتمامات المشتركة</label>
-      <div class="checkbox-group" id="interestsList"></div>
-
-      <button type="submit" class="start-btn">حفظ البيانات ✅</button>
-    </form>
-
-    <button id="deleteBtn" class="danger-btn">حذف الحساب نهائياً ⚠️</button>
-    <div id="statusMsg" style="margin-top:10px;color:var(--p);font-weight:bold;"></div>
+      <div class="danger-zone">
+        <button id="deleteAccBtn" class="icon-btn" style="color:var(--danger); font-size: 0.9rem;">
+          ⚠️ <span class="tr" data-key="delete_account">حذف الحساب نهائياً</span>
+        </button>
+      </div>
+    </div>
+    <div id="pStatus" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
   </div>
 
   <script type="module">
-    import { auth, db, toggleLang, toggleTheme, applyTranslations, deleteAccount } from './ui-logic.js';
-    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { auth, db, doc, getDoc, updateDoc, deleteAccount, toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
 
-    const currentLang = localStorage.getItem('preferredLang') || 'ar';
-    applyTranslations(currentLang);
+    const interestsList = ["Sports", "Gaming", "Tech", "Music", "Art", "Travel", "Cooking", "Coding"];
+    
+    // تهيئة واجهة المستخدم
+    initUI();
     document.getElementById('themeBtn').onclick = toggleTheme;
     document.getElementById('langBtn').onclick = toggleLang;
 
-    const profileForm = document.getElementById("profileForm");
-    const statusMsg = document.getElementById("statusMsg");
-
-    // ✅ قائمة الدول (مختصرة هنا، يمكن تحميلها من ملف خارجي JSON)
-    const countries = ["Algeria","Morocco","Tunisia","Egypt","Saudi Arabia","France","Germany","Italy","Spain","UK","USA","Canada","Brazil","Argentina","Mexico","Japan","China","India","Russia","South Africa","Australia","New Zealand"];
-    const countrySelect = document.getElementById("country");
-    countries.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c;
-      opt.textContent = c;
-      countrySelect.appendChild(opt);
+    // ملء قائمة الاهتمامات
+    const grid = document.getElementById('pInterests');
+    interestsList.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'interest-item';
+      div.innerHTML = `<input type="checkbox" value="${item}"> <span>${item}</span>`;
+      grid.appendChild(div);
     });
 
-    // ✅ الاهتمامات
-    const interests = ["Sports","Gaming","Tech","AI","Music","Art","Travel","Reading","Cooking","Coding","Movies","Photography","Fitness","Nature","Languages","Fashion","Cars","Science","History","Politics","Animals","Food","Business","Education","Volunteering","Meditation","Gardening","Pets","Comics","Board Games","Dance","Writing","Astronomy","DIY"];
-    const interestsList = document.getElementById("interestsList");
-    interests.forEach(i => {
-      const label = document.createElement("label");
-      label.innerHTML = `<input type="checkbox" value="${i}"> ${i}`;
-      interestsList.appendChild(label);
-    });
-
-    // ✅ معاينة الصورة الشخصية
-    const avatarUpload = document.getElementById("avatarUpload");
-    const avatarPreview = document.getElementById("avatarPreview");
-    avatarUpload.onchange = () => {
-      const file = avatarUpload.files[0];
-      if (file) {
-        avatarPreview.src = URL.createObjectURL(file);
+    // تحميل بيانات المستخدم
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.replace("login.html");
+        return;
       }
-    };
-
-    async function loadProfile() {
-      const user = auth.currentUser;
-      if (!user) return location.href = "login.html";
 
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
         const data = snap.data();
-        document.getElementById("fullname").value = data.fullname || "";
-        document.getElementById("gender").value = data.gender || "male";
-        document.getElementById("seeking").value = data.seeking || "both";
-        document.getElementById("country").value = data.country || "Algeria";
-
-        // الاهتمامات
-        const userInterests = data.interests || [];
-        document.querySelectorAll("#interestsList input").forEach(cb => {
-          cb.checked = userInterests.includes(cb.value);
+        document.getElementById('pFullname').value = data.fullname || "";
+        document.getElementById('pGender').value = data.gender || "male";
+        document.getElementById('pSeeking').value = data.seeking || "both";
+        document.getElementById('profilePreview').src = data.avatarUrl || "default-avatar.png";
+        
+        // تحديد الاهتمامات المحفوظة
+        const checks = document.querySelectorAll('#pInterests input');
+        checks.forEach(ch => {
+          if (data.interests && data.interests.includes(ch.value)) ch.checked = true;
         });
-
-        // الصورة الشخصية
-        if (data.avatarUrl) avatarPreview.src = data.avatarUrl;
       }
-    }
-    loadProfile();
+    });
 
-    profileForm.onsubmit = async (e) => {
+    // تحديث البيانات
+    document.getElementById('profileUpdateForm').onsubmit = async (e) => {
       e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const fullname = document.getElementById("fullname").value.trim();
-      const gender = document.getElementById("gender").value;
-      const seeking = document.getElementById("seeking").value;
-      const country = document.getElementById("country").value;
-      const interests = Array.from(document.querySelectorAll("#interestsList input:checked")).map(cb => cb.value);
+      const btn = document.getElementById('saveBtn');
+      const status = document.getElementById('pStatus');
+      const selectedInterests = Array.from(document.querySelectorAll('#pInterests input:checked')).map(c => c.value);
 
       try {
-        await updateDoc(doc(db, "users", user.uid), {
-          fullname, gender, seeking, country, interests
+        btn.disabled = true;
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+          fullname: document.getElementById('pFullname').value.trim(),
+          gender: document.getElementById('pGender').value,
+          seeking: document.getElementById('pSeeking').value,
+          interests: selectedInterests
         });
-        statusMsg.innerText = currentLang === 'ar' ? "تم الحفظ بنجاح! ✨" : "Saved successfully! ✨";
-      } catch (error) {
-        statusMsg.innerText = currentLang === 'ar' ? "فشل الحفظ، حاول ثانية" : "Save failed, try again";
+        status.style.color = "green";
+        status.innerText = "تم التحديث بنجاح! ✨";
+        setTimeout(() => { status.innerText = ""; btn.disabled = false; }, 2000);
+      } catch (err) {
+        status.style.color = "var(--danger)";
+        status.innerText = "فشل التحديث، حاول ثانية";
+        btn.disabled = false;
       }
     };
 
     // حذف الحساب
-    document.getElementById("deleteBtn").onclick = deleteAccount;
+    document.getElementById('deleteAccBtn').onclick = deleteAccount;
+
+    // معاينة الصورة المختارة
+    document.getElementById('avatarInput').onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) document.getElementById('profilePreview').src = URL.createObjectURL(file);
+    };
   </script>
 </body>
 </html>
