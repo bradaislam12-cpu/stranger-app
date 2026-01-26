@@ -1,183 +1,187 @@
-<!DOCTYPE html>
+here<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title class="tr" data-key="register_title">إنشاء حساب | Stranger Meeting</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .register-form {
-      max-width: 800px; margin: 20px auto; padding: 20px;
-      background: var(--card); border-radius: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    .register-container { padding: 20px; display: flex; justify-content: center; }
+    .avatar-upload { text-align: center; margin-bottom: 20px; position: relative; }
+    .avatar-upload img { 
+      width: 110px; height: 110px; border-radius: 50%; 
+      object-fit: cover; border: 3px solid var(--p); background: #eee;
     }
-    .register-form label { display:block; margin:10px 0 5px; font-weight:bold; }
-    .register-form input, .register-form select {
-      width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;
-      margin-bottom:15px;
+    .file-label {
+      position: absolute; bottom: 5px; right: calc(50% - 55px);
+      background: var(--p); color: white; border-radius: 50%;
+      width: 32px; height: 32px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; border: 2px solid white;
     }
-    .checkbox-group {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:10px;
+    .interests-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px; background: var(--bg); padding: 15px; border-radius: 12px; margin-bottom: 15px;
     }
-    .danger-btn {
-      background: var(--danger); color:white; padding:12px; border:none;
-      border-radius:8px; cursor:pointer; width:100%; margin-top:15px;
-    }
-    .avatar {
-      text-align:center; margin-bottom:20px;
-    }
-    .avatar img {
-      width:120px; height:120px; border-radius:50%; object-fit:cover;
-      border:3px solid var(--p);
+    .captcha-area {
+      background: var(--card); border: 2px dashed var(--p);
+      padding: 15px; border-radius: 15px; text-align: center; margin: 20px 0;
     }
   </style>
 </head>
 <body class="light-mode">
 
-  <!-- الهيدر -->
   <div class="header">
     <button class="icon-btn" onclick="location.href='index.html'">🔙</button>
     <h2 class="tr" data-key="register_title">إنشاء حساب جديد</h2>
-    <div style="display:flex;gap:8px;">
+    <div style="display:flex; gap:8px;">
       <button id="themeBtn" class="icon-btn">🌓</button>
       <button id="langBtn" class="friend-btn">EN</button>
     </div>
   </div>
 
-  <!-- نموذج التسجيل -->
-  <div class="register-form">
-    <form id="registerForm">
-      <!-- صورة شخصية -->
-      <div class="avatar">
-        <img id="avatarPreview" src="default-avatar.png" alt="Avatar">
-        <input type="file" id="avatarUpload" accept="image/*">
-      </div>
+  <div class="register-container">
+    <div class="register-form">
+      <form id="registerForm">
+        <div class="avatar-upload">
+          <img id="regPreview" src="default-avatar.png">
+          <label for="regAvatar" class="file-label">📷</label>
+          <input type="file" id="regAvatar" hidden accept="image/*">
+        </div>
 
-      <label>الاسم الكامل</label>
-      <input type="text" id="fullname" required>
+        <label class="tr" data-key="fullname_placeholder">الاسم الكامل</label>
+        <input type="text" id="regName" required placeholder="اسمك المستعار">
 
-      <label>البريد الإلكتروني</label>
-      <input type="email" id="email" required>
+        <label class="tr" data-key="email_label">البريد الإلكتروني</label>
+        <input type="email" id="regEmail" required placeholder="name@example.com">
 
-      <label>كلمة المرور</label>
-      <input type="password" id="password" required minlength="6">
+        <label class="tr" data-key="pass_label">كلمة المرور</label>
+        <input type="password" id="regPass" required minlength="6" placeholder="••••••••">
 
-      <label>الجنس</label>
-      <select id="gender">
-        <option value="male">ذكر</option>
-        <option value="female">أنثى</option>
-      </select>
+        <div style="display: flex; gap: 15px;">
+          <div style="flex: 1;">
+            <label class="tr" data-key="gender_label">الجنس</label>
+            <select id="regGender">
+              <option value="male" class="tr" data-key="male">ذكر</option>
+              <option value="female" class="tr" data-key="female">أنثى</option>
+            </select>
+          </div>
+          <div style="flex: 1;">
+            <label class="tr" data-key="seeking_label">أهتم بمقابلة</label>
+            <select id="regSeeking">
+              <option value="male" class="tr" data-key="seeking_male">رجال</option>
+              <option value="female" class="tr" data-key="seeking_female">نساء</option>
+              <option value="both" class="tr" data-key="seeking_both" selected>الجميع</option>
+            </select>
+          </div>
+        </div>
 
-      <label>أهتم بمقابلة</label>
-      <select id="seeking">
-        <option value="male">رجال</option>
-        <option value="female">نساء</option>
-        <option value="both">الجميع</option>
-      </select>
+        <label class="tr" data-key="country_label">الدولة</label>
+        <select id="regCountry"></select>
 
-      <label>اختر الدولة</label>
-      <select id="country"></select> <!-- سيتم ملؤها ديناميكياً -->
+        <label class="tr" data-key="interests_label">اهتماماتك</label>
+        <div class="interests-grid" id="regInterests"></div>
 
-      <label>الاهتمامات المشتركة</label>
-      <div class="checkbox-group" id="interestsList"></div>
+        <div class="captcha-area">
+          <span id="regCaptchaQuest" style="font-weight: bold; display: block; margin-bottom: 10px;">...</span>
+          <input type="number" id="regCaptchaAns" required placeholder="الإجابة" style="width: 100px; text-align: center; margin-bottom: 0;">
+        </div>
 
-      <!-- كابتشا بسيطة -->
-      <div style="margin:10px 0;">
-        <span id="captchaQuestion"></span>
-        <input type="text" id="captchaAnswer" placeholder="الإجابة" required>
-      </div>
-
-      <button type="submit" class="start-btn">إنشاء الحساب ✅</button>
-    </form>
-
-    <div id="statusMsg" style="margin-top:10px;color:var(--p);font-weight:bold;"></div>
+        <button type="submit" id="regSubmitBtn" class="start-btn tr" data-key="register_title">إنشاء الحساب ✅</button>
+      </form>
+      
+      <div id="regStatus" style="margin-top: 15px; text-align: center; font-weight: bold;"></div>
+    </div>
   </div>
 
   <script type="module">
-    import { auth, db, toggleLang, toggleTheme, applyTranslations } from './ui-logic.js';
-    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { auth, db, doc, setDoc, toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
     import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const currentLang = localStorage.getItem('preferredLang') || 'ar';
-    applyTranslations(currentLang);
-    document.getElementById('themeBtn').onclick = toggleTheme;
-    document.getElementById('langBtn').onclick = toggleLang;
+    // 1. البيانات الثابتة
+    const countries = ["Algeria", "Morocco", "Tunisia", "Egypt", "Saudi Arabia", "USA", "France", "UK", "Germany"];
+    const interests = ["Sports", "Gaming", "Tech", "Cooking", "Art", "Travel", "Music", "Reading"];
 
-    const registerForm = document.getElementById("registerForm");
-    const statusMsg = document.getElementById("statusMsg");
+    // 2. تهيئة الواجهة
+    window.addEventListener('DOMContentLoaded', () => {
+      initUI();
+      generateCaptcha();
+      
+      // ملء القوائم
+      const cSelect = document.getElementById('regCountry');
+      countries.forEach(c => cSelect.add(new Option(c, c)));
 
-    // ✅ قائمة الدول (مختصرة هنا، يمكن تحميلها من ملف خارجي JSON)
-    const countries = ["Algeria","Morocco","Tunisia","Egypt","Saudi Arabia","France","Germany","Italy","Spain","UK","USA","Canada","Brazil","Argentina","Mexico","Japan","China","India","Russia","South Africa","Australia","New Zealand"];
-    const countrySelect = document.getElementById("country");
-    countries.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c;
-      opt.textContent = c;
-      countrySelect.appendChild(opt);
+      const iGrid = document.getElementById('regInterests');
+      interests.forEach(i => {
+        const label = document.createElement('label');
+        label.className = 'interest-item';
+        label.innerHTML = `<input type="checkbox" value="${i}"> <span>${i}</span>`;
+        iGrid.appendChild(label);
+      });
     });
 
-    // ✅ الاهتمامات
-    const interests = ["Sports","Gaming","Tech","AI","Music","Art","Travel","Reading","Cooking","Coding","Movies","Photography","Fitness","Nature","Languages","Fashion","Cars","Science","History","Politics","Animals","Food","Business","Education","Volunteering","Meditation","Gardening","Pets","Comics","Board Games","Dance","Writing","Astronomy","DIY"];
-    const interestsList = document.getElementById("interestsList");
-    interests.forEach(i => {
-      const label = document.createElement("label");
-      label.innerHTML = `<input type="checkbox" value="${i}"> ${i}`;
-      interestsList.appendChild(label);
-    });
-
-    // ✅ معاينة الصورة الشخصية
-    const avatarUpload = document.getElementById("avatarUpload");
-    const avatarPreview = document.getElementById("avatarPreview");
-    avatarUpload.onchange = () => {
-      const file = avatarUpload.files[0];
-      if (file) {
-        avatarPreview.src = URL.createObjectURL(file);
-      }
-    };
-
-    // ✅ كابتشا بسيطة
+    // 3. كابتشا ذكية
     let captchaResult;
     function generateCaptcha() {
+      const lang = localStorage.getItem('preferredLang') || 'ar';
       const a = Math.floor(Math.random() * 10) + 1;
       const b = Math.floor(Math.random() * 10) + 1;
       captchaResult = a + b;
-      document.getElementById('captchaQuestion').innerText = currentLang === 'ar'
-        ? `ما نتيجة ${a} + ${b} ؟`
-        : `What is ${a} + ${b}?`;
+      document.getElementById('regCaptchaQuest').innerText = lang === 'ar' 
+        ? `سؤال أمان: كم ناتج ${a} + ${b} ؟` 
+        : `Security: What is ${a} + ${b}?`;
     }
-    generateCaptcha();
 
-    registerForm.onsubmit = async (e) => {
+    document.getElementById('langBtn').onclick = () => { toggleLang(); generateCaptcha(); };
+    document.getElementById('themeBtn').onclick = toggleTheme;
+
+    // 4. معاينة الصورة
+    document.getElementById('regAvatar').onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) document.getElementById('regPreview').src = URL.createObjectURL(file);
+    };
+
+    // 5. عملية التسجيل
+    document.getElementById('registerForm').onsubmit = async (e) => {
       e.preventDefault();
-      const fullname = document.getElementById("fullname").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const gender = document.getElementById("gender").value;
-      const seeking = document.getElementById("seeking").value;
-      const country = document.getElementById("country").value;
-      const interests = Array.from(document.querySelectorAll("#interestsList input:checked")).map(cb => cb.value);
-      const captchaAnswer = document.getElementById("captchaAnswer").value.trim();
+      const lang = localStorage.getItem('preferredLang') || 'ar';
+      const status = document.getElementById('regStatus');
+      const ans = document.getElementById('regCaptchaAns').value;
 
-      // تحقق من الكابتشا
-      if (parseInt(captchaAnswer) !== captchaResult) {
-        statusMsg.innerText = currentLang === 'ar' ? "إجابة الكابتشا غير صحيحة" : "Incorrect CAPTCHA answer";
+      if (parseInt(ans) !== captchaResult) {
+        status.style.color = "red";
+        status.innerText = lang === 'ar' ? "❌ الكابتشا غير صحيحة" : "❌ Incorrect CAPTCHA";
         generateCaptcha();
         return;
       }
 
       try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        const email = document.getElementById('regEmail').value.trim();
+        const pass = document.getElementById('regPass').value;
+        
+        status.style.color = "var(--p)";
+        status.innerText = lang === 'ar' ? "جاري إنشاء الحساب..." : "Creating account...";
+
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        
+        // حفظ البيانات في Firestore
         await setDoc(doc(db, "users", userCred.user.uid), {
           uid: userCred.user.uid,
-          fullname, email, gender, seeking, country, interests,
-          isOnline: true, isBusy: false,
-          avatarUrl: avatarPreview.src
+          fullname: document.getElementById('regName').value.trim(),
+          email: email,
+          gender: document.getElementById('regGender').value,
+          seeking: document.getElementById('regSeeking').value,
+          country: document.getElementById('regCountry').value,
+          interests: Array.from(document.querySelectorAll('#regInterests input:checked')).map(c => c.value),
+          avatarUrl: document.getElementById('regPreview').src,
+          isOnline: true,
+          isBusy: false,
+          createdAt: new Date()
         });
-        statusMsg.innerText = currentLang === 'ar' ? "تم إنشاء الحساب بنجاح! 🎉" : "Account created successfully! 🎉";
-        setTimeout(() => window.location.replace("dashboard.html"), 1500);
-      } catch (error) {
-        statusMsg.innerText = currentLang === 'ar' ? "فشل إنشاء الحساب، حاول ثانية" : "Registration failed, try again";
+
+        window.location.replace("dashboard.html");
+      } catch (err) {
+        status.style.color = "red";
+        status.innerText = lang === 'ar' ? "❌ خطأ: " + err.message : "❌ Error: " + err.message;
       }
     };
   </script>
