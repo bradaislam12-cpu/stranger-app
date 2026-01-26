@@ -1,122 +1,66 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title class="tr" data-key="login_title">تسجيل الدخول | Stranger Meeting</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .auth-container {
-      display: flex; align-items: center; justify-content: center;
-      min-height: calc(100vh - 80px); padding: 20px;
-    }
-    .google-btn {
-      background: #ffffff; color: #757575; border: 1px solid #ddd;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      margin-top: 10px; font-weight: bold; width: 100%; transition: 0.3s;
-    }
-    .google-btn:hover { background: #f8f8f8; }
-    .google-btn img { width: 20px; }
-    
-    /* تحسين شكل المدخلات */
-    input { width: 100%; margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="login_title">تسجيل الدخول - Stranger Meeting</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="ui-logic.js"></script>
 </head>
-<body class="light-mode">
+<body class="auth-page">
 
-  <div class="header">
-    <button class="icon-btn" onclick="location.href='index.html'">🔙</button>
-    <h2 class="tr" data-key="login_title">تسجيل الدخول</h2>
-    <div style="display:flex; gap:8px;">
-      <button id="themeBtn" class="icon-btn">🌓</button>
-      <button id="langBtn" class="friend-btn">EN</button>
+    <div class="controls">
+        <button onclick="toggleLang()" class="btn-icon" title="Change Language">🌐</button>
+        <button onclick="toggleTheme()" class="btn-icon" title="Toggle Dark Mode">🌓</button>
     </div>
-  </div>
 
-  <div class="auth-container">
-    <div class="auth-box">
-      <h2 class="tr" data-key="welcome_back" style="text-align: center; margin-bottom: 20px;">مرحباً بك مجدداً!</h2>
-      
-      <form id="loginForm">
-        <label class="tr" data-key="email_label">البريد الإلكتروني</label>
-        <input type="email" id="email" required placeholder="example@mail.com" autocomplete="email">
+    <div class="auth-container">
+        <div class="logo">
+            <h1>🤝 Stranger<span>Meeting</span></h1>
+        </div>
 
-        <label class="tr" data-key="pass_label">كلمة المرور</label>
-        <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+        <h2 data-i18n="login_welcome">مرحباً بك مجدداً!</h2>
+        <p data-i18n="login_subtitle">الرجاء إدخال بياناتك للدخول إلى حسابك</p>
+        
+        <form onsubmit="loginUser(event)" id="loginForm">
+            <div class="input-group">
+                <label for="email" data-i18n="label_email">البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="example@mail.com" required>
+            </div>
 
-        <button type="submit" id="loginBtn" class="start-btn tr" data-key="login" style="width: 100%; border: none;">
-            تسجيل الدخول
+            <div class="input-group">
+                <label for="password" data-i18n="label_password">كلمة المرور</label>
+                <input type="password" id="password" placeholder="********" required>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox"> <span data-i18n="remember_me">تذكرني</span>
+                </label>
+                <a href="forgot-password.html" class="forgot-link" data-i18n="forgot_password">نسيت كلمة المرور؟</a>
+            </div>
+
+            <button type="submit" class="btn-primary" data-i18n="btn_login">تسجيل الدخول</button>
+        </form>
+
+        <div class="divider">
+            <span data-i18n="divider_text">أو عبر</span>
+        </div>
+
+        <button type="button" onclick="loginWithGoogle()" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google">
+            <span data-i18n="btn_google">الدخول بواسطة جوجل</span>
         </button>
-      </form>
 
-      <div style="text-align: center; margin: 15px 0; opacity: 0.6; font-size: 0.8rem;">أو عبر التواصل الاجتماعي</div>
-
-      <button id="googleLoginBtn" class="start-btn google-btn">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-        <span class="tr" data-key="google_login">الدخول بواسطة جوجل</span>
-      </button>
-
-      <p style="text-align: center; margin-top: 25px; font-size: 0.9rem;">
-        <span class="tr" data-key="no_account">ليس لديك حساب؟</span> 
-        <a href="register.html" style="color: var(--p); text-decoration: none; font-weight: bold;">سجل الآن</a>
-      </p>
-      
-      <div id="statusMsg" style="margin-top: 15px; text-align: center; font-weight: bold; font-size: 0.85rem; min-height: 1.2rem;"></div>
+        <p class="auth-footer">
+            <span data-i18n="no_account">ليس لديك حساب؟</span> 
+            <a href="register.html" data-i18n="link_register">أنشئ حساباً الآن</a>
+        </p>
     </div>
-  </div>
 
-  <script type="module">
-    import { auth, loginWithGoogle, toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
-    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    <footer class="simple-footer">
+        <p>&copy; 2026 Stranger Meeting. جميع الحقوق محفوظة.</p>
+    </footer>
 
-    // 1. تهيئة الواجهة
-    window.addEventListener('DOMContentLoaded', initUI);
-    document.getElementById('themeBtn').onclick = toggleTheme;
-    document.getElementById('langBtn').onclick = toggleLang;
-
-    const loginForm = document.getElementById('loginForm');
-    const statusMsg = document.getElementById('statusMsg');
-
-    // 2. معالجة الدخول التقليدي (تم حذف الكابتشا)
-    loginForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const lang = localStorage.getItem('preferredLang') || 'ar';
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-
-      try {
-        statusMsg.style.color = "var(--p)";
-        statusMsg.innerText = lang === 'ar' ? "⏳ جاري التحقق..." : "⏳ Verifying...";
-        
-        await signInWithEmailAndPassword(auth, email, password);
-        
-        // الانتقال بعد النجاح
-        window.location.replace("dashboard.html");
-      } catch (error) {
-        statusMsg.style.color = "var(--danger)";
-        
-        // رسائل خطأ أوضح للمستخدم
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-            statusMsg.innerText = lang === 'ar' ? "❌ البريد أو كلمة المرور غير صحيحة" : "❌ Invalid email or password";
-        } else {
-            statusMsg.innerText = lang === 'ar' ? "❌ حدث خطأ في تسجيل الدخول" : "❌ Login error occurred";
-        }
-        console.error("Login Error:", error.code);
-      }
-    };
-
-    // 3. الدخول بجوجل
-    document.getElementById('googleLoginBtn').onclick = async () => {
-        try {
-            await loginWithGoogle();
-        } catch (error) {
-            statusMsg.style.color = "var(--danger)";
-            statusMsg.innerText = "❌ فشل الدخول عبر جوجل";
-        }
-    };
-
-  </script>
 </body>
 </html>
-
