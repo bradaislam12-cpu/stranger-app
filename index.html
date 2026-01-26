@@ -1,104 +1,67 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title class="tr" data-key="app_name">Stranger Meeting | الرئيسية</title>
-  
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#075e54">
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3649/3649460.png">
-
-  <style>
-    .hero-section {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; text-align: center;
-      min-height: calc(100vh - 80px);
-      padding: 20px; animation: fadeIn 0.8s ease-in-out;
-    }
-    .hero-logo { width: 120px; margin-bottom: 20px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
-    .hero-title { font-size: 2rem; color: var(--p); margin-bottom: 10px; font-weight: 800; }
-    .hero-desc { font-size: 1.1rem; max-width: 600px; opacity: 0.8; margin-bottom: 30px; line-height: 1.6; }
-    .btn-group { display: flex; gap: 15px; width: 100%; max-width: 400px; }
-    
-    /* ميزات الموقع الجديدة */
-    .features-grid {
-      margin-top: 50px; display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-      gap: 15px; width: 100%; max-width: 700px;
-    }
-    .feature-item {
-      background: var(--card); padding: 15px; border-radius: 15px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 0.9rem;
-    }
-    .feature-item span { display: block; font-size: 1.5rem; margin-bottom: 5px; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 500px) { .btn-group { flex-direction: column; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="login_title">تسجيل الدخول - Stranger Meeting</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="ui-logic.js"></script>
 </head>
-<body class="light-mode">
+<body class="auth-page">
 
-  <div class="header">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <img src="https://cdn-icons-png.flaticon.com/512/3649/3649460.png" width="30" height="30" alt="logo">
-      <h2 class="tr" data-key="app_name">Stranger Meeting</h2>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <button id="themeBtn" class="icon-btn" title="تبديل الوضع">🌓</button>
-      <button id="langBtn" class="friend-btn">EN</button>
-    </div>
-  </div>
-
-  <div class="hero-section">
-    <img src="https://cdn-icons-png.flaticon.com/512/3649/3649460.png" class="hero-logo" alt="SM Logo">
-    
-    <h1 class="hero-title tr" data-key="welcome_back">تواصل مع العالم بضغطة زر</h1>
-    <p class="hero-desc tr" data-key="terms_intro">
-        منصة آمنة للتعارف العشوائي عبر الفيديو. اجمع النقاط من خلال مشاهدة الإعلانات واستخدمها لبدء محادثات مشفرة مع أشخاص جدد.
-    </p>
-
-    <div class="btn-group">
-      <button onclick="location.href='login.html'" class="start-btn tr" data-key="login" style="background: var(--p); border: none;">تسجيل الدخول</button>
-      <button onclick="location.href='register.html'" class="start-btn tr" data-key="register_title" style="background: var(--card); color: var(--text); border: 2px solid var(--p);">إنشاء حساب</button>
+    <div class="controls">
+        <button onclick="toggleLang()" class="btn-icon">🌐</button>
+        <button onclick="toggleTheme()" class="btn-icon">🌓</button>
     </div>
 
-    <div class="features-grid">
-      <div class="feature-item"><span>🛡️</span>دردشة مشفرة</div>
-      <div class="feature-item"><span>💰</span>نظام نقاط</div>
-      <div class="feature-item"><span>📹</span>فيديو عالي الدقة</div>
-      <div class="feature-item"><span>🎁</span>مكافآت إعلانية</div>
+    <div class="auth-container">
+        <div class="logo">
+            <h1>🤝 Stranger<span>Meeting</span></h1>
+        </div>
+
+        <h2 data-i18n="login_welcome">مرحباً بك مجدداً!</h2>
+        <p data-i18n="login_subtitle">سجل دخولك لتبدأ الدردشة مع الغرباء</p>
+        
+        <form onsubmit="loginUser(event)" id="loginForm">
+            <div class="input-group">
+                <label for="email" data-i18n="label_email">البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="example@mail.com" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password" data-i18n="label_password">كلمة المرور</label>
+                <input type="password" id="password" placeholder="********" required>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox"> <span data-i18n="remember_me">تذكرني</span>
+                </label>
+                <a href="forgot-password.html" class="forgot-link" data-i18n="forgot_password">نسيت كلمة المرور؟</a>
+            </div>
+
+            <button type="submit" class="btn-primary" data-i18n="btn_login">تسجيل الدخول</button>
+        </form>
+
+        <div class="divider">
+            <span data-i18n="divider_text">أو عبر</span>
+        </div>
+
+        <button type="button" onclick="loginWithGoogle()" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google">
+            <span data-i18n="btn_google">الدخول بواسطة جوجل</span>
+        </button>
+
+        <p class="auth-footer">
+            <span data-i18n="no_account">ليس لديك حساب؟</span> 
+            <a href="register.html" data-i18n="link_register">أنشئ حساباً الآن</a>
+        </p>
     </div>
-  </div>
 
-  <script type="module">
-    import { auth } from './ui-logic.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
+    <footer class="simple-footer">
+        <p>&copy; 2026 Stranger Meeting. All rights reserved.</p>
+    </footer>
 
-    // 1. تهيئة الواجهة
-    initUI();
-    document.getElementById('themeBtn').onclick = toggleTheme;
-    document.getElementById('langBtn').onclick = toggleLang;
-
-    // 2. التحقق من الدخول (توجيه فوري للمستخدمين النشطين)
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        if (localStorage.getItem('termsAccepted') === 'true') {
-          window.location.replace("dashboard.html");
-        } else {
-          window.location.replace("terms.html");
-        }
-      }
-    });
-
-    // 3. دعم PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
-      });
-    }
-  </script>
 </body>
 </html>
+
