@@ -1,144 +1,58 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title class="tr" data-key="register_title">إنشاء حساب | Stranger Meeting</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .register-container { padding: 20px; display: flex; justify-content: center; min-height: calc(100vh - 80px); align-items: center; }
-    .register-form { width: 100%; max-width: 400px; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: var(--shadow); }
-    .avatar-upload { text-align: center; margin-bottom: 25px; position: relative; }
-    .avatar-upload img { 
-      width: 100px; height: 100px; border-radius: 50%; 
-      object-fit: cover; border: 3px solid var(--p); background: #f9f9f9;
-    }
-    .file-label {
-      position: absolute; bottom: 0; right: calc(50% - 50px);
-      background: var(--p); color: white; border-radius: 50%;
-      width: 30px; height: 30px; display: flex; align-items: center;
-      justify-content: center; cursor: pointer; border: 2px solid white; font-size: 0.8rem;
-    }
-    input, select { width: 100%; margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: var(--p); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب جديد - Stranger Meeting</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="ui-logic.js"></script>
 </head>
-<body class="light-mode">
+<body>
 
-  <div class="header">
-    <button class="icon-btn" onclick="location.href='index.html'">🔙</button>
-    <h2 class="tr" data-key="register_title">حساب جديد</h2>
-    <div style="display:flex; gap:8px;">
-      <button id="themeBtn" class="icon-btn">🌓</button>
-      <button id="langBtn" class="friend-btn">EN</button>
-    </div>
-  </div>
+    <div class="auth-container">
+        <h2 data-i18n="register_title">إنشاء حساب جديد</h2>
+        <p data-i18n="register_subtitle">انضم إلينا وابدأ في تكوين صداقات جديدة</p>
 
-  <div class="register-container">
-    <div class="register-form">
-      <form id="registerForm">
-        <div class="avatar-upload">
-          <img id="regPreview" src="default-avatar.png">
-          <label for="regAvatar" class="file-label">📷</label>
-          <input type="file" id="regAvatar" hidden accept="image/*">
-        </div>
+        <form onsubmit="registerUser(event)">
+            
+            <div class="input-group">
+                <label for="fullname" data-i18n="label_fullname">الاسم المستعار</label>
+                <input type="text" id="fullname" placeholder="مثلاً: الباحث عن المعرفة" required>
+            </div>
 
-        <label class="tr" data-key="fullname_placeholder">الاسم</label>
-        <input type="text" id="regName" required placeholder="اسمك المستعار">
+            <div class="input-group">
+                <label for="email" data-i18n="label_email">البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="example@mail.com" required>
+            </div>
 
-        <label class="tr" data-key="email_label">البريد الإلكتروني</label>
-        <input type="email" id="regEmail" required placeholder="name@example.com">
+            <div class="input-group">
+                <label for="password" data-i18n="label_password">كلمة المرور</label>
+                <input type="password" id="password" placeholder="********" minlength="6" required>
+            </div>
 
-        <label class="tr" data-key="pass_label">كلمة المرور</label>
-        <input type="password" id="regPass" required minlength="6" placeholder="6 رموز على الأقل">
+            <div class="input-group">
+                <label for="gender" data-i18n="label_gender">الجنس</label>
+                <select id="gender" required>
+                    <option value="" disabled selected data-i18n="select_gender">اختر الجنس</option>
+                    <option value="male" data-i18n="gender_male">ذكر</option>
+                    <option value="female" data-i18n="gender_female">أنثى</option>
+                </select>
+            </div>
 
-        <div style="display: flex; gap: 10px;">
-          <div style="flex: 1;">
-            <label class="tr" data-key="gender_label">جنسك</label>
-            <select id="regGender">
-              <option value="male">ذكر</option>
-              <option value="female">أنثى</option>
-            </select>
-          </div>
-          <div style="flex: 1;">
-            <label class="tr" data-key="seeking_label">أبحث عن</label>
-            <select id="regSeeking">
-              <option value="male">رجال</option>
-              <option value="female">نساء</option>
-              <option value="both" selected>الجميع</option>
-            </select>
-          </div>
-        </div>
+            <button type="submit" class="btn-primary" data-i18n="btn_register">إنشاء الحساب</button>
+        </form>
 
-        <button type="submit" id="regSubmitBtn" class="start-btn tr" data-key="register_title" style="width: 100%; border: none; margin-top: 10px;">
-            ابدأ الآن 🚀
+        <div class="divider" data-i18n="divider_text">أو عبر</div>
+
+        <button type="button" onclick="loginWithGoogle()" class="btn-google">
+            <img src="google-icon.png" alt=""> <span data-i18n="btn_google">سجل بواسطة جوجل</span>
         </button>
-      </form>
-      
-      <p style="text-align: center; margin-top: 20px; font-size: 0.85rem;">
-        لديك حساب بالفعل؟ <a href="login.html" style="color: var(--p); text-decoration: none; font-weight: bold;">دخول</a>
-      </p>
 
-      <div id="regStatus" style="margin-top: 15px; text-align: center; font-weight: bold; font-size: 0.85rem;"></div>
+        <p class="auth-footer">
+            <span data-i18n="have_account">لديك حساب بالفعل؟</span> 
+            <a href="index.html" data-i18n="link_login">سجل الدخول</a>
+        </p>
     </div>
-  </div>
 
-  <script type="module">
-    import { auth, db, toggleLang, toggleTheme, initUI } from './ui-logic.js';
-    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    window.addEventListener('DOMContentLoaded', initUI);
-    document.getElementById('themeBtn').onclick = toggleTheme;
-    document.getElementById('langBtn').onclick = toggleLang;
-
-    // معاينة الصورة
-    document.getElementById('regAvatar').onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => document.getElementById('regPreview').src = ev.target.result;
-        reader.readAsDataURL(file);
-      }
-    };
-
-    // عملية التسجيل
-    document.getElementById('registerForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const status = document.getElementById('regStatus');
-      const lang = localStorage.getItem('preferredLang') || 'ar';
-
-      try {
-        const email = document.getElementById('regEmail').value.trim();
-        const pass = document.getElementById('regPass').value;
-        const name = document.getElementById('regName').value.trim();
-        
-        status.style.color = "var(--p)";
-        status.innerText = lang === 'ar' ? "⏳ جاري إنشاء الحساب..." : "⏳ Creating account...";
-
-        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        
-        // حفظ البيانات الأساسية + منح 100 نقطة هدية
-        await setDoc(doc(db, "users", userCred.user.uid), {
-          uid: userCred.user.uid,
-          fullname: name,
-          email: email,
-          gender: document.getElementById('regGender').value,
-          seeking: document.getElementById('regSeeking').value,
-          points: 100, // مكافأة التسجيل
-          avatarUrl: document.getElementById('regPreview').src,
-          isOnline: true,
-          isBusy: false,
-          createdAt: new Date()
-        });
-
-        window.location.replace("dashboard.html");
-      } catch (err) {
-        status.style.color = "var(--danger)";
-        status.innerText = lang === 'ar' ? "❌ فشل التسجيل: " + err.code : "❌ Registration failed";
-        console.error(err);
-      }
-    };
-  </script>
 </body>
 </html>
