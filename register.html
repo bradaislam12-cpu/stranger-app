@@ -1,4 +1,4 @@
-here<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -6,33 +6,28 @@ here<!DOCTYPE html>
   <title class="tr" data-key="register_title">إنشاء حساب | Stranger Meeting</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .register-container { padding: 20px; display: flex; justify-content: center; }
-    .avatar-upload { text-align: center; margin-bottom: 20px; position: relative; }
+    .register-container { padding: 20px; display: flex; justify-content: center; min-height: calc(100vh - 80px); align-items: center; }
+    .register-form { width: 100%; max-width: 400px; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: var(--shadow); }
+    .avatar-upload { text-align: center; margin-bottom: 25px; position: relative; }
     .avatar-upload img { 
-      width: 110px; height: 110px; border-radius: 50%; 
-      object-fit: cover; border: 3px solid var(--p); background: #eee;
+      width: 100px; height: 100px; border-radius: 50%; 
+      object-fit: cover; border: 3px solid var(--p); background: #f9f9f9;
     }
     .file-label {
-      position: absolute; bottom: 5px; right: calc(50% - 55px);
+      position: absolute; bottom: 0; right: calc(50% - 50px);
       background: var(--p); color: white; border-radius: 50%;
-      width: 32px; height: 32px; display: flex; align-items: center;
-      justify-content: center; cursor: pointer; border: 2px solid white;
+      width: 30px; height: 30px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; border: 2px solid white; font-size: 0.8rem;
     }
-    .interests-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px; background: var(--bg); padding: 15px; border-radius: 12px; margin-bottom: 15px;
-    }
-    .captcha-area {
-      background: var(--card); border: 2px dashed var(--p);
-      padding: 15px; border-radius: 15px; text-align: center; margin: 20px 0;
-    }
+    input, select { width: 100%; margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: var(--p); }
   </style>
 </head>
 <body class="light-mode">
 
   <div class="header">
     <button class="icon-btn" onclick="location.href='index.html'">🔙</button>
-    <h2 class="tr" data-key="register_title">إنشاء حساب جديد</h2>
+    <h2 class="tr" data-key="register_title">حساب جديد</h2>
     <div style="display:flex; gap:8px;">
       <button id="themeBtn" class="icon-btn">🌓</button>
       <button id="langBtn" class="friend-btn">EN</button>
@@ -48,130 +43,89 @@ here<!DOCTYPE html>
           <input type="file" id="regAvatar" hidden accept="image/*">
         </div>
 
-        <label class="tr" data-key="fullname_placeholder">الاسم الكامل</label>
+        <label class="tr" data-key="fullname_placeholder">الاسم</label>
         <input type="text" id="regName" required placeholder="اسمك المستعار">
 
         <label class="tr" data-key="email_label">البريد الإلكتروني</label>
         <input type="email" id="regEmail" required placeholder="name@example.com">
 
         <label class="tr" data-key="pass_label">كلمة المرور</label>
-        <input type="password" id="regPass" required minlength="6" placeholder="••••••••">
+        <input type="password" id="regPass" required minlength="6" placeholder="6 رموز على الأقل">
 
-        <div style="display: flex; gap: 15px;">
+        <div style="display: flex; gap: 10px;">
           <div style="flex: 1;">
-            <label class="tr" data-key="gender_label">الجنس</label>
+            <label class="tr" data-key="gender_label">جنسك</label>
             <select id="regGender">
-              <option value="male" class="tr" data-key="male">ذكر</option>
-              <option value="female" class="tr" data-key="female">أنثى</option>
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
             </select>
           </div>
           <div style="flex: 1;">
-            <label class="tr" data-key="seeking_label">أهتم بمقابلة</label>
+            <label class="tr" data-key="seeking_label">أبحث عن</label>
             <select id="regSeeking">
-              <option value="male" class="tr" data-key="seeking_male">رجال</option>
-              <option value="female" class="tr" data-key="seeking_female">نساء</option>
-              <option value="both" class="tr" data-key="seeking_both" selected>الجميع</option>
+              <option value="male">رجال</option>
+              <option value="female">نساء</option>
+              <option value="both" selected>الجميع</option>
             </select>
           </div>
         </div>
 
-        <label class="tr" data-key="country_label">الدولة</label>
-        <select id="regCountry"></select>
-
-        <label class="tr" data-key="interests_label">اهتماماتك</label>
-        <div class="interests-grid" id="regInterests"></div>
-
-        <div class="captcha-area">
-          <span id="regCaptchaQuest" style="font-weight: bold; display: block; margin-bottom: 10px;">...</span>
-          <input type="number" id="regCaptchaAns" required placeholder="الإجابة" style="width: 100px; text-align: center; margin-bottom: 0;">
-        </div>
-
-        <button type="submit" id="regSubmitBtn" class="start-btn tr" data-key="register_title">إنشاء الحساب ✅</button>
+        <button type="submit" id="regSubmitBtn" class="start-btn tr" data-key="register_title" style="width: 100%; border: none; margin-top: 10px;">
+            ابدأ الآن 🚀
+        </button>
       </form>
       
-      <div id="regStatus" style="margin-top: 15px; text-align: center; font-weight: bold;"></div>
+      <p style="text-align: center; margin-top: 20px; font-size: 0.85rem;">
+        لديك حساب بالفعل؟ <a href="login.html" style="color: var(--p); text-decoration: none; font-weight: bold;">دخول</a>
+      </p>
+
+      <div id="regStatus" style="margin-top: 15px; text-align: center; font-weight: bold; font-size: 0.85rem;"></div>
     </div>
   </div>
 
   <script type="module">
-    import { auth, db, doc, setDoc, toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
+    import { auth, db, toggleLang, toggleTheme, initUI } from './ui-logic.js';
     import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 1. البيانات الثابتة
-    const countries = ["Algeria", "Morocco", "Tunisia", "Egypt", "Saudi Arabia", "USA", "France", "UK", "Germany"];
-    const interests = ["Sports", "Gaming", "Tech", "Cooking", "Art", "Travel", "Music", "Reading"];
-
-    // 2. تهيئة الواجهة
-    window.addEventListener('DOMContentLoaded', () => {
-      initUI();
-      generateCaptcha();
-      
-      // ملء القوائم
-      const cSelect = document.getElementById('regCountry');
-      countries.forEach(c => cSelect.add(new Option(c, c)));
-
-      const iGrid = document.getElementById('regInterests');
-      interests.forEach(i => {
-        const label = document.createElement('label');
-        label.className = 'interest-item';
-        label.innerHTML = `<input type="checkbox" value="${i}"> <span>${i}</span>`;
-        iGrid.appendChild(label);
-      });
-    });
-
-    // 3. كابتشا ذكية
-    let captchaResult;
-    function generateCaptcha() {
-      const lang = localStorage.getItem('preferredLang') || 'ar';
-      const a = Math.floor(Math.random() * 10) + 1;
-      const b = Math.floor(Math.random() * 10) + 1;
-      captchaResult = a + b;
-      document.getElementById('regCaptchaQuest').innerText = lang === 'ar' 
-        ? `سؤال أمان: كم ناتج ${a} + ${b} ؟` 
-        : `Security: What is ${a} + ${b}?`;
-    }
-
-    document.getElementById('langBtn').onclick = () => { toggleLang(); generateCaptcha(); };
+    window.addEventListener('DOMContentLoaded', initUI);
     document.getElementById('themeBtn').onclick = toggleTheme;
+    document.getElementById('langBtn').onclick = toggleLang;
 
-    // 4. معاينة الصورة
+    // معاينة الصورة
     document.getElementById('regAvatar').onchange = (e) => {
       const file = e.target.files[0];
-      if (file) document.getElementById('regPreview').src = URL.createObjectURL(file);
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => document.getElementById('regPreview').src = ev.target.result;
+        reader.readAsDataURL(file);
+      }
     };
 
-    // 5. عملية التسجيل
+    // عملية التسجيل
     document.getElementById('registerForm').onsubmit = async (e) => {
       e.preventDefault();
-      const lang = localStorage.getItem('preferredLang') || 'ar';
       const status = document.getElementById('regStatus');
-      const ans = document.getElementById('regCaptchaAns').value;
-
-      if (parseInt(ans) !== captchaResult) {
-        status.style.color = "red";
-        status.innerText = lang === 'ar' ? "❌ الكابتشا غير صحيحة" : "❌ Incorrect CAPTCHA";
-        generateCaptcha();
-        return;
-      }
+      const lang = localStorage.getItem('preferredLang') || 'ar';
 
       try {
         const email = document.getElementById('regEmail').value.trim();
         const pass = document.getElementById('regPass').value;
+        const name = document.getElementById('regName').value.trim();
         
         status.style.color = "var(--p)";
-        status.innerText = lang === 'ar' ? "جاري إنشاء الحساب..." : "Creating account...";
+        status.innerText = lang === 'ar' ? "⏳ جاري إنشاء الحساب..." : "⏳ Creating account...";
 
         const userCred = await createUserWithEmailAndPassword(auth, email, pass);
         
-        // حفظ البيانات في Firestore
+        // حفظ البيانات الأساسية + منح 100 نقطة هدية
         await setDoc(doc(db, "users", userCred.user.uid), {
           uid: userCred.user.uid,
-          fullname: document.getElementById('regName').value.trim(),
+          fullname: name,
           email: email,
           gender: document.getElementById('regGender').value,
           seeking: document.getElementById('regSeeking').value,
-          country: document.getElementById('regCountry').value,
-          interests: Array.from(document.querySelectorAll('#regInterests input:checked')).map(c => c.value),
+          points: 100, // مكافأة التسجيل
           avatarUrl: document.getElementById('regPreview').src,
           isOnline: true,
           isBusy: false,
@@ -180,8 +134,9 @@ here<!DOCTYPE html>
 
         window.location.replace("dashboard.html");
       } catch (err) {
-        status.style.color = "red";
-        status.innerText = lang === 'ar' ? "❌ خطأ: " + err.message : "❌ Error: " + err.message;
+        status.style.color = "var(--danger)";
+        status.innerText = lang === 'ar' ? "❌ فشل التسجيل: " + err.code : "❌ Registration failed";
+        console.error(err);
       }
     };
   </script>
