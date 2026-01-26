@@ -6,35 +6,73 @@
     <title class="tr" data-key="terms_title">شروط الخدمة والخصوصية | SM</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        body { 
+            background: var(--bg); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
         
         .terms-container {
-            max-width: 650px; width: 100%; padding: 35px;
-            background: var(--card); border-radius: 25px;
-            line-height: 1.8; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            max-width: 650px; 
+            width: 100%; 
+            padding: 35px;
+            background: var(--card); 
+            border-radius: 25px;
+            line-height: 1.8; 
+            box-shadow: var(--shadow);
             animation: fadeIn 0.6s ease;
         }
 
-        h2 { color: var(--p); text-align: center; margin-bottom: 25px; gap: 10px; font-size: 1.6rem; }
+        h2 { color: var(--p); text-align: center; margin-bottom: 25px; font-size: 1.6rem; }
         h3 { color: var(--p-dark); font-size: 1.1rem; margin-top: 25px; border-bottom: 2px solid var(--bg); padding-bottom: 8px; }
         
         ul { padding-right: 15px; list-style: none; }
         li { margin-bottom: 12px; position: relative; padding-right: 25px; font-size: 0.95rem; opacity: 0.9; }
-        li::before { content: "✔"; position: absolute; right: 0; color: #25d366; font-weight: bold; }
+        
+        /* أيقونة التحقق في القائمة */
+        li::before { 
+            content: "✔"; 
+            position: absolute; 
+            right: 0; 
+            color: var(--accent); 
+            font-weight: bold; 
+        }
         
         .disclaimer {
-            background: rgba(255, 193, 7, 0.1); color: #856404;
-            padding: 18px; border-radius: 15px; font-size: 0.9rem;
-            margin-top: 25px; border-right: 5px solid #ffc107;
+            background: rgba(255, 193, 7, 0.1); 
+            color: #856404;
+            padding: 18px; 
+            border-radius: 15px; 
+            font-size: 0.9rem;
+            margin-top: 25px; 
+            border-right: 5px solid #ffc107;
         }
 
         .accept-btn {
-            display: block; width: 100%; padding: 16px;
-            background: var(--p); color: white; text-align: center;
-            text-decoration: none; border-radius: 50px; font-weight: bold;
-            margin-top: 30px; transition: 0.3s; border: none; cursor: pointer;
+            display: block; 
+            width: 100%; 
+            padding: 16px;
+            background: var(--p); 
+            color: white; 
+            text-align: center;
+            text-decoration: none; 
+            border-radius: 50px; 
+            font-weight: bold;
+            margin-top: 30px; 
+            transition: 0.3s; 
+            border: none; 
+            cursor: pointer;
         }
-        .accept-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(7, 94, 84, 0.3); }
+        
+        .accept-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(7, 94, 84, 0.3); 
+        }
+
+        body.dark-mode .disclaimer { color: #ffc107; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -47,14 +85,14 @@
         
         <h3 class="tr" data-key="terms_privacy_title">🔒 الخصوصية والأمان</h3>
         <ul>
-            <li class="tr" data-key="terms_privacy_1"><strong>التشفير:</strong> جميع مكالمات الفيديو مشفرة تماماً ولا يتم تسجيلها في خوادمنا.</li>
-            <li class="tr" data-key="terms_privacy_2"><strong>البيانات:</strong> معلوماتك الشخصية تستخدم فقط لغرض "المطابقة" لتحسين تجربتك.</li>
+            <li class="tr" data-key="terms_privacy_1"><strong>التشفير:</strong> جميع مكالمات الفيديو والدردشة مشفرة ولا يتم تسجيلها.</li>
+            <li class="tr" data-key="terms_privacy_2"><strong>البيانات:</strong> معلوماتك تستخدم فقط لغرض "المطابقة" لتحسين تجربتك.</li>
         </ul>
 
         <h3 class="tr" data-key="terms_rules_title">🚫 قواعد السلوك</h3>
         <ul>
-            <li class="tr" data-key="terms_rules_1">يُمنع منعاً باتاً أي سلوك خادش للحياء أو تنمر تجاه المشتركين الآخرين.</li>
-            <li class="tr" data-key="terms_rules_2">انتحال الشخصية أو الحسابات الوهمية يعرضك للحظر الدائم.</li>
+            <li class="tr" data-key="terms_rules_1">يُمنع منعاً باتاً أي سلوك خادش للحياء أو تنمر.</li>
+            <li class="tr" data-key="terms_rules_2">انتحال الشخصية يعرضك للحظر الدائم من المنصة.</li>
         </ul>
 
         <div class="disclaimer tr" data-key="terms_disclaimer">
@@ -65,22 +103,23 @@
     </div>
 
     <script type="module">
-        import { applyTranslations } from './ui-logic.js';
+        import { initUI, applyTranslations } from './ui-logic.js';
 
-        // تطبيق اللغة والوضع الليلي
-        const lang = localStorage.getItem('preferredLang') || 'ar';
-        applyTranslations(lang);
+        // تهيئة الواجهة (اللغة والثيم)
+        initUI();
 
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-
-        // عند الموافقة، نحفظ في الذاكرة أن المستخدم وافق لكي لا تظهر له ثانية
+        // عند الضغط على زر الموافقة
         document.getElementById('acceptBtn').onclick = () => {
+            // حفظ حالة الموافقة محلياً
             localStorage.setItem('termsAccepted', 'true');
-            window.location.href = 'index.html';
+            // التوجيه إلى لوحة التحكم
+            window.location.replace('dashboard.html');
         };
+
+        // التحقق مما إذا كان قد وافق مسبقاً (اختياري: لتجنب ظهور الصفحة مرة أخرى)
+        if (localStorage.getItem('termsAccepted') === 'true') {
+            window.location.replace('dashboard.html');
+        }
     </script>
 </body>
 </html>
-
