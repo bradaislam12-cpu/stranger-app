@@ -14,14 +14,26 @@
     .hero-section {
       display: flex; flex-direction: column; align-items: center;
       justify-content: center; text-align: center;
-      min-height: calc(100vh - var(--header-h));
+      min-height: calc(100vh - 80px);
       padding: 20px; animation: fadeIn 0.8s ease-in-out;
     }
-    .hero-logo { width: 150px; margin-bottom: 20px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
-    .hero-title { font-size: 2.2rem; color: var(--p); margin-bottom: 10px; }
-    .hero-desc { font-size: 1.1rem; max-width: 600px; opacity: 0.8; margin-bottom: 30px; }
+    .hero-logo { width: 120px; margin-bottom: 20px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
+    .hero-title { font-size: 2rem; color: var(--p); margin-bottom: 10px; font-weight: 800; }
+    .hero-desc { font-size: 1.1rem; max-width: 600px; opacity: 0.8; margin-bottom: 30px; line-height: 1.6; }
     .btn-group { display: flex; gap: 15px; width: 100%; max-width: 400px; }
     
+    /* ميزات الموقع الجديدة */
+    .features-grid {
+      margin-top: 50px; display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+      gap: 15px; width: 100%; max-width: 700px;
+    }
+    .feature-item {
+      background: var(--card); padding: 15px; border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 0.9rem;
+    }
+    .feature-item span { display: block; font-size: 1.5rem; margin-bottom: 5px; }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 500px) { .btn-group { flex-direction: column; } }
   </style>
@@ -42,33 +54,37 @@
   <div class="hero-section">
     <img src="https://cdn-icons-png.flaticon.com/512/3649/3649460.png" class="hero-logo" alt="SM Logo">
     
-    <h1 class="hero-title tr" data-key="welcome_back">مرحباً بك في عالم التعارف الآمن</h1>
-    <p class="hero-desc tr" data-key="terms_intro">تحدث مع أشخاص جدد حول العالم عبر الفيديو والدردشة المشفرة. ابدأ رحلتك الآن مجاناً وبكل خصوصية.</p>
+    <h1 class="hero-title tr" data-key="welcome_back">تواصل مع العالم بضغطة زر</h1>
+    <p class="hero-desc tr" data-key="terms_intro">
+        منصة آمنة للتعارف العشوائي عبر الفيديو. اجمع النقاط من خلال مشاهدة الإعلانات واستخدمها لبدء محادثات مشفرة مع أشخاص جدد.
+    </p>
 
     <div class="btn-group">
-      <button onclick="location.href='login.html'" class="start-btn tr" data-key="login" style="background: var(--p);">تسجيل الدخول</button>
-      <button onclick="location.href='register.html'" class="start-btn tr" data-key="register_title">إنشاء حساب جديد</button>
+      <button onclick="location.href='login.html'" class="start-btn tr" data-key="login" style="background: var(--p); border: none;">تسجيل الدخول</button>
+      <button onclick="location.href='register.html'" class="start-btn tr" data-key="register_title" style="background: var(--card); color: var(--text); border: 2px solid var(--p);">إنشاء حساب</button>
     </div>
 
-    <div style="margin-top: 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 20px; width: 100%; max-width: 600px; opacity: 0.7;">
-      <div>🔒 مشفر</div>
-      <div>⚡ سريع</div>
-      <div>🌍 عالمي</div>
+    <div class="features-grid">
+      <div class="feature-item"><span>🛡️</span>دردشة مشفرة</div>
+      <div class="feature-item"><span>💰</span>نظام نقاط</div>
+      <div class="feature-item"><span>📹</span>فيديو عالي الدقة</div>
+      <div class="feature-item"><span>🎁</span>مكافآت إعلانية</div>
     </div>
   </div>
 
   <script type="module">
-    import { auth, onAuthStateChanged, toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
+    import { auth } from './ui-logic.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { toggleLang, toggleTheme, applyTranslations, initUI } from './ui-logic.js';
 
-    // 1. تهيئة الواجهة (اللغة والثيم)
+    // 1. تهيئة الواجهة
     initUI();
     document.getElementById('themeBtn').onclick = toggleTheme;
     document.getElementById('langBtn').onclick = toggleLang;
 
-    // 2. التحقق من حالة المستخدم (إعادة التوجيه التلقائي)
+    // 2. التحقق من الدخول (توجيه فوري للمستخدمين النشطين)
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // إذا كان مسجلاً، نتحقق هل وافق على الشروط؟
         if (localStorage.getItem('termsAccepted') === 'true') {
           window.location.replace("dashboard.html");
         } else {
@@ -77,15 +93,12 @@
       }
     });
 
-    // 3. تسجيل الـ Service Worker (لـ PWA)
+    // 3. دعم PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(reg => console.log('SW Registered'))
-          .catch(err => console.log('SW Failed', err));
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
       });
     }
   </script>
 </body>
 </html>
-
