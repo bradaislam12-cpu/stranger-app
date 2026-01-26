@@ -1,165 +1,175 @@
-/* style.css */
-
-/* 🎨 إعداد الألوان */
+/* 🎨 المتغيرات الأساسية ونظام الألوان */
 :root {
+  /* الوضع النهاري (Default) */
   --bg: #f0f2f5;
   --card: #ffffff;
+  --text: #1c1e21;
+  --text-muted: #65676b;
   --p: #075e54;
-  --p-dark: #064c44;
+  --p-light: #128c7e;
+  --p-dark: #05413a;
   --accent: #25d366;
   --danger: #d9534f;
   --header-h: 60px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --radius: 12px;
 }
 
-body.light-mode {
-  background: var(--bg);
-  color: #333;
-}
-
+/* 🌙 الوضع الليلي (Dark Mode) */
 body.dark-mode {
-  background: #121212;
-  color: #eee;
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #e4e6eb;
+  --text-muted: #b0b3b8;
+  --p: #05413a;
+  --p-light: #075e54;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-body.dark-mode .header {
-  background: #1e1e1e;
-}
-body.dark-mode .card {
-  background: #222;
+/* 🧱 الإعدادات العامة */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 🟩 الهيدر */
+body {
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+}
+
+/* 🟩 الهيدر (Navigation) */
 .header {
   height: var(--header-h);
+  background: var(--p);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 15px;
-  background: var(--p);
-  color: white;
+  padding: 0 20px;
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.header h2 {
-  font-size: 1.2rem;
-  margin: 0;
-}
-
-/* 🔘 الأزرار */
-button, .start-btn, .friend-btn, .icon-btn {
+/* 🔘 الأزرار (Buttons) */
+button, .start-btn, .friend-btn {
   cursor: pointer;
   border: none;
-  font-size: 1rem;
-  transition: 0.3s;
+  outline: none;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .start-btn {
   background: var(--accent);
   color: white;
-  padding: 12px 20px;
-  border-radius: 10px;
+  padding: 14px 25px;
   width: 100%;
+  font-size: 1.1rem;
+}
+
+.start-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
 }
 
 .friend-btn {
-  background: var(--p);
+  background: var(--p-light);
   color: white;
-  padding: 10px 15px;
-  border-radius: 8px;
+  padding: 8px 16px;
 }
 
 .icon-btn {
   background: transparent;
   color: inherit;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  padding: 5px;
 }
 
-/* 🗂️ صناديق النماذج */
+/* 🗂️ الصناديق والنماذج (Forms & Cards) */
 .auth-box, .profile-form, .register-form {
-  max-width: 500px;
-  margin: 30px auto;
-  padding: 20px;
+  max-width: 450px;
+  width: 90%;
+  margin: 40px auto;
+  padding: 30px;
   background: var(--card);
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
 }
 
-.auth-box h2, .profile-form h2, .register-form h2 {
-  margin-bottom: 15px;
-  color: var(--p-dark);
-}
-
-.auth-box input, .profile-form input, .register-form input,
-.auth-box select, .profile-form select, .register-form select {
+input, select, textarea {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
+  padding: 12px 15px;
+  margin: 8px 0 20px 0;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
 }
 
-/* 🎥 الفيديو */
-.video-container {
+input:focus {
+  border-color: var(--p);
+}
+
+/* 💬 نظام الدردشة (Chat UI) */
+.msg-container {
+  height: calc(100vh - 120px);
+  padding: 20px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - var(--header-h));
-  background: var(--bg);
-  padding: 10px;
 }
 
+.msg {
+  max-width: 75%;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  position: relative;
+}
+
+.msg.me {
+  align-self: flex-end;
+  background: #dcf8c6; /* لون واتساب الشهير */
+  color: #000;
+  border-bottom-right-radius: 4px;
+}
+
+body.dark-mode .msg.me {
+  background: #05413a;
+  color: #fff;
+}
+
+.msg.them {
+  align-self: flex-start;
+  background: var(--card);
+  border: 1px solid #eee;
+  border-bottom-left-radius: 4px;
+}
+
+/* 🎥 الفيديو (Video Call) */
 video {
-  width: 100%;
-  max-width: 500px;
-  border-radius: 12px;
-  background: black;
-  margin: 10px 0;
+  border-radius: var(--radius);
+  background: #000;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
-/* ⚙️ أزرار التحكم في الفيديو */
-.controls {
-  display: flex;
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.controls button {
-  padding: 12px 18px;
-  border-radius: 50px;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.end-btn {
-  background: var(--danger);
-  color: white;
-}
-
-.ctrl-btn {
-  background: var(--p);
-  color: white;
-}
-
-.ctrl-btn:hover, .end-btn:hover {
-  filter: brightness(1.1);
-}
-
-/* 📱 Responsive Design */
+/* 📱 الشاشات الصغيرة */
 @media (max-width: 600px) {
-  .header h2 {
-    font-size: 1rem;
-  }
-  .auth-box, .profile-form, .register-form {
-    margin: 15px;
-    padding: 15px;
-  }
-  .controls {
-    flex-direction: column;
-    gap: 10px;
-  }
+  .header h2 { font-size: 1rem; }
+  .auth-box { padding: 20px; }
+  .msg { max-width: 85%; }
 }
+
